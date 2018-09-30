@@ -12,7 +12,7 @@ namespace Fractum.WebSocket.Hooks
 {
     public sealed class GuildCreateHook : IEventHook<JToken>
     {
-        public Task RunAsync(JToken data, IFractumCache cache)
+        public Task RunAsync(JToken data, IFractumCache cache, IStateCache state)
         {
             var guild = data.ToObject<Guild>();
 

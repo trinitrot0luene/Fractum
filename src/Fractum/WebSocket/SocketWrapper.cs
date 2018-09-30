@@ -21,7 +21,6 @@ namespace Fractum.WebSocket
 
         private Uri _url;
         private ClientWebSocket _socket;
-        private ConcurrentQueue<string> SocketMessageQueue;
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private WebSocketMessageConverter _converter;
 
@@ -56,12 +55,15 @@ namespace Fractum.WebSocket
                 "The listener task was cancelled.", LogSeverity.Error)); }), _cts.Token);
         }
 
+        public Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "")
+            => _socket.CloseAsync(status, reason, _cts.Token);
+
         /// <summary>
         /// Send a message to the gateway over a socket connection.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        private async Task SendMessageAsync(string message)
+        public async Task SendMessageAsync(string message)
         {
             if (DateTimeOffset.UtcNow > _ratelimitResetsAt)
             {

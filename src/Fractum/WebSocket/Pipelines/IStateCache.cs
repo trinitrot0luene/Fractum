@@ -18,5 +18,7 @@ namespace Fractum.WebSocket.Pipelines
         int HeartbeatInterval { get; set; }
 
         bool IsWaitingForACK { get; set; }
+
+        void Reset();
     }
 }

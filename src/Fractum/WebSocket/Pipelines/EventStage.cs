@@ -14,8 +14,13 @@ namespace Fractum.WebSocket.Pipelines
 
         public IFractumCache Cache { get; set; }
 
-        public EventStage(IFractumCache cache)
-            => Cache = cache;
+        public IStateCache State { get; set; }
+
+        public EventStage(IFractumCache cache, IStateCache state)
+        {
+            Cache = cache;
+            State = state;
+        }
 
         public void RegisterHook(string eventName, IEventHook<JToken> hook)
         {
@@ -32,7 +37,7 @@ namespace Fractum.WebSocket.Pipelines
         {
             if (Hooks.TryGetValue(payload.Type, out var hooks))
                 foreach (var hook in hooks)
-                    await hook.RunAsync(payload.Data, Cache);
+                    await hook.RunAsync(payload.Data, Cache, State);
         }
     }
 }

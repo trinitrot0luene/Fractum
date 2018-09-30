@@ -13,20 +13,12 @@ namespace Fractum.WebSocket.Pipelines
     {
         ConcurrentDictionary<ulong, Guild> Guilds { get; }
 
-        ConcurrentDictionary<ulong, Role> Roles { get; }
+        FractumSocketConfig Config { get; }
 
-        ConcurrentDictionary<ulong, GuildMember> Members { get; }
+        Guild GetGuild(ulong guildId);
 
-        ConcurrentDictionary<ulong, GuildChannel> Channels { get; }
+        void UpdateGuild(ulong guildId, Action<Guild> updateGuild);
 
-        Guild PopulateGuild(ulong guildId);
-
-        GuildMember PopulateMember(ulong guildId, ulong memberId);
-
-        GuildChannel PopulateChannel(ulong channelId);
-
-        void Initialise();
-
-        void Reset();
+        void Clear();
     }
 }

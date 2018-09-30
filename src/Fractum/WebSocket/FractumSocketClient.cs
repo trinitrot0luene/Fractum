@@ -33,8 +33,8 @@ namespace Fractum.WebSocket
 
         public void UseDefaultPipeline()
         {
-            var connectionStage = new ConnectionStage(state);
-            var eventStage = new EventStage(cache);
+            var connectionStage = new ConnectionStage(state, _socket);
+            var eventStage = new EventStage(cache, state);
             eventStage.RegisterHook("GUILD_CREATE", new GuildCreateHook());
 
             _pipeline = new PayloadPipeline(cache, state, _socket);
