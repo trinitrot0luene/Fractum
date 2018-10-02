@@ -19,7 +19,7 @@ namespace Fractum.WebSocket.Pipelines
     {
         public ISession Session { get; private set; }
 
-        public IFractumCache Cache { get; private set; }
+        public FractumCache Cache { get; private set; }
 
         public FractumSocketClient Client { get; private set; }
 
@@ -78,9 +78,11 @@ namespace Fractum.WebSocket.Pipelines
                 #endregion
                 #region Heartbeat / ACK
                 case OpCode.Heartbeat:
-                    return AcknowledgeHeartbeatAsync();
+                    Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Received heartbeat request from Gateway", LogSeverity.Debug));
+                    return HeartbeatAsync();
                 case OpCode.HeartbeatACK:
                     Session.WaitingForACK = false;
+                    Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Heartbeat ACK", LogSeverity.Debug));
                     return Task.CompletedTask;
                 #endregion
             }
@@ -96,12 +98,17 @@ namespace Fractum.WebSocket.Pipelines
         private async Task ReconnectAsync(WebSocketCloseStatus status)
         {
             var statusCode = (int)status;
+
+            Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Disconnected from the gateway with close code {statusCode}.", LogSeverity.Error));
+
             if (statusCode == 1000 || statusCode == 4006)
                 Session.Invalidated = true; // When the connection is re-established don't try to resume, re-identify.
 
             if (Session.Resuming) return; // We are trying to resume already and these disconnections are just failed reconnects.
             int backoffPower = 1;
             int backoff = 2;
+
+            Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Reconnecting...", LogSeverity.Warning));
 
             Session.Resuming = true; // Lock other closed event handlers and op2 Handling
             do
@@ -114,12 +121,17 @@ namespace Fractum.WebSocket.Pipelines
 
                 backoffPower++;
                 Session.ReconnectionAttempts++; // Increment reconnection attempts.
+
+                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnection attempt {backoffPower}.", LogSeverity.Warning));
             }
             while (Socket.ListenerTask.IsCanceled && Session.ReconnectionAttempts <= 3); // No listener and we haven't tried 3 reconnections.
 
             // Connection resumed successfully, the close handler can now exit.
             if (!Socket.ListenerTask.IsCanceled)
+            {
+                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Reconnected!", LogSeverity.Warning));
                 return;
+            }
 
             // Fetch connection info from the gateway with new Url: 
             var gatewayInfo = await Client.GetSocketUrlAsync();
@@ -138,6 +150,8 @@ namespace Fractum.WebSocket.Pipelines
                 backoffPower++;
 
                 Session.ReconnectionAttempts++; // Redundant but potentially useful for debugging purposes.
+
+                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnection attempt {backoffPower}.", LogSeverity.Warning));
             }
         }
 
@@ -158,6 +172,8 @@ namespace Fractum.WebSocket.Pipelines
                 }.Serialize())
             }.Serialize();
 
+            Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Resuming...", LogSeverity.Verbose));
+
             return Socket.SendMessageAsync(resume);
         }
 
@@ -173,7 +189,7 @@ namespace Fractum.WebSocket.Pipelines
                 OpCode = OpCode.Identify,
                 Data = JToken.Parse(new
                 {
-                    token = Cache.Config.Token,
+                    token = Cache.Client.Config.Token,
                     properties = new Dictionary<string, string>()
                     {
                         { "$os", Environment.OSVersion.ToString() },
@@ -181,9 +197,11 @@ namespace Fractum.WebSocket.Pipelines
                         { "$device", Assembly.GetExecutingAssembly().FullName }
                     },
                     compress = false,
-                    large_threshold = Cache.Config.LargeThreshold ?? 250
+                    large_threshold = Cache.Client.Config.LargeThreshold ?? 250
                 }.Serialize())
             }.Serialize();
+
+            Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Identifying...", LogSeverity.Verbose));
 
             return Socket.SendMessageAsync(identify);
         }
@@ -206,24 +224,9 @@ namespace Fractum.WebSocket.Pipelines
             }.Serialize();
             Session.WaitingForACK = true;
 
+            Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Heartbeat", LogSeverity.Debug));
+
             return Socket.SendMessageAsync(heartbeat);
-        }
-
-        /// <summary>
-        /// In the case that the client receives a heartbeat from the socket, send an ACK back.
-        /// </summary>
-        /// <returns></returns>
-        private Task AcknowledgeHeartbeatAsync()
-        {
-            var heartbeatAck = new
-            {
-                op = OpCode.HeartbeatACK,
-                d = default(string),
-                t = default(string),
-                s = default(string)
-            }.Serialize();
-
-            return Socket.SendMessageAsync(heartbeatAck);
         }
     }
 }

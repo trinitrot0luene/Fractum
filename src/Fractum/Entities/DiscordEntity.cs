@@ -13,7 +13,7 @@ namespace Fractum.Entities
         internal DiscordEntity() { }
 
         [JsonProperty("id")]
-        public ulong Id { get; private set; }
+        public ulong Id { get; protected set; }
 
         [JsonIgnore]
         public DateTimeOffset CreatedAt { get => new DateTimeOffset(2015, 1, 1, 0, 0, 0, TimeSpan.Zero).AddMilliseconds(Id >> 22); }

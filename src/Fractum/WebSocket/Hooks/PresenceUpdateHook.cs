@@ -1,4 +1,5 @@
 ﻿using Fractum.Entities;
+using Fractum.WebSocket.Events;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public sealed class ReadyHook : IEventHook<JToken>
+    public sealed class PresenceUpdateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            session.SessionId = args.Value<string>("session_id");
+            var presenceUpdate = args.ToObject<PresenceUpdateEvent>();
 
-            client.InvokeLog(new LogMessage(nameof(ReadyHook), "Ready", LogSeverity.Info));
+            presenceUpdate.ApplyToCache(cache);
+
+            client.InvokeLog(new LogMessage(nameof(PresenceUpdateHook), "Presence Update", LogSeverity.Verbose));
 
             return Task.CompletedTask;
         }

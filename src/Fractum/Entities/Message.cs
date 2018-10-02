@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace Fractum.Entities
@@ -47,22 +48,31 @@ namespace Fractum.Entities
         [JsonProperty("channel_id")]
         public ulong ChannelId { get; private set; }
 
-        [JsonProperty("member")]
-        internal PartialMember Member { get; private set; }
-
         [JsonProperty("guild_id")]
         public ulong? GuildId { get; private set; }
 
+        [JsonProperty("member")]
+        internal PartialMember Member { get; private set; }
+
         [JsonProperty("author")]
-        internal User MessageAuthor { get; set; }
+        private User AuthorUser { get; set; }
 
         [JsonIgnore]
-        public TextChannel Channel { get; internal set; }
+        public IUser Author
+        {
+            get
+            {
+                var member = Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id);
+                if (member is null)
+                    return AuthorUser;
+                return member;
+            }
+        }
+
+        [JsonIgnore]
+        public TextChannel Channel => Guild.TextChannels.FirstOrDefault(c => c.Id == ChannelId);
 
         [JsonIgnore]
         public Guild Guild { get; internal set; }
-
-        [JsonIgnore]
-        public IUser Author { get; internal set; }
     }
 }

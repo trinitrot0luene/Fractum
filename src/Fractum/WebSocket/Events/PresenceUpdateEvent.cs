@@ -1,5 +1,6 @@
 ﻿using Fractum.Entities;
 using Fractum.WebSocket.Entities;
+using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -51,28 +52,31 @@ namespace Fractum.WebSocket.Events
             }
         }
         
-        public void ApplyToGuild(Guild guild)
+        public void ApplyToCache(FractumCache cache)
         {
-            var member = guild.Members.FirstOrDefault(m => m.Id == User.Id);
-            if (member is null)
-                return;
-            member.RoleIds = Roles ?? member.RoleIds;
-            member.IsDeafened = User.Member?.IsDeafened ?? member.IsDeafened;
-            member.IsMuted = User.Member?.IsMuted ?? member.IsMuted;
-            member.Nickname = Nickname ?? member.Nickname;
-            member.User.Username = User.Username ?? member.User.Username;
-            member.User.Discrim = User.Discrim != short.MinValue ? User.Discrim : member.User.Discrim;
-
-            var newPresence = new Presence();
-            newPresence.Activity = Activity;
-            if (NewStatus.HasValue)
-                newPresence.Status = NewStatus.Value;
-
-            guild.PresenceData.AddOrUpdate(member.Id, newPresence, (id, presence) =>
+            cache.UpdateGuildCache(GuildId ?? 0, guildCache =>
             {
-                presence.Activity = Activity;
-                presence.Status = NewStatus ?? presence.Status;
-                return presence;
+                if (guildCache.Members.TryGetValue(User.Id, out var member))
+                {
+                    member.RoleIds = Roles ?? member.RoleIds;
+                    member.IsDeafened = User.Member?.IsDeafened ?? member.IsDeafened;
+                    member.IsMuted = User.Member?.IsMuted ?? member.IsMuted;
+                    member.Nickname = Nickname ?? member.Nickname;
+                    member.User.Username = User.Username ?? member.User.Username;
+                    member.User.Discrim = User.Discrim != short.MinValue ? User.Discrim : member.User.Discrim;
+
+                    var newPresence = new Presence();
+                    newPresence.Activity = Activity;
+                    if (NewStatus.HasValue)
+                        newPresence.Status = NewStatus.Value;
+
+                    guildCache.Presences.AddOrUpdate(member.Id, newPresence, (id, presence) =>
+                    {
+                        presence.Activity = Activity;
+                        presence.Status = NewStatus ?? presence.Status;
+                        return presence;
+                    });
+                }
             });
         }
     }

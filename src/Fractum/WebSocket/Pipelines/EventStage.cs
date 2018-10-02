@@ -13,7 +13,7 @@ namespace Fractum.WebSocket.Pipelines
     {
         private Dictionary<string, List<IEventHook<JToken>>> Hooks;
 
-        public IFractumCache Cache { get; set; }
+        public FractumCache Cache { get; set; }
 
         public ISession Session { get; set; }
 

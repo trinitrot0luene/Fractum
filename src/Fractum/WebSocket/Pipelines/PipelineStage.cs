@@ -8,7 +8,7 @@ namespace Fractum.WebSocket.Pipelines
 {
     public abstract class PipelineStage : IPipelineStage<Payload>
     {
-        public abstract IFractumCache Cache { get; }
+        public abstract FractumCache Cache { get; }
 
         public abstract ISession Session { get; }
 

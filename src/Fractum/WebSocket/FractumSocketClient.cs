@@ -14,20 +14,19 @@ namespace Fractum.WebSocket
     public sealed class FractumSocketClient
     {
         internal SocketWrapper Socket;
-        internal IFractumCache Cache; // TODO: Implement
+        internal FractumCache Cache; // TODO: Implement
         internal ISession Session; // TODO: Implement
         internal FractumSocketConfig Config;
-
-        private FractumRestClient _rest;
+        internal FractumRestClient RestClient;
 
         private IPipeline<Payload> _pipeline;
 
         public FractumSocketClient(FractumSocketConfig config)
         {
             Config = config;
-            Cache = new FractumCache(Config);
+            Cache = new FractumCache(this);
             Session = new Session();
-            _rest = new FractumRestClient(Config);
+            RestClient = new FractumRestClient(Config);
         }
 
         public void UseDefaultPipeline()
@@ -36,6 +35,10 @@ namespace Fractum.WebSocket
 
             var eventStage = new EventStage(this)
                 .RegisterHook("GUILD_CREATE", new GuildCreateHook())
+                .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
+                .RegisterHook("GUILD_MEMBER_UPDATE", new PresenceUpdateHook())
+                .RegisterHook("MESSAGE_CREATE", new MessageReceivedHook())
+                .RegisterHook("MESSAGE_CREATE", new TempCommandsHook())
                 .RegisterHook("READY", new ReadyHook());
 
             _pipeline = new PayloadPipeline()
@@ -45,7 +48,7 @@ namespace Fractum.WebSocket
 
         public async Task InitialiseAsync()
         {
-            var gatewayInfo = await _rest.GetSocketUrlAsync();
+            var gatewayInfo = await RestClient.GetSocketUrlAsync();
             if (gatewayInfo.SessionStartLimit["remaining"] <= 0)
                 throw new InvalidOperationException("No new sessions can be started.");
 
@@ -63,7 +66,7 @@ namespace Fractum.WebSocket
         }
 
         public Task<GatewayBotResponse> GetSocketUrlAsync()
-            => _rest.GetSocketUrlAsync();
+            => RestClient.GetSocketUrlAsync();
 
         public Task ConnectAsync()
             => Socket.ConnectAsync();

@@ -8,7 +8,7 @@ namespace Fractum.WebSocket.Pipelines
 {
     public interface IPipelineStage<TData>
     {
-        IFractumCache Cache { get; }
+        FractumCache Cache { get; }
 
         ISession Session { get; }
 
