@@ -1,4 +1,5 @@
-﻿using Fractum.Entities.Extensions;
+﻿using Fractum.Entities;
+using Fractum.Entities.Extensions;
 using Fractum.WebSocket.Entities;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,83 +12,162 @@ using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Pipelines
 {
-    public sealed class ConnectionStage : IConnectionStage<Payload>
+    /// <summary>
+    /// Operates on the Gateway WebSocket to handle all connection-related logic.
+    /// </summary>
+    internal sealed class ConnectionStage : IPipelineStage<Payload>
     {
-        public IStateCache State { get; private set; }
+        public ISession Session { get; private set; }
 
         public IFractumCache Cache { get; private set; }
+
+        public FractumSocketClient Client { get; private set; }
 
         public SocketWrapper Socket { get; private set; }
 
         public Timer HeartbeatTimer { get; private set; }
 
-        public object FreezeObject { get; private set; }
-
-        public ConnectionStage(IStateCache state, SocketWrapper socket)
+        public ConnectionStage(FractumSocketClient client)
         {
-            State = state;
-            Socket = socket;
+            Cache = client.Cache;
+            Session = client.Session;
+            Socket = client.Socket;
+            Client = client;
 
-            Socket.ConnectionClosed += HandleClosedAsync;
+            Socket.ConnectionClosed += ReconnectAsync;
         }
 
-        private async Task HandleClosedAsync(WebSocketCloseStatus status)
-        {
-            FreezeObject = new object();
-
-            await Socket.ConnectAsync();
-            switch((int)status)
-            {
-                case 1000:
-                case 4006:
-                    State.Reset();
-                    FreezeObject = default;
-                    await IdentifyAsync();
-                    return;
-                default:
-                    if (State.ReconnectionAttempts <= 3)
-                    {
-                        State.ReconnectionAttempts++;
-                        await ResumeAsync();
-                    }
-                    return;
-            }
-        }
-
-        public Task ResumeAsync()
-        {
-
-            return Socket.SendMessageAsync(resume);
-        }
-
+        /// <summary>
+        /// Run the stage to completion.
+        /// </summary>
+        /// <param name="payload">The payload the stage will receive as input.</param>
+        /// <returns></returns>
         public Task CompleteAsync(Payload payload)
         {
-            if (FreezeObject != null)
-                return Task.CompletedTask;
-
             switch (payload.OpCode)
             {
-                case OpCode.HeartbeatACK:
-                    State.IsWaitingForACK = false;
-                    break;
+                #region Hello
                 case OpCode.Hello:
-                    State.HeartbeatInterval = payload.DataObject.Value<int>("heartbeat_interval");
-                    HeartbeatTimer = new Timer((_) => Task.Run(() => HeartbeatAsync()), null, State.HeartbeatInterval, State.HeartbeatInterval);
-
-                    return IdentifyAsync();
+                    // Regardless of what happens we want to start heartbeating on HELLO.
+                    var heartbeatInterval = payload.DataObject.Value<int>("heartbeat_interval");
+                    HeartbeatTimer = new Timer((_) => Task.Run(() => HeartbeatAsync()), null, heartbeatInterval, heartbeatInterval);
+                    // If we aren't resuming, re-identify.
+                    if (!Session.Resuming)
+                    {
+                        Session.Invalidate();
+                        return IdentifyAsync();
+                    }
+                    else
+                        return ResumeAsync();
+                #endregion
+                #region Reconnect
                 case OpCode.Reconnect:
-                    
-                    break;
+                    return Socket.DisconnectAsync();
+                #endregion
+                #region Invalid Session
+                case OpCode.InvalidSession:
+                    var isValid = payload.Data.ToObject<bool>();
+                    // d: false, invalidate session and re-identify.
+                    if (!isValid)
+                    {
+                        Session.Invalidate();
+                        return IdentifyAsync();
+                    }
+                    else
+                        return ResumeAsync();
+                #endregion
+                #region Heartbeat / ACK
+                case OpCode.Heartbeat:
+                    return AcknowledgeHeartbeatAsync();
+                case OpCode.HeartbeatACK:
+                    Session.WaitingForACK = false;
+                    return Task.CompletedTask;
+                #endregion
             }
 
             return Task.CompletedTask;
         }
 
-        public Task IdentifyAsync()
+        /// <summary>
+        /// Handle socket closures and subsequent reconnections.
+        /// </summary>
+        /// <param name="status">Details of the closure.</param>
+        /// <returns></returns>
+        private async Task ReconnectAsync(WebSocketCloseStatus status)
         {
-            State = new StateCache();
-            Cache = new FractumCache(Cache.Config);
+            var statusCode = (int)status;
+            if (statusCode == 1000 || statusCode == 4006)
+                Session.Invalidated = true; // When the connection is re-established don't try to resume, re-identify.
 
+            if (Session.Resuming) return; // We are trying to resume already and these disconnections are just failed reconnects.
+            int backoffPower = 1;
+            int backoff = 2;
+
+            Session.Resuming = true; // Lock other closed event handlers and op2 Handling
+            do
+            {
+                var computedBackoff = (int)Math.Pow(backoff, backoffPower) * 1000; // Keep raising our backoff up to a maximum of 900 minutes.
+
+                await Task.Delay(computedBackoff <= 900000 ? computedBackoff : 900000);
+
+                await Socket.ConnectAsync(); // Try to reconnect
+
+                backoffPower++;
+                Session.ReconnectionAttempts++; // Increment reconnection attempts.
+            }
+            while (Socket.ListenerTask.IsCanceled && Session.ReconnectionAttempts <= 3); // No listener and we haven't tried 3 reconnections.
+
+            // Connection resumed successfully, the close handler can now exit.
+            if (!Socket.ListenerTask.IsCanceled)
+                return;
+
+            // Fetch connection info from the gateway with new Url: 
+            var gatewayInfo = await Client.GetSocketUrlAsync();
+            if (gatewayInfo.SessionStartLimit["remaining"] == 0)
+                throw new GatewayException("No new sessions can be started.");
+            Socket.UpdateUrl(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
+            // Continually try to reconnect.
+            while (Socket.ListenerTask.IsCanceled)
+            {
+                var computedBackoff = (int)Math.Pow(backoff, backoffPower) * 1000; // Keep raising our backoff up to a maximum of 900 minutes.
+
+                await Task.Delay(computedBackoff <= 900000 ? computedBackoff : 900000);
+
+                await Socket.ConnectAsync(); // Try to reconnect
+
+                backoffPower++;
+
+                Session.ReconnectionAttempts++; // Redundant but potentially useful for debugging purposes.
+            }
+        }
+
+        /// <summary>
+        /// Send a resume payload to the gateway.
+        /// </summary>
+        /// <returns></returns>
+        private Task ResumeAsync()
+        {
+            var resume = new Payload
+            {
+                OpCode = OpCode.Resume,
+                Data = JToken.Parse(new
+                {
+                    token = Client.Config.Token,
+                    session_id = Session.SessionId,
+                    seq = Session.Seq
+                }.Serialize())
+            }.Serialize();
+
+            return Socket.SendMessageAsync(resume);
+        }
+
+        /// <summary>
+        /// Send an identify payload to the gateway.
+        /// </summary>
+        /// <returns></returns>
+        private Task IdentifyAsync()
+        {
+            // Should reset cache here.   
             var identify = new Payload
             {
                 OpCode = OpCode.Identify,
@@ -108,25 +188,42 @@ namespace Fractum.WebSocket.Pipelines
             return Socket.SendMessageAsync(identify);
         }
 
-        public async Task ReconnectAsync()
+        /// <summary>
+        /// Send a heartbeat to the gateway.
+        /// </summary>
+        /// <returns></returns>
+        private Task HeartbeatAsync()
         {
-        }
-
-        public Task HeartbeatAsync()
-        {
-            if (State.IsWaitingForACK)
+            if (Session.WaitingForACK)
             {
                 HeartbeatTimer.Dispose();
-                return ReconnectAsync();
+                return Socket.DisconnectAsync();
             }
             var heartbeat = new
             {
                 op = OpCode.Heartbeat,
-                d = State.Seq
+                d = Session.Seq
             }.Serialize();
-            State.IsWaitingForACK = true;
+            Session.WaitingForACK = true;
 
             return Socket.SendMessageAsync(heartbeat);
+        }
+
+        /// <summary>
+        /// In the case that the client receives a heartbeat from the socket, send an ACK back.
+        /// </summary>
+        /// <returns></returns>
+        private Task AcknowledgeHeartbeatAsync()
+        {
+            var heartbeatAck = new
+            {
+                op = OpCode.HeartbeatACK,
+                d = default(string),
+                t = default(string),
+                s = default(string)
+            }.Serialize();
+
+            return Socket.SendMessageAsync(heartbeatAck);
         }
     }
 }

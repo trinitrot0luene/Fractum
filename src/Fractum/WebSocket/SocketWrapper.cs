@@ -42,6 +42,9 @@ namespace Fractum.WebSocket
             _ratelimitResetsAt = DateTimeOffset.UtcNow.AddSeconds(60);
         }
 
+        public void UpdateUrl(Uri url)
+            => _url = url;
+
         /// <summary>
         /// Connect to the gateway and initiate the handshake.
         /// </summary>

@@ -22,7 +22,7 @@ namespace Fractum.WebSocket.Pipelines
         /// Add a new stage to the pipeline.
         /// </summary>
         /// <param name="newStage"></param>
-        void AddStage(IPipelineStage<TData> newStage);
+        IPipeline<TData> AddStage(IPipelineStage<TData> newStage);
 
         /// <summary>
         /// Asynchronously enter the pipeline and begin processing stages.

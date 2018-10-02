@@ -10,35 +10,25 @@ namespace Fractum.WebSocket.Pipelines
 {
     public sealed class PayloadPipeline : IPipeline<Payload>
     {
-        public IPipelineStage<Payload>[] Stages;
+        public List<IPipelineStage<Payload>> Stages;
 
-        public IFractumCache Cache { get; }
+        public PayloadPipeline()
+            => Stages = new List<IPipelineStage<Payload>>();
 
-        public IStateCache State { get; }
-
-        public SocketWrapper Socket { get; }
-
-        public PayloadPipeline(IFractumCache cache, IStateCache state, SocketWrapper socket)
+        public IPipeline<Payload> AddStage(IPipelineStage<Payload> newStage)
         {
-            Cache = cache;
-            State = state;
-            Socket = socket;
-            Stages = new PipelineStage[0];
-        }
+            Stages.Add(newStage);
 
-        public void AddStage(IPipelineStage<Payload> newStage)
-        {
-            Array.Resize(ref Stages, Stages.Length + 1);
-            Stages[Stages.Length - 1] = newStage; 
+            return this;
         }
 
         public void Clear()
-            => Stages = new PipelineStage[0];
+            => Stages = new List<IPipelineStage<Payload>>();
 
         public async Task<LogMessage> CompleteAsync(Payload payload)
         {
             var exceptions = new List<Exception>();
-            for(int pipelinePos = 0; pipelinePos < Stages.Length; pipelinePos++)
+            for(int pipelinePos = 0; pipelinePos < Stages.Count; pipelinePos++)
             {
                 try
                 {
@@ -55,5 +45,10 @@ namespace Fractum.WebSocket.Pipelines
             return exceptions.Count == 0 ? null : new LogMessage(nameof(PayloadPipeline), "Errors occured while completing the payload pipeline.",
                 LogSeverity.Error, new AggregateException("An exception was thrown while completing one or more stages in the pipeline.", exceptions));
         }
+
+        private void InvokeLog(LogMessage msg)
+            => Log?.Invoke(msg);
+
+        public event Func<LogMessage, Task> Log;
     }
 }

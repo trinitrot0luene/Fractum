@@ -9,8 +9,6 @@ namespace Fractum.WebSocket.Pipelines
     /// </summary>
     public interface IEventStage<TData> : IPipelineStage<TData>
     {
-        IFractumCache Cache { get; }
-
         Dictionary<string, IEventHook<TData>> Hooks { get; }
 
         IEventStage<TData> RegisterHook(string eventName, IEventHook<TData> hook);

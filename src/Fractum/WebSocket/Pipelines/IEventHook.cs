@@ -8,6 +8,6 @@ namespace Fractum.WebSocket.Pipelines
 {
     public interface IEventHook<TArgs>
     {
-        Task RunAsync(TArgs args, IFractumCache cache, IStateCache state);
+        Task RunAsync(TArgs args, IFractumCache cache, ISession session, FractumSocketClient client);
     }
 }

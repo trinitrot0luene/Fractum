@@ -13,33 +13,34 @@ namespace Fractum.WebSocket
 {
     public sealed class FractumSocketClient
     {
-        internal SocketWrapper _socket;
-
-        internal IFractumCache cache; // TODO: Implement
-        internal IStateCache state; // TODO: Implement
-        internal Task SocketListenerTask;
+        internal SocketWrapper Socket;
+        internal IFractumCache Cache; // TODO: Implement
+        internal ISession Session; // TODO: Implement
+        internal FractumSocketConfig Config;
 
         private FractumRestClient _rest;
-        private FractumSocketConfig _config;
 
         private IPipeline<Payload> _pipeline;
 
         public FractumSocketClient(FractumSocketConfig config)
         {
-            _config = config;
-
-            _rest = new FractumRestClient(_config);
+            Config = config;
+            Cache = new FractumCache(Config);
+            Session = new Session();
+            _rest = new FractumRestClient(Config);
         }
 
         public void UseDefaultPipeline()
         {
-            var connectionStage = new ConnectionStage(state, _socket);
-            var eventStage = new EventStage(cache, state);
-            eventStage.RegisterHook("GUILD_CREATE", new GuildCreateHook());
+            var connectionStage = new ConnectionStage(this);
 
-            _pipeline = new PayloadPipeline(cache, state, _socket);
-            _pipeline.AddStage(eventStage);
-            // TODO: Add Stages
+            var eventStage = new EventStage(this)
+                .RegisterHook("GUILD_CREATE", new GuildCreateHook())
+                .RegisterHook("READY", new ReadyHook());
+
+            _pipeline = new PayloadPipeline()
+                .AddStage(connectionStage)
+                .AddStage(eventStage);
         }
 
         public async Task InitialiseAsync()
@@ -48,15 +49,28 @@ namespace Fractum.WebSocket
             if (gatewayInfo.SessionStartLimit["remaining"] <= 0)
                 throw new InvalidOperationException("No new sessions can be started.");
 
-            _socket = new SocketWrapper(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
+            Socket = new SocketWrapper(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
 
-            _socket.PayloadReceived += RunPipelineAsync;
+            if (_pipeline is null)
+                UseDefaultPipeline();
+
+            Socket.PayloadReceived += async (payload) =>
+            {
+                var logMessage = await _pipeline.CompleteAsync(payload);
+                if (logMessage != null)
+                    InvokeLog(logMessage);
+            };
         }
 
-        private Task RunPipelineAsync(Payload payload)
-            => _pipeline.CompleteAsync(payload);
+        public Task<GatewayBotResponse> GetSocketUrlAsync()
+            => _rest.GetSocketUrlAsync();
 
         public Task ConnectAsync()
-            => _socket.ConnectAsync();
+            => Socket.ConnectAsync();
+
+        internal void InvokeLog(LogMessage msg)
+           => Log?.Invoke(msg);
+
+        public event Func<LogMessage, Task> Log;
     }
 }
