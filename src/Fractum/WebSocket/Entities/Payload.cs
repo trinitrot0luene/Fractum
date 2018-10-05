@@ -15,15 +15,18 @@ namespace Fractum.WebSocket.Entities
         public JToken Data { get; set; }
 
         [JsonIgnore]
+        public string DataValue { set => Data = JToken.Parse(value); }
+
+        [JsonIgnore]
         public JObject DataObject { get => Data as JObject; }
 
         [JsonIgnore]
         public JArray DataArray { get => Data as JArray; }
 
-        [JsonProperty("s")]
+        [JsonProperty("s", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Seq { get; set; }
 
-        [JsonProperty("t")]
+        [JsonProperty("t", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Type { get; set; }
     }
 }

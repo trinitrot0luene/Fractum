@@ -9,10 +9,13 @@ using System.Text;
 
 namespace Fractum.WebSocket.Events
 {
-    internal sealed class PresenceUpdateEvent
+    internal sealed class PresenceUpdateEvent : IEvent
     {
         [JsonProperty("user")]
         public User User { get; private set; }
+
+        [JsonProperty("member")]
+        public PartialMember PartialMember { get; private set; }
 
         [JsonProperty("roles")]
         public ulong[] Roles { get; private set; }
@@ -67,6 +70,7 @@ namespace Fractum.WebSocket.Events
 
                     var newPresence = new Presence();
                     newPresence.Activity = Activity;
+                    newPresence.User = User;
                     if (NewStatus.HasValue)
                         newPresence.Status = NewStatus.Value;
 

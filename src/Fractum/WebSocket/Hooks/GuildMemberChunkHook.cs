@@ -9,16 +9,14 @@ using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public sealed class PresenceUpdateHook : IEventHook<JToken>
+    class GuildMemberChunkHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var presenceUpdate = args.ToObject<PresenceUpdateEvent>();
+            var guildMemberChunkEvent = args.ToObject<GuildMemberChunkEvent>();
+            guildMemberChunkEvent.ApplyToCache(cache);
 
-            presenceUpdate.ApplyToCache(cache);
-
-            client.InvokeLog(new LogMessage(nameof(PresenceUpdateHook), "Presence Update", LogSeverity.Debug));
-
+            client.InvokeLog(new LogMessage(nameof(GuildMemberChunkHook), $"Received a {guildMemberChunkEvent.Members.Count} member chunk for guild {cache.GetGuild(guildMemberChunkEvent.GuildId).Name}", LogSeverity.Debug));
             return Task.CompletedTask;
         }
     }

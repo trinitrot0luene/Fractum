@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Fractum.Entities.Extensions;
 
 namespace Fractum.WebSocket
 {
@@ -29,7 +30,7 @@ namespace Fractum.WebSocket
             RestClient = new FractumRestClient(Config);
         }
 
-        public void UseDefaultPipeline()
+        private void UseDefaultPipeline()
         {
             var connectionStage = new ConnectionStage(this);
 
@@ -37,6 +38,9 @@ namespace Fractum.WebSocket
                 .RegisterHook("GUILD_CREATE", new GuildCreateHook())
                 .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
                 .RegisterHook("GUILD_MEMBER_UPDATE", new PresenceUpdateHook())
+                .RegisterHook("GUILD_MEMBERS_CHUNK", new GuildMemberChunkHook())
+                .RegisterHook("CHANNEL_CREATE", new ChannelUpdateHook())
+                .RegisterHook("CHANNEL_UPDATE", new ChannelUpdateHook())
                 .RegisterHook("MESSAGE_CREATE", new MessageReceivedHook())
                 .RegisterHook("MESSAGE_CREATE", new TempCommandsHook())
                 .RegisterHook("READY", new ReadyHook());
@@ -67,6 +71,40 @@ namespace Fractum.WebSocket
 
         public Task<GatewayBotResponse> GetSocketUrlAsync()
             => RestClient.GetSocketUrlAsync();
+
+        public Task UpdatePresenceAsync(string name, ActivityType type = ActivityType.Playing, Status status = Status.Online)
+        {
+            var payload = new
+            {
+                op = OpCode.StatusUpdate,
+                d = new Presence()
+                {
+                    Activity = new Activity()
+                    {
+                        Name = name,
+                        Type = type
+                    },
+                    Status = status
+                }
+            }.Serialize();
+            return Socket.SendMessageAsync(payload);
+        }
+
+        public Task RequestMembersAsync(ulong guildId, string queryString = null, int limit = 0)
+        {
+            var memberRequest = new SendPayload()
+            {
+                op = OpCode.RequestGuildMembers,
+                d = new
+                {
+                    guild_id = guildId,
+                    query = queryString ?? string.Empty,
+                    limit = limit
+                }
+            }.Serialize();
+
+            return Socket.SendMessageAsync(memberRequest);
+        }
 
         public Task ConnectAsync()
             => Socket.ConnectAsync();

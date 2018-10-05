@@ -1,8 +1,11 @@
 ﻿using Fractum.Entities;
+using Fractum.WebSocket.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,12 +18,18 @@ namespace Fractum.WebSocket.Hooks
             var msg = args.ToObject<Message>();
             cache.AddAndPopulateMessage(msg);
 
-            if (msg.Content.StartsWith(">") && msg.Author.Id == 233648473390448641)
+            if (msg.Content.StartsWith(">") && !msg.Author.IsBot)
             {
-                switch (msg.Content.Substring(1, msg.Content.Length - 1))
+                switch (msg.Content.Substring(1, msg.Content.Length - 1).ToLowerInvariant())
                 {
-                    case "presence_test":
-                        await msg.Channel.CreateMessageAsync($"Your status is: {(msg.Author as GuildMember)?.Presence?.Status.ToString() ?? "Uncached"}");
+                    case "update_test":
+                        await client.UpdatePresenceAsync("With a shit c# lib", ActivityType.Playing);
+                            return;
+                    case "chunk_test":
+                        await client.RequestMembersAsync(msg.Guild.Id);
+                        return;
+                    case "count":
+                        await msg.Channel.CreateMessageAsync(msg.Guild.Members.Count.ToString());
                         return;
                 }
             }

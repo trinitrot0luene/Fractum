@@ -11,6 +11,9 @@ namespace Fractum.Entities
         [JsonProperty("position")]
         public int Position { get; private set; }
 
+        [JsonProperty("guild_id")]
+        internal ulong GuildId { get; private set; }
+
         [JsonProperty("permission_overwrites")]
         public PermissionsOverwrite[] Overwrites { get; private set; }
 

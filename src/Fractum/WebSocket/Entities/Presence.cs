@@ -8,7 +8,7 @@ namespace Fractum.WebSocket.Entities
 {
     public sealed class Presence
     {
-        public Presence()
+        internal Presence()
         {
             Since = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             Activity = null;

@@ -13,5 +13,11 @@ namespace Fractum.WebSocket.Entities
 
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        [JsonProperty("details", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Details { get; set; }
+
+        [JsonProperty("state", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string State { get; set; }
     }
 }

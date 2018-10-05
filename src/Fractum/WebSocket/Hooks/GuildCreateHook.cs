@@ -8,15 +8,18 @@ namespace Fractum.WebSocket.Hooks
 {
     public sealed class GuildCreateHook : IEventHook<JToken>
     {
-        public Task RunAsync(JToken data, FractumCache cache, ISession session, FractumSocketClient client)
+        public async Task RunAsync(JToken data, FractumCache cache, ISession session, FractumSocketClient client)
         {
             var guild = data.ToObject<GuildCreateModel>();
 
             cache.AddGuild(guild);
 
+            if (client.Config.AlwaysDownloadMembers)
+                await client.RequestMembersAsync(guild.Id);
+
             client.InvokeLog(new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
 
-            return Task.CompletedTask;
+            return;
         }
     }
 }

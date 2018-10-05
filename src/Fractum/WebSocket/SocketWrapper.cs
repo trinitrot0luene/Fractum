@@ -18,6 +18,7 @@ namespace Fractum.WebSocket
         private const int _bufferSize = 4096;
 
         internal Task ListenerTask;
+        internal WebSocketState State => _socket.State;
 
         private Uri _url;
         private ClientWebSocket _socket;
@@ -35,7 +36,6 @@ namespace Fractum.WebSocket
         internal SocketWrapper(Uri url)
         {
             _url = url;
-            _socket = new ClientWebSocket();
             _converter = new WebSocketMessageConverter();
             _ratelimitLock = new SemaphoreSlim(1, 1);
             _remainingMessages = 60;
@@ -51,15 +51,34 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         public async Task ConnectAsync()
         {
-            await _socket.ConnectAsync(_url, _cts.Token);
+            _socket = new ClientWebSocket();
+            var abortTask = Task.Run(async () => {
+                await Task.Delay(5000);
+                if (_socket.State != WebSocketState.Open)
+                    _socket.Abort();
+            });
+            await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
+
+            if (_socket.State != WebSocketState.Open)
+                return;
+
             InvokeConnected();
 
             ListenerTask = Task.Run(() => ListenAsync().ContinueWith(task => { if (task.IsCanceled) InvokeLog(new LogMessage(nameof(SocketWrapper), 
                 "The listener task was cancelled.", LogSeverity.Error)); }), _cts.Token);
         }
 
-        public Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "")
-            => _socket.CloseAsync(status, reason, _cts.Token);
+        public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "")
+        {
+            if (_socket.State == WebSocketState.Open)
+                await _socket.CloseAsync((WebSocketCloseStatus)status, reason, _cts.Token);
+
+            _socket.Dispose();
+            _socket = new ClientWebSocket();
+            _converter = new WebSocketMessageConverter();
+
+            InvokeCloseCodeIssued((WebSocketCloseStatus)status);
+        }
 
         /// <summary>
         /// Send a message to the gateway over a socket connection.
@@ -142,6 +161,10 @@ namespace Fractum.WebSocket
                 }
             }
             InvokeCloseCodeIssued(_socket.CloseStatus.Value);
+
+            _socket.Dispose();
+            _socket = new ClientWebSocket();
+            _converter = new WebSocketMessageConverter();
         }
 
         #region Events

@@ -36,7 +36,8 @@ namespace Fractum.WebSocket.Pipelines
                     .ToList().AsReadOnly();
 
                 foreach (var member in _cachedGuild.Members)
-                    member.Presence = Presences.Select(kvp => kvp.Value).FirstOrDefault(p => p.User.Id == member.Id);
+                    member.Presence = Presences.Select(kvp => kvp.Value)
+                        .FirstOrDefault(p => p.User.Id == member.Id);
 
                 return _cachedGuild;
             }
