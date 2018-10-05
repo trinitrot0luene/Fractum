@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fractum.WebSocket.Entities
 {
@@ -15,13 +12,16 @@ namespace Fractum.WebSocket.Entities
         public JToken Data { get; set; }
 
         [JsonIgnore]
-        public string DataValue { set => Data = JToken.Parse(value); }
+        public string DataValue
+        {
+            set => Data = JToken.Parse(value);
+        }
 
         [JsonIgnore]
-        public JObject DataObject { get => Data as JObject; }
+        public JObject DataObject => Data as JObject;
 
         [JsonIgnore]
-        public JArray DataArray { get => Data as JArray; }
+        public JArray DataArray => Data as JArray;
 
         [JsonProperty("s", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Seq { get; set; }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fractum.WebSocket.Pipelines
+﻿namespace Fractum.WebSocket.Pipelines
 {
     public sealed class Session : ISession
     {

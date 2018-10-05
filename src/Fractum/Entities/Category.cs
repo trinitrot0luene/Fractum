@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fractum.Entities
+﻿namespace Fractum.Entities
 {
     public sealed class Category : GuildChannel
     {

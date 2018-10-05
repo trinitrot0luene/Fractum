@@ -1,24 +1,36 @@
-﻿using Fractum.Entities;
-using Fractum.WebSocket.Entities;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
+using Fractum.Entities;
+using Fractum.WebSocket.Entities;
 
 namespace Fractum.WebSocket.Pipelines
 {
     public sealed class GuildCache
     {
-        public ConcurrentDictionary<ulong, Presence> Presences { get; private set; }
+        private Guild _cachedGuild;
 
-        public ConcurrentDictionary<ulong, Emoji> Emojis { get; private set; }
+        internal GuildCache(FractumSocketClient client, GuildCreateModel model)
+        {
+            Presences = new ConcurrentDictionary<ulong, Presence>();
+            Emojis = new ConcurrentDictionary<ulong, Emoji>();
+            Members = new ConcurrentDictionary<ulong, GuildMember>();
+            Channels = new ConcurrentDictionary<ulong, GuildChannel>();
+            Roles = new ConcurrentDictionary<ulong, Role>();
 
-        public ConcurrentDictionary<ulong, GuildMember> Members { get; private set; }
+            Client = client;
 
-        public ConcurrentDictionary<ulong, GuildChannel> Channels { get; private set; }
+            Create(model);
+        }
 
-        public ConcurrentDictionary<ulong, Role> Roles { get; private set; }
+        public ConcurrentDictionary<ulong, Presence> Presences { get; }
+
+        public ConcurrentDictionary<ulong, Emoji> Emojis { get; }
+
+        public ConcurrentDictionary<ulong, GuildMember> Members { get; }
+
+        public ConcurrentDictionary<ulong, GuildChannel> Channels { get; }
+
+        public ConcurrentDictionary<ulong, Role> Roles { get; }
 
         public Guild Value
         {
@@ -43,22 +55,7 @@ namespace Fractum.WebSocket.Pipelines
             }
         }
 
-        private Guild _cachedGuild;
-
-        public FractumSocketClient Client { get; private set; }
-
-        internal GuildCache(FractumSocketClient client, GuildCreateModel model)
-        {
-            Presences = new ConcurrentDictionary<ulong, Presence>();
-            Emojis = new ConcurrentDictionary<ulong, Emoji>();
-            Members = new ConcurrentDictionary<ulong, GuildMember>();
-            Channels = new ConcurrentDictionary<ulong, GuildChannel>();
-            Roles = new ConcurrentDictionary<ulong, Role>();
-
-            Client = client;
-
-            Create(model);
-        }
+        public FractumSocketClient Client { get; }
 
         private void Create(GuildCreateModel model)
         {
@@ -73,11 +70,13 @@ namespace Fractum.WebSocket.Pipelines
                 Members.TryAdd(member.Id, member.WithClient<GuildMember>(Client.RestClient));
                 member.Guild = _cachedGuild;
             }
+
             foreach (var channel in model.Channels)
             {
                 Channels.TryAdd(channel.Id, channel.WithClient<GuildChannel>(Client.RestClient));
                 channel.Guild = _cachedGuild;
             }
+
             foreach (var role in model.Roles)
                 Roles.TryAdd(role.Id, role.WithClient<Role>(Client.RestClient));
         }

@@ -1,12 +1,6 @@
-﻿using Fractum.WebSocket.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using Fractum.WebSocket.Entities;
 
 namespace Fractum.Entities
 {

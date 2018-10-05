@@ -1,28 +1,27 @@
-﻿using Fractum.Rest.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Fractum.Rest.Extensions;
 
 namespace Fractum.Entities
 {
     public sealed class EmbedBuilder
     {
-        private EmbedFooter Footer;
-
-        private List<EmbedField> Fields;
-
         private Color Color;
+
+        private string Description;
+
+        private readonly List<EmbedField> Fields;
+        private EmbedFooter Footer;
 
         private DateTimeOffset? Timestamp;
 
         private string Title;
 
-        private string Description;
-
         public EmbedBuilder()
         {
             Fields = new List<EmbedField>();
-            Footer = new EmbedFooter { Text = string.Empty, IconUrl = string.Empty };
+            Footer = new EmbedFooter {Text = string.Empty, IconUrl = string.Empty};
             Color = Color.Black;
         }
 
@@ -35,7 +34,7 @@ namespace Fractum.Entities
             if (value.Length > 1024)
                 throw new ArgumentException("Your field content cannot be longer than 1024 characters.");
 
-            Fields.Add(new EmbedField { Name = title, Value = value, IsInline = isInline });
+            Fields.Add(new EmbedField {Name = title, Value = value, IsInline = isInline});
             return this;
         }
 
@@ -80,10 +79,14 @@ namespace Fractum.Entities
             if (content.Length > 2048)
                 throw new ArgumentException("Footer content must not be longer than 2048 characters.");
 
-            Footer = new EmbedFooter { Text = content, IconUrl = iconUrl };
+            Footer = new EmbedFooter {Text = content, IconUrl = iconUrl};
             return this;
         }
 
-        public Embed Create() => new Embed() { Title = Title, Description = Description, Fields = Fields.ToArray(), Color = Color.ToRGB(), Footer = Footer, Timestamp = Timestamp };
+        public Embed Create() => new Embed
+        {
+            Title = Title, Description = Description, Fields = Fields.ToArray(), Color = Color.ToRGB(), Footer = Footer,
+            Timestamp = Timestamp
+        };
     }
 }

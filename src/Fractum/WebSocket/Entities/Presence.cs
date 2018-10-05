@@ -1,8 +1,6 @@
-﻿using Fractum.Entities;
+﻿using System;
+using Fractum.Entities;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fractum.WebSocket.Entities
 {
@@ -33,7 +31,7 @@ namespace Fractum.WebSocket.Entities
         {
             get
             {
-                switch(StatusString)
+                switch (StatusString)
                 {
                     case "online":
                         return Status.Online;
@@ -49,7 +47,7 @@ namespace Fractum.WebSocket.Entities
             }
             set
             {
-                switch(value)
+                switch (value)
                 {
                     case Status.Online:
                         StatusString = "online";

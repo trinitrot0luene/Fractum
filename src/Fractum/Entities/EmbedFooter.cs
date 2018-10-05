@@ -4,7 +4,9 @@ namespace Fractum.Entities
 {
     public class EmbedFooter
     {
-        internal EmbedFooter() { }
+        internal EmbedFooter()
+        {
+        }
 
         [JsonProperty("text")]
         public string Text { get; internal set; }

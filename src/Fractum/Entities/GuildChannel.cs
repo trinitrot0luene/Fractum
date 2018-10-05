@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
+using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
@@ -24,7 +21,7 @@ namespace Fractum.Entities
         private string ParentIdRaw { get; set; }
 
         [JsonIgnore]
-        public ulong? ParentId { get => ParentIdRaw is null ? default(ulong?) : ulong.Parse(ParentIdRaw); }
+        public ulong? ParentId => ParentIdRaw is null ? default(ulong?) : ulong.Parse(ParentIdRaw);
 
         [JsonProperty("nsfw")]
         public bool IsNsfw { get; private set; }
@@ -53,11 +50,12 @@ namespace Fractum.Entities
                 return Permissions.All;
 
             var permissions = base_permissions;
-            var everyone_overwrite = Overwrites.FirstOrDefault(o => o.Id == Guild.Roles.First(r => r.Name == "@everyone").Id);
+            var everyone_overwrite =
+                Overwrites.FirstOrDefault(o => o.Id == Guild.Roles.First(r => r.Name == "@everyone").Id);
             if (everyone_overwrite != null)
             {
                 permissions &= ~everyone_overwrite.Deny;
-                permissions |= ~everyone_overwrite.Allow; 
+                permissions |= ~everyone_overwrite.Allow;
             }
 
             var allow = Permissions.None;

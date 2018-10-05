@@ -2,10 +2,6 @@
 using Fractum.WebSocket.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Fractum.WebSocket.Events
 {
@@ -36,7 +32,8 @@ namespace Fractum.WebSocket.Events
         private string StatusRaw { get; set; }
 
         [JsonIgnore]
-        public Status? NewStatus {
+        public Status? NewStatus
+        {
             get
             {
                 switch (StatusRaw)
@@ -54,7 +51,7 @@ namespace Fractum.WebSocket.Events
                 }
             }
         }
-        
+
         public void ApplyToCache(FractumCache cache)
         {
             cache.UpdateGuildCache(GuildId ?? 0, guildCache =>

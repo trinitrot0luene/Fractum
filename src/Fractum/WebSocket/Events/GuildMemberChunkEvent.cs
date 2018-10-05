@@ -1,10 +1,7 @@
-﻿using Fractum.Entities;
+﻿using System.Collections.ObjectModel;
+using Fractum.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace Fractum.WebSocket.Events
 {

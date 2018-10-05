@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
@@ -18,10 +16,11 @@ namespace Fractum.Entities
         private string LastMessageIdRaw { get; set; }
 
         [JsonIgnore]
-        public ulong? LastMessageId { get => LastMessageIdRaw is null ? default(ulong?) : ulong.Parse(LastMessageIdRaw); }
+        public ulong? LastMessageId => LastMessageIdRaw is null ? default(ulong?) : ulong.Parse(LastMessageIdRaw);
 
         public Task<Message> CreateMessageAsync(EmbedBuilder EmbedBuilder)
             => Client.CreateMessageAsync(this, null, EmbedBuilder: EmbedBuilder);
+
         public Task<Message> CreateMessageAsync(string content, bool isTTS = false, EmbedBuilder EmbedBuilder = null)
             => Client.CreateMessageAsync(this, content, isTTS, EmbedBuilder);
     }

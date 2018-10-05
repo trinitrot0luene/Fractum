@@ -1,12 +1,9 @@
-﻿using Fractum.Entities;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Fractum.Entities.Contracts;
 using Fractum.WebSocket.Entities;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace Fractum.Entities
 {
@@ -19,7 +16,7 @@ namespace Fractum.Entities
         public MessageType Type { get; private set; }
 
         [JsonIgnore]
-        public bool IsUserMessage { get => Type == MessageType.Default; }
+        public bool IsUserMessage => Type == MessageType.Default;
 
         [JsonProperty("timestamp")]
         public DateTimeOffset Timestamp { get; private set; }

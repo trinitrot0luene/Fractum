@@ -1,25 +1,21 @@
-﻿using Fractum.Entities;
-using Fractum.WebSocket.Entities;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+using Fractum.Entities;
+using Fractum.WebSocket.Entities;
 
 namespace Fractum.WebSocket.Pipelines
 {
     public sealed class FractumCache
     {
-        public ConcurrentDictionary<ulong, GuildCache> Guilds { get; private set; }
-
-        public FractumSocketClient Client { get; private set; }
-
         public FractumCache(FractumSocketClient client)
         {
             Guilds = new ConcurrentDictionary<ulong, GuildCache>();
             Client = client;
         }
+
+        public ConcurrentDictionary<ulong, GuildCache> Guilds { get; private set; }
+
+        public FractumSocketClient Client { get; }
 
         public Guild GetGuild(ulong guildId)
             => Guilds.TryGetValue(guildId, out var guild) ? guild.Value : default;

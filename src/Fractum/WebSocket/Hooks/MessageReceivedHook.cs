@@ -1,12 +1,7 @@
-﻿using Fractum.Entities;
-using Fractum.Entities.Contracts;
+﻿using System.Threading.Tasks;
+using Fractum.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -18,7 +13,9 @@ namespace Fractum.WebSocket.Hooks
 
             cache.AddAndPopulateMessage(message);
 
-            client.InvokeLog(new LogMessage(nameof(MessageReceivedHook), $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.", LogSeverity.Verbose));
+            client.InvokeLog(new LogMessage(nameof(MessageReceivedHook),
+                $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",
+                LogSeverity.Verbose));
 
             return Task.CompletedTask;
         }

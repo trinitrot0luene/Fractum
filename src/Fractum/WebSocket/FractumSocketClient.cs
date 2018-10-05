@@ -1,26 +1,22 @@
-﻿using Fractum.Entities;
-using Fractum.WebSocket;
-using Fractum.WebSocket.Hooks;
-using Fractum.WebSocket.Pipelines;
+﻿using System;
+using System.Threading.Tasks;
+using Fractum.Entities;
+using Fractum.Entities.Extensions;
 using Fractum.Rest;
 using Fractum.WebSocket.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Fractum.Entities.Extensions;
+using Fractum.WebSocket.Hooks;
+using Fractum.WebSocket.Pipelines;
 
 namespace Fractum.WebSocket
 {
     public sealed class FractumSocketClient
     {
-        internal SocketWrapper Socket;
+        private IPipeline<Payload> _pipeline;
         internal FractumCache Cache; // TODO: Implement
-        internal ISession Session; // TODO: Implement
         internal FractumSocketConfig Config;
         internal FractumRestClient RestClient;
-
-        private IPipeline<Payload> _pipeline;
+        internal ISession Session; // TODO: Implement
+        internal SocketWrapper Socket;
 
         public FractumSocketClient(FractumSocketConfig config)
         {
@@ -61,7 +57,7 @@ namespace Fractum.WebSocket
             if (_pipeline is null)
                 UseDefaultPipeline();
 
-            Socket.PayloadReceived += async (payload) =>
+            Socket.PayloadReceived += async payload =>
             {
                 var logMessage = await _pipeline.CompleteAsync(payload);
                 if (logMessage != null)
@@ -72,14 +68,15 @@ namespace Fractum.WebSocket
         public Task<GatewayBotResponse> GetSocketUrlAsync()
             => RestClient.GetSocketUrlAsync();
 
-        public Task UpdatePresenceAsync(string name, ActivityType type = ActivityType.Playing, Status status = Status.Online)
+        public Task UpdatePresenceAsync(string name, ActivityType type = ActivityType.Playing,
+            Status status = Status.Online)
         {
             var payload = new
             {
                 op = OpCode.StatusUpdate,
-                d = new Presence()
+                d = new Presence
                 {
-                    Activity = new Activity()
+                    Activity = new Activity
                     {
                         Name = name,
                         Type = type
@@ -92,14 +89,14 @@ namespace Fractum.WebSocket
 
         public Task RequestMembersAsync(ulong guildId, string queryString = null, int limit = 0)
         {
-            var memberRequest = new SendPayload()
+            var memberRequest = new SendPayload
             {
                 op = OpCode.RequestGuildMembers,
                 d = new
                 {
                     guild_id = guildId,
                     query = queryString ?? string.Empty,
-                    limit = limit
+                    limit
                 }
             }.Serialize();
 
@@ -110,7 +107,7 @@ namespace Fractum.WebSocket
             => Socket.ConnectAsync();
 
         internal void InvokeLog(LogMessage msg)
-           => Log?.Invoke(msg);
+            => Log?.Invoke(msg);
 
         public event Func<LogMessage, Task> Log;
     }

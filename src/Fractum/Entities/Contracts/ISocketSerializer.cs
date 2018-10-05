@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fractum.Entities.Contracts
+﻿namespace Fractum.Entities.Contracts
 {
     internal interface ISocketSerializer
     {

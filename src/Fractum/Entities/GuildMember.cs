@@ -1,17 +1,16 @@
-﻿using Fractum.Entities.Contracts;
-using Fractum.Rest;
+﻿using System;
+using System.Collections.ObjectModel;
+using Fractum.Entities.Contracts;
 using Fractum.WebSocket.Entities;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace Fractum.Entities
 {
     public sealed class GuildMember : FractumEntity, IUser
     {
-        internal GuildMember() { }
+        internal GuildMember()
+        {
+        }
 
         [JsonProperty("user")]
         internal User User { get; set; }
@@ -22,21 +21,6 @@ namespace Fractum.Entities
         [JsonIgnore]
         public Guild Guild { get; internal set; }
 
-        [JsonIgnore]
-        public ulong Id { get => User.Id; }
-
-        [JsonIgnore]
-        public DateTimeOffset CreatedAt { get => User.CreatedAt; }
-
-        [JsonIgnore]
-        public string Username { get => User.Username; }
-
-        [JsonIgnore]
-        public short Discrim { get => User.Discrim; }
-
-        [JsonIgnore]
-        public bool IsBot { get => User.IsBot; }
-        
         [JsonProperty("roles")]
         internal ulong[] RoleIds { get; set; }
 
@@ -54,6 +38,21 @@ namespace Fractum.Entities
 
         [JsonProperty("deaf")]
         public bool IsDeafened { get; internal set; }
+
+        [JsonIgnore]
+        public ulong Id => User.Id;
+
+        [JsonIgnore]
+        public DateTimeOffset CreatedAt => User.CreatedAt;
+
+        [JsonIgnore]
+        public string Username => User.Username;
+
+        [JsonIgnore]
+        public short Discrim => User.Discrim;
+
+        [JsonIgnore]
+        public bool IsBot => User.IsBot;
 
         public string GetAvatarUrl() => User.GetAvatarUrl();
     }

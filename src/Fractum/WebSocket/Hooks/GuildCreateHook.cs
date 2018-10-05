@@ -1,8 +1,8 @@
-﻿using Fractum.WebSocket.Entities;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.WebSocket.Entities;
 using Fractum.WebSocket.Pipelines;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -17,9 +17,8 @@ namespace Fractum.WebSocket.Hooks
             if (client.Config.AlwaysDownloadMembers)
                 await client.RequestMembersAsync(guild.Id);
 
-            client.InvokeLog(new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
-
-            return;
+            client.InvokeLog(
+                new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
         }
     }
 }

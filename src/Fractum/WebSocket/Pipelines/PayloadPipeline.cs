@@ -1,10 +1,8 @@
-﻿using Fractum.Entities;
-using Fractum.WebSocket;
-using Fractum.WebSocket.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Fractum.Entities;
+using Fractum.WebSocket.Entities;
 
 namespace Fractum.WebSocket.Pipelines
 {
@@ -13,7 +11,9 @@ namespace Fractum.WebSocket.Pipelines
         public List<IPipelineStage<Payload>> Stages;
 
         public PayloadPipeline()
-            => Stages = new List<IPipelineStage<Payload>>();
+        {
+            Stages = new List<IPipelineStage<Payload>>();
+        }
 
         public IPipeline<Payload> AddStage(IPipelineStage<Payload> newStage)
         {
@@ -28,8 +28,7 @@ namespace Fractum.WebSocket.Pipelines
         public async Task<LogMessage> CompleteAsync(Payload payload)
         {
             var exceptions = new List<Exception>();
-            for(int pipelinePos = 0; pipelinePos < Stages.Count; pipelinePos++)
-            {
+            for (var pipelinePos = 0; pipelinePos < Stages.Count; pipelinePos++)
                 try
                 {
                     await Task.Yield();
@@ -40,10 +39,13 @@ namespace Fractum.WebSocket.Pipelines
                 {
                     exceptions.Add(ex);
                 }
-            }
 
-            return exceptions.Count == 0 ? null : new LogMessage(nameof(PayloadPipeline), "Errors occured while completing the payload pipeline.",
-                LogSeverity.Error, new AggregateException("An exception was thrown while completing one or more stages in the pipeline.", exceptions));
+            return exceptions.Count == 0
+                ? null
+                : new LogMessage(nameof(PayloadPipeline), "Errors occured while completing the payload pipeline.",
+                    LogSeverity.Error,
+                    new AggregateException(
+                        "An exception was thrown while completing one or more stages in the pipeline.", exceptions));
         }
 
         private void InvokeLog(LogMessage msg)

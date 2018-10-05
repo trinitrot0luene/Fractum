@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Fractum.WebSocket.Pipelines
 {
     /// <summary>
-    /// A pipeline stage responsible for handling event data sent by payloads.
+    ///     A pipeline stage responsible for handling event data sent by payloads.
     /// </summary>
     public interface IEventStage<TData> : IPipelineStage<TData>
     {

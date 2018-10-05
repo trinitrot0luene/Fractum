@@ -1,13 +1,12 @@
 ﻿using Fractum.Rest;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fractum.Entities
 {
     public abstract class FractumEntity
     {
-        internal FractumEntity() { }
+        internal FractumEntity()
+        {
+        }
 
         internal FractumRestClient Client { get; private set; }
 

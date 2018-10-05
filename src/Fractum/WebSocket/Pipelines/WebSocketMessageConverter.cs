@@ -7,19 +7,16 @@ using System.Threading.Tasks;
 namespace Fractum.WebSocket.Pipelines
 {
     /// <summary>
-    /// Decompresses Gateway messages to plaintext.
-    /// 
-    /// Credit to Emzi0767 for this.
-    /// https://github.com/DSharpPlus/DSharpPlus/blob/master/DSharpPlus/Net/WebSocket/WebSocketClient.cs#L186
-    /// 
+    ///     Decompresses Gateway messages to plaintext.
+    ///     Credit to Emzi0767 for this.
+    ///     https://github.com/DSharpPlus/DSharpPlus/blob/master/DSharpPlus/Net/WebSocket/WebSocketClient.cs#L186
     /// </summary>
     internal sealed class WebSocketMessageConverter
     {
-        private MemoryStream CompressedStream;
-        private MemoryStream DecompressedStream;
-        private DeflateStream DecompressionStream;
-
         private const ushort _zlibSuffix = 0xFFFF;
+        private readonly MemoryStream CompressedStream;
+        private readonly MemoryStream DecompressedStream;
+        private DeflateStream DecompressionStream;
 
         public WebSocketMessageConverter()
         {
@@ -44,7 +41,9 @@ namespace Fractum.WebSocket.Pipelines
 
             if (BitConverter.ToUInt16(buffer, buffer.Length - 2) != _zlibSuffix)
                 using (var zlib = new DeflateStream(CompressedStream, CompressionMode.Decompress, true))
+                {
                     await zlib.CopyToAsync(DecompressedStream);
+                }
             else
                 await DecompressionStream.CopyToAsync(DecompressedStream);
 

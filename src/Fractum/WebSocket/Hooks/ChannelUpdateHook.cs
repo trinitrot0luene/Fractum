@@ -1,10 +1,7 @@
-﻿using Fractum.Entities;
+﻿using System.Threading.Tasks;
+using Fractum.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -25,6 +22,7 @@ namespace Fractum.WebSocket.Hooks
                     updatedChannel = args.ToObject<VoiceChannel>();
                     break;
             }
+
             if (cache.Guilds.TryGetValue(updatedChannel.GuildId, out var guild))
                 guild.Channels.AddOrUpdate(updatedChannel.Id, updatedChannel, (k, v) => v = updatedChannel ?? v);
 

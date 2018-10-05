@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
+using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
@@ -27,7 +24,7 @@ namespace Fractum.Entities
         public bool IsHoisted { get; private set; }
 
         [JsonIgnore]
-        public Color Color { get => Color.FromArgb(ColorRaw); }
+        public Color Color => Color.FromArgb(ColorRaw);
 
         [JsonProperty("color")]
         private int ColorRaw { get; set; }
