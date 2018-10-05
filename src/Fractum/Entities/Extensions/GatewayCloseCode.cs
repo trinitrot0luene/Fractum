@@ -1,66 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Net.WebSockets;
 
 namespace Fractum.Entities.Extensions
 {
     internal static class GatewayCloseCode
     {
         /// <summary>
-        /// 4000
+        ///     4000
         /// </summary>
-        public static WebSocketCloseStatus UnknownError => (WebSocketCloseStatus)4000;
+        public static WebSocketCloseStatus UnknownError => (WebSocketCloseStatus) 4000;
 
         /// <summary>
-        /// 4001
+        ///     4001
         /// </summary>
-        public static WebSocketCloseStatus UnknownOpCode => (WebSocketCloseStatus)4001;
+        public static WebSocketCloseStatus UnknownOpCode => (WebSocketCloseStatus) 4001;
 
         /// <summary>
-        /// 4002
+        ///     4002
         /// </summary>
-        public static WebSocketCloseStatus DecodeError => (WebSocketCloseStatus)4002;
+        public static WebSocketCloseStatus DecodeError => (WebSocketCloseStatus) 4002;
 
         /// <summary>
-        /// 4003
+        ///     4003
         /// </summary>
-        public static WebSocketCloseStatus NotAuthenticated => (WebSocketCloseStatus)4003;
+        public static WebSocketCloseStatus NotAuthenticated => (WebSocketCloseStatus) 4003;
 
         /// <summary>
-        /// 4004
+        ///     4004
         /// </summary>
-        public static WebSocketCloseStatus AuthenticationFailed => (WebSocketCloseStatus)4004;
+        public static WebSocketCloseStatus AuthenticationFailed => (WebSocketCloseStatus) 4004;
 
         /// <summary>
-        /// 4005
+        ///     4005
         /// </summary>
-        public static WebSocketCloseStatus AlreadyAuthenticated => (WebSocketCloseStatus)4005;
+        public static WebSocketCloseStatus AlreadyAuthenticated => (WebSocketCloseStatus) 4005;
 
         /// <summary>
-        /// 4007
+        ///     4007
         /// </summary>
-        public static WebSocketCloseStatus InvalidSeq => (WebSocketCloseStatus)4007;
+        public static WebSocketCloseStatus InvalidSeq => (WebSocketCloseStatus) 4007;
 
         /// <summary>
-        /// 4008
+        ///     4008
         /// </summary>
-        public static WebSocketCloseStatus Ratelimited => (WebSocketCloseStatus)4008;
+        public static WebSocketCloseStatus Ratelimited => (WebSocketCloseStatus) 4008;
 
         /// <summary>
-        /// 4009
+        ///     4009
         /// </summary>
-        public static WebSocketCloseStatus SessionTimedOut => (WebSocketCloseStatus)4009;
+        public static WebSocketCloseStatus SessionTimedOut => (WebSocketCloseStatus) 4009;
 
         /// <summary>
-        /// 4010
+        ///     4010
         /// </summary>
-        public static WebSocketCloseStatus InvalidShard => (WebSocketCloseStatus)4010;
+        public static WebSocketCloseStatus InvalidShard => (WebSocketCloseStatus) 4010;
 
         /// <summary>
-        /// 4011
+        ///     4011
         /// </summary>
-        public static WebSocketCloseStatus ShardingRequired => (WebSocketCloseStatus)4011;
+        public static WebSocketCloseStatus ShardingRequired => (WebSocketCloseStatus) 4011;
 
         public static string GetCodeName(int closeCode)
         {

@@ -5,29 +5,27 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public class ChannelUpdateHook : IEventHook<JToken>
+    public class ChannelDeleteHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            GuildChannel updatedChannel = null;
+            GuildChannel deletedChannel = null;
             switch ((ChannelType)args.Value<int>("type"))
             {
                 case ChannelType.GuildCategory:
-                    updatedChannel = args.ToObject<Category>();
+                    deletedChannel = args.ToObject<Category>();
                     break;
                 case ChannelType.GuildText:
-                    updatedChannel = args.ToObject<TextChannel>();
+                    deletedChannel = args.ToObject<TextChannel>();
                     break;
                 case ChannelType.GuildVoice:
-                    updatedChannel = args.ToObject<VoiceChannel>();
+                    deletedChannel = args.ToObject<VoiceChannel>();
                     break;
             }
 
-            cache.UpdateGuildCache(updatedChannel.GuildId,
-                gc => { gc.Channels.AddOrUpdate(updatedChannel.Id, updatedChannel, (k, v) => updatedChannel ?? v); });
+            cache.UpdateGuildCache(deletedChannel.GuildId, gc => { gc.Channels.TryRemove(deletedChannel.Id, out _); });
 
-            client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
-                $"Channel {updatedChannel.Name} was updated", LogSeverity.Debug));
+            client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {deletedChannel.Name} was deleted", LogSeverity.Debug));
 
             return Task.CompletedTask;
         }

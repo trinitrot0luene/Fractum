@@ -12,10 +12,10 @@ namespace Fractum.WebSocket
     public sealed class FractumSocketClient
     {
         private IPipeline<Payload> _pipeline;
-        internal FractumCache Cache; // TODO: Implement
+        internal FractumCache Cache;
         internal FractumSocketConfig Config;
         internal FractumRestClient RestClient;
-        internal ISession Session; // TODO: Implement
+        internal ISession Session;
         internal SocketWrapper Socket;
 
         public FractumSocketClient(FractumSocketConfig config)
@@ -31,15 +31,22 @@ namespace Fractum.WebSocket
             var connectionStage = new ConnectionStage(this);
 
             var eventStage = new EventStage(this)
-                .RegisterHook("GUILD_CREATE", new GuildCreateHook())
+                .RegisterHook("READY", new ReadyHook())
+
                 .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
+
+                .RegisterHook("GUILD_CREATE", new GuildCreateHook())
+                .RegisterHook("GUILD_UPDATE", new GuildUpdateHook())
                 .RegisterHook("GUILD_MEMBER_UPDATE", new PresenceUpdateHook())
-                .RegisterHook("GUILD_MEMBERS_CHUNK", new GuildMemberChunkHook())
-                .RegisterHook("CHANNEL_CREATE", new ChannelUpdateHook())
+                .RegisterHook("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHook())
+
+                .RegisterHook("CHANNEL_CREATE", new ChannelCreateHook())
                 .RegisterHook("CHANNEL_UPDATE", new ChannelUpdateHook())
+                .RegisterHook("CHANNEL_DELETE", new ChannelDeleteHook())
+                .RegisterHook("CHANNEL_PINS_UPDATE", new ChannelPinsUpdateHook())
+
                 .RegisterHook("MESSAGE_CREATE", new MessageReceivedHook())
-                .RegisterHook("MESSAGE_CREATE", new TempCommandsHook())
-                .RegisterHook("READY", new ReadyHook());
+                .RegisterHook("MESSAGE_CREATE", new TempCommandsHook());
 
             _pipeline = new PayloadPipeline()
                 .AddStage(connectionStage)
@@ -109,6 +116,10 @@ namespace Fractum.WebSocket
         internal void InvokeLog(LogMessage msg)
             => Log?.Invoke(msg);
 
+        internal void InvokeMessagePinned(TextChannel channel)
+            => MessagePinned?.Invoke(channel);
+
         public event Func<LogMessage, Task> Log;
+        public event Func<TextChannel, Task> MessagePinned;
     }
 }

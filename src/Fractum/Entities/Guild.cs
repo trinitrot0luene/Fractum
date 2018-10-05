@@ -18,6 +18,11 @@ namespace Fractum.Entities
             Large = model.Large;
         }
 
+        private Guild()
+        {
+
+        }
+
         public ulong OwnerId { get; internal set; }
 
         public bool IsUnavailable { get; internal set; }

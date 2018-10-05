@@ -1,13 +1,8 @@
-﻿using Fractum.Entities;
+﻿using System.Threading.Tasks;
+using Fractum.Entities;
 using Fractum.WebSocket.Entities;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -19,12 +14,11 @@ namespace Fractum.WebSocket.Hooks
             cache.AddAndPopulateMessage(msg);
 
             if (msg.Content.StartsWith(">") && !msg.Author.IsBot)
-            {
                 switch (msg.Content.Substring(1, msg.Content.Length - 1).ToLowerInvariant())
                 {
                     case "update_test":
                         await client.UpdatePresenceAsync("With a shit c# lib", ActivityType.Playing);
-                            return;
+                        return;
                     case "chunk_test":
                         await client.RequestMembersAsync(msg.Guild.Id);
                         return;
@@ -32,7 +26,6 @@ namespace Fractum.WebSocket.Hooks
                         await msg.Channel.CreateMessageAsync(msg.Guild.Members.Count.ToString());
                         return;
                 }
-            }
         }
     }
 }

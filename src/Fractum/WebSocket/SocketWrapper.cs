@@ -1,14 +1,12 @@
-﻿using Fractum.Entities;
-using Fractum.Entities.Extensions;
-using Fractum.WebSocket.Entities;
-using System;
+﻿using System;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
-using System.IO.Compression;
-using System.Collections.Concurrent;
+using Fractum.Entities;
+using Fractum.Entities.Extensions;
+using Fractum.WebSocket.Entities;
 using Fractum.WebSocket.Pipelines;
 
 namespace Fractum.WebSocket
@@ -16,21 +14,20 @@ namespace Fractum.WebSocket
     public sealed class SocketWrapper
     {
         private const int _bufferSize = 4096;
-
-        internal Task ListenerTask;
-        internal WebSocketState State => _socket.State;
-
-        private Uri _url;
-        private ClientWebSocket _socket;
-        private CancellationTokenSource _cts = new CancellationTokenSource();
         private WebSocketMessageConverter _converter;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
-        private SemaphoreSlim _ratelimitLock;
+        private readonly SemaphoreSlim _ratelimitLock;
         private DateTimeOffset _ratelimitResetsAt;
         private int _remainingMessages;
+        private ClientWebSocket _socket;
+
+        private Uri _url;
+
+        internal Task ListenerTask;
 
         /// <summary>
-        /// Wrapper around the ClientWebSocket handling the socket connection.
+        ///     Wrapper around the ClientWebSocket handling the socket connection.
         /// </summary>
         /// <param name="url">Gateway URL</param>
         internal SocketWrapper(Uri url)
@@ -42,17 +39,20 @@ namespace Fractum.WebSocket
             _ratelimitResetsAt = DateTimeOffset.UtcNow.AddSeconds(60);
         }
 
+        internal WebSocketState State => _socket.State;
+
         public void UpdateUrl(Uri url)
             => _url = url;
 
         /// <summary>
-        /// Connect to the gateway and initiate the handshake.
+        ///     Connect to the gateway and initiate the handshake.
         /// </summary>
         /// <returns></returns>
         public async Task ConnectAsync()
         {
             _socket = new ClientWebSocket();
-            var abortTask = Task.Run(async () => {
+            var abortTask = Task.Run(async () =>
+            {
                 await Task.Delay(5000);
                 if (_socket.State != WebSocketState.Open)
                     _socket.Abort();
@@ -64,24 +64,28 @@ namespace Fractum.WebSocket
 
             InvokeConnected();
 
-            ListenerTask = Task.Run(() => ListenAsync().ContinueWith(task => { if (task.IsCanceled) InvokeLog(new LogMessage(nameof(SocketWrapper), 
-                "The listener task was cancelled.", LogSeverity.Error)); }), _cts.Token);
+            ListenerTask = Task.Run(() => ListenAsync().ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                    InvokeLog(new LogMessage(nameof(SocketWrapper),
+                        "The listener task was cancelled.", LogSeverity.Error));
+            }), _cts.Token);
         }
 
         public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "")
         {
             if (_socket.State == WebSocketState.Open)
-                await _socket.CloseAsync((WebSocketCloseStatus)status, reason, _cts.Token);
+                await _socket.CloseAsync(status, reason, _cts.Token);
 
             _socket.Dispose();
             _socket = new ClientWebSocket();
             _converter = new WebSocketMessageConverter();
 
-            InvokeCloseCodeIssued((WebSocketCloseStatus)status);
+            InvokeCloseCodeIssued(status);
         }
 
         /// <summary>
-        /// Send a message to the gateway over a socket connection.
+        ///     Send a message to the gateway over a socket connection.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -113,7 +117,7 @@ namespace Fractum.WebSocket
         }
 
         /// <summary>
-        /// Block and listen for messages/events on the socket.
+        ///     Block and listen for messages/events on the socket.
         /// </summary>
         /// <returns></returns>
         private async Task ListenAsync()
@@ -126,7 +130,7 @@ namespace Fractum.WebSocket
 
             var token = _cts.Token;
 
-            while(!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
+            while (!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
             {
                 using (var ms = new MemoryStream())
                 {
@@ -138,9 +142,10 @@ namespace Fractum.WebSocket
                             // Pass close information out of the loop.
                         }
                         else
+                        {
                             ms.Write(buffer, 0, result.Count);
-                    }
-                    while (!result.EndOfMessage);
+                        }
+                    } while (!result.EndOfMessage);
 
                     resultBuffer = ms.ToArray();
                 }
@@ -155,11 +160,12 @@ namespace Fractum.WebSocket
                 }
                 catch (Exception ex)
                 {
-                    InvokeLog(new LogMessage(nameof(FractumSocketClient), 
+                    InvokeLog(new LogMessage(nameof(FractumSocketClient),
                         "An exception was raised by a PayloadReceived handler.",
                         LogSeverity.Warning, ex));
                 }
             }
+
             InvokeCloseCodeIssued(_socket.CloseStatus.Value);
 
             _socket.Dispose();
@@ -170,30 +176,34 @@ namespace Fractum.WebSocket
         #region Events
 
         /// <summary>
-        /// Raised when the wrapper generates a LogMessage.
+        ///     Raised when the wrapper generates a LogMessage.
         /// </summary>
         public event Func<LogMessage, Task> Log;
+
         private void InvokeLog(LogMessage msg)
             => Log?.Invoke(msg);
 
         /// <summary>
-        /// Raised when the client makes a successful connection to the gateway.
+        ///     Raised when the client makes a successful connection to the gateway.
         /// </summary>
         public event Func<Task> OnConnected;
+
         private void InvokeConnected()
             => OnConnected?.Invoke();
 
         /// <summary>
-        /// Raised when the listen loop is broken by a server disconnect.
+        ///     Raised when the listen loop is broken by a server disconnect.
         /// </summary>
         internal event Func<WebSocketCloseStatus, Task> ConnectionClosed;
+
         private void InvokeCloseCodeIssued(WebSocketCloseStatus status)
             => ConnectionClosed?.Invoke(status);
 
         /// <summary>
-        /// Raised when the wrapper receives a payload from the gateway.
+        ///     Raised when the wrapper receives a payload from the gateway.
         /// </summary>
         internal event Func<Payload, Task> PayloadReceived;
+
         private void InvokeReceived(Payload payload)
             => PayloadReceived?.Invoke(payload);
 

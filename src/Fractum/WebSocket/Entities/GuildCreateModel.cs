@@ -1,11 +1,9 @@
-﻿using Fractum.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using Fractum.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Entities
 {
@@ -17,6 +15,62 @@ namespace Fractum.WebSocket.Entities
             Presences = new List<Presence>();
             Members = new List<GuildMember>();
             Roles = new List<Role>();
+        }
+
+        [JsonProperty("channels")]
+        private JArray RawChannels
+        {
+            set
+            {
+                value.ToList().ForEach(token =>
+                {
+                    GuildChannel newChannel = null;
+                    switch (token.Value<int>("type"))
+                    {
+                        case (int) ChannelType.GuildText:
+                            newChannel = token.ToObject<TextChannel>();
+                            break;
+                        case (int) ChannelType.GuildVoice:
+                            newChannel = token.ToObject<VoiceChannel>();
+                            break;
+                        case (int) ChannelType.GuildCategory:
+                            newChannel = token.ToObject<Category>();
+                            break;
+                    }
+
+                    Channels.Add(newChannel);
+                });
+            }
+        }
+
+        [JsonProperty("presences")]
+        private ReadOnlyCollection<Presence> RawPresences
+        {
+            set
+            {
+                foreach (var val in value)
+                    Presences.Add(val);
+            }
+        }
+
+        [JsonProperty("members")]
+        private ReadOnlyCollection<GuildMember> RawMembers
+        {
+            set
+            {
+                foreach (var val in value)
+                    Members.Add(val);
+            }
+        }
+
+        [JsonProperty("roles")]
+        private ReadOnlyCollection<Role> RawRoles
+        {
+            set
+            {
+                foreach (var val in value)
+                    Roles.Add(val);
+            }
         }
 
         #region Cacheable Entities
@@ -55,60 +109,5 @@ namespace Fractum.WebSocket.Entities
         public bool Large { get; private set; }
 
         #endregion
-
-        [JsonProperty("channels")]
-        private JArray RawChannels
-        {
-            set
-            {
-                value.ToList().ForEach(token =>
-                {
-                    GuildChannel newChannel = null;
-                    switch (token.Value<int>("type"))
-                    {
-                        case (int)ChannelType.GuildText:
-                            newChannel = token.ToObject<TextChannel>();
-                            break;
-                        case (int)ChannelType.GuildVoice:
-                            newChannel = token.ToObject<VoiceChannel>();
-                            break;
-                        case (int)ChannelType.GuildCategory:
-                            newChannel = token.ToObject<Category>();
-                            break;
-                    }
-                    Channels.Add(newChannel);
-                });
-            }
-        }
-
-        [JsonProperty("presences")]
-        private ReadOnlyCollection<Presence> RawPresences
-        {
-            set
-            {
-                foreach (var val in value)
-                    Presences.Add(val);
-            }
-        }
-
-        [JsonProperty("members")]
-        private ReadOnlyCollection<GuildMember> RawMembers
-        {
-            set
-            {
-                foreach (var val in value)
-                    Members.Add(val);
-            }
-        }
-
-        [JsonProperty("roles")]
-        private ReadOnlyCollection<Role> RawRoles
-        {
-            set
-            {
-                foreach (var val in value)
-                    Roles.Add(val);
-            }
-        }
     }
 }
