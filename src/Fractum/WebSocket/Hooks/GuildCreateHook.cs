@@ -1,24 +1,27 @@
-﻿using Fractum.WebSocket.Pipelines;
-using Fractum.WebSocket;
-using Fractum.WebSocket.Entities;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
+using Fractum.WebSocket.Pipelines;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
     public sealed class GuildCreateHook : IEventHook<JToken>
     {
-        public Task RunAsync(JToken data, IFractumCache cache)
+        public async Task RunAsync(JToken data, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var guild = data.ToObject<Guild>();
+            var guild = data.ToObject<GuildCreateEventModel>();
 
-            cache.Guilds.AddOrUpdate(guild.Id, guild, (k, v) => guild ?? v);
+            guild.ApplyToCache(cache);
 
-            return Task.CompletedTask;
+            if (client.Config.AlwaysDownloadMembers)
+                await client.RequestMembersAsync(guild.Id);
+
+            client.InvokeLog(
+                new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
+
+            client.InvokeGuildCreated(cache.GetGuild(guild.Id));
         }
     }
 }

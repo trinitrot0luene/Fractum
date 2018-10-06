@@ -1,25 +1,23 @@
-﻿using Fractum.Rest.Utils;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using Fractum.Rest.Utils;
 
 namespace Fractum.Rest
 {
     public sealed class StringRestRequest : RestRequest
     {
-        public StringContent Content { get; set; }
-
-        public StringRestRequest(RouteBuilder rb, HttpMethod verb, ulong majorParam = 0, string content = null) : base(rb, verb, majorParam)
+        public StringRestRequest(RouteBuilder rb, HttpMethod verb, ulong majorParam = 0, string content = null) : base(
+            rb, verb, majorParam)
         {
             if (content != null)
                 Content = new StringContent(content);
         }
 
+        public StringContent Content { get; set; }
+
         public override HttpRequestMessage BuildRequest()
         {
-            var message = new HttpRequestMessage()
+            var message = new HttpRequestMessage
             {
                 RequestUri = Url,
                 Method = Method,

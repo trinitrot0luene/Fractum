@@ -1,43 +1,41 @@
-﻿using Fractum.Entities;
-using Fractum.Rest.Compliance;
-using Fractum.Rest.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fractum.Rest.Compliance;
+using Fractum.Rest.Exceptions;
+using Fractum.WebSocket;
 
 namespace Fractum.Rest
 {
     public abstract class FractumRestService
     {
-        private FractumRestConfig _config;
+        private readonly ConcurrentDictionary<string, RatelimitInfo> _buckets;
 
-        private ConcurrentDictionary<string, RatelimitInfo> _buckets;
+        private readonly HttpClient _http;
 
-        private HttpClient _http;
+        private readonly SemaphoreSlim _requestLock;
 
-        private SemaphoreSlim _requestLock;
+        internal readonly FractumConfig Config;
 
-        internal FractumRestService(FractumRestConfig config)
+        internal FractumRestService(FractumConfig config)
         {
-            _config = config;
+            Config = config;
             _buckets = new ConcurrentDictionary<string, RatelimitInfo>();
             _http = new HttpClient();
             _requestLock = new SemaphoreSlim(1, 1);
 
             _http.DefaultRequestHeaders.Add("User-Agent", $"DiscordBot ({Consts.LIB_VERSION}, {Consts.GH_URL})");
-            _http.DefaultRequestHeaders.Add("Authorization", $"Bot {_config.Token}");
+            _http.DefaultRequestHeaders.Add("Authorization", $"Bot {Config.Token}");
         }
 
         protected async Task<HttpResponseMessage> SendRequestAsync(RestRequest request)
         {
             await _requestLock.WaitAsync();
             // If there is a bucket with no uses for this route that hasn't expired, wait until it expires.
-            if (_buckets.TryGetValue(request.BucketId, out var bucket) && bucket.Remaining <= 0 && bucket.ExpiresAt > (DateTimeOffset.UtcNow + bucket.Offset))
+            if (_buckets.TryGetValue(request.BucketId, out var bucket) && bucket.Remaining <= 0 &&
+                bucket.ExpiresAt > DateTimeOffset.UtcNow + bucket.Offset)
             {
                 Console.WriteLine($"429_PRE_EMPT with delay {bucket.RequiredDelay.TotalMilliseconds}ms");
                 await Task.Delay(bucket.RequiredDelay);
@@ -56,7 +54,7 @@ namespace Fractum.Rest
             }
 
             // Determine reaction by response code.
-            switch((int)response.StatusCode)
+            switch ((int) response.StatusCode)
             {
                 case 200: // OK
                 case 201:
@@ -79,8 +77,6 @@ namespace Fractum.Rest
                     _requestLock.Release();
                     response = await tcs.Task;
                     return response;
-                default:
-                    break;
             }
 
             return null;
@@ -94,12 +90,13 @@ namespace Fractum.Rest
             _buckets.AddOrUpdate(bucketId, newBucket.Value, (k, b) => newBucket.Value);
         }
 
-        private async Task Handle429(RestRequest request, HttpResponseMessage response, TaskCompletionSource<HttpResponseMessage> tcs, string bucketId)
+        private async Task Handle429(RestRequest request, HttpResponseMessage response,
+            TaskCompletionSource<HttpResponseMessage> tcs, string bucketId)
         {
             var global = response.Headers.TryGetValues("X-RateLimit-Global", out _);
             response.Headers.TryGetValues("Retry-After", out var retry_vals);
 
-            if (int.TryParse(string.Join("", retry_vals), out int retry_in))
+            if (int.TryParse(string.Join("", retry_vals), out var retry_in))
                 await Task.Delay(retry_in);
 
             await SendRequestAsync(request).ContinueWith(task => tcs.SetResult(task.Result));

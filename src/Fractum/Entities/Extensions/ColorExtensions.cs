@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 
-namespace Fractum.Rest.Extensions
+namespace Fractum.Entities.Extensions
 {
     public static class ColorExtensions
     {
         public static int ToRGB(this Color color)
-            => (color.R * 256 * 256) + (color.G * 256) + color.B;
+            => color.R * 256 * 256 + color.G * 256 + color.B;
     }
 }

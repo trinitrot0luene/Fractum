@@ -1,11 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
     public sealed class Embed
     {
-        internal Embed() { }
+        internal Embed()
+        {
+        }
 
         [JsonProperty("title")]
         public string Title { get; internal set; }

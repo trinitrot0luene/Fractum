@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Fractum.Entities.Extensions
 {
@@ -11,12 +9,17 @@ namespace Fractum.Entities.Extensions
 
         public static T Deserialize<T>(this string value)
         {
+            if (value is null) return default;
+
             try
             {
                 var obj = JsonConvert.DeserializeObject<T>(value);
                 return obj;
             }
-            catch(JsonException jsonEx) { throw new Exception($"Failed deserialization: {jsonEx.Message}"); };
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed deserialization: {ex.Message}");
+            }
         }
     }
 }

@@ -27,9 +27,9 @@ namespace Fractum.Entities
         ManagePermissions = 0x10000000,
         ManageWebHooks = 0x20000000,
 
-        All = CreateInvite | ManageChannels | AddReactions | ViewChannel | SendMessages 
-            | SendTTSMessages | ManageMessages | EmbedLinks | AttachFiles | ReadMessageHistory 
-            | MentionEveryone | UseExternalEmojis | Connect | Speak | MuteMembers | DeafenMembers 
-            | MoveMembers | UseVoiceActivityDetection | PrioritySpeaker | ManagePermissions | ManageWebHooks
+        All = CreateInvite | ManageChannels | AddReactions | ViewChannel | SendMessages
+              | SendTTSMessages | ManageMessages | EmbedLinks | AttachFiles | ReadMessageHistory
+              | MentionEveryone | UseExternalEmojis | Connect | Speak | MuteMembers | DeafenMembers
+              | MoveMembers | UseVoiceActivityDetection | PrioritySpeaker | ManagePermissions | ManageWebHooks
     }
 }

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 
 namespace Fractum.Rest.Compliance
 {
     /// <summary>
-    /// Caches ratelimit information for routes on the REST API.
+    ///     Caches ratelimit information for routes on the REST API.
     /// </summary>
     internal struct RatelimitInfo
     {
@@ -18,23 +16,23 @@ namespace Fractum.Rest.Compliance
 
         public TimeSpan Offset { get; set; }
 
-        public TimeSpan RequiredDelay => ExpiresAt - (DateTimeOffset.UtcNow.Add(Offset));
+        public TimeSpan RequiredDelay => ExpiresAt - DateTimeOffset.UtcNow.Add(Offset);
 
         private RatelimitInfo(HttpResponseMessage msg)
         {
             if (msg.Headers.TryGetValues("X-RateLimit-Limit", out var limit_vals)
-                && int.TryParse(string.Join("", limit_vals), out int limit))
+                && int.TryParse(string.Join("", limit_vals), out var limit))
                 Limit = limit;
             else Limit = -1;
 
             if (msg.Headers.TryGetValues("X-RateLimit-Remaining", out var remaining_vals)
-                && int.TryParse(string.Join("", remaining_vals), out int remaining))
+                && int.TryParse(string.Join("", remaining_vals), out var remaining))
                 Remaining = remaining;
             else
                 Remaining = -1;
 
             if (msg.Headers.TryGetValues("X-RateLimit-Reset", out var reset_vals)
-                && int.TryParse(string.Join("", reset_vals), out int reset)
+                && int.TryParse(string.Join("", reset_vals), out var reset)
                 && msg.Headers.TryGetValues("Date", out var issue_vals)
                 && DateTimeOffset.TryParse(string.Join("", issue_vals), out var issuedAt))
             {

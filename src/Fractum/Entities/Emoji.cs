@@ -1,16 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fractum.Entities
 {
     public sealed class Emoji : DiscordEntity
     {
         [JsonProperty("name")]
-        public string Name { get; private set; }
+        public string Name { get; internal set; }
 
         [JsonProperty("animated")]
-        public bool IsAnimated { get; private set; }
+        public bool IsAnimated { get; internal set; }
     }
 }

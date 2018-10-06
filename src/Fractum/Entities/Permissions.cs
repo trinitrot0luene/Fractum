@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fractum.Entities
 {
@@ -38,9 +36,12 @@ namespace Fractum.Entities
         ManageWebHooks = 0x20000000,
         ManageEmojis = 0x40000000,
 
-        All = KickUsers | BanUsers | Administrator | ManageGuild | ViewAuditLogs | ChangeNickname | ManageNicknames | ManageEmojis | CreateInvite | ManageChannels
-            | AddReactions | ViewChannel | SendMessages | SendTTSMessages | ManageMessages | EmbedLinks | AttachFiles | ReadMessageHistory | MentionEveryone
-            | UseExternalEmojis | Connect | Speak | MuteMembers | DeafenMembers | MoveMembers | UseVoiceActivityDetection | PrioritySpeaker | ManagePermissions
-            | ManageWebHooks
+        All = KickUsers | BanUsers | Administrator | ManageGuild | ViewAuditLogs | ChangeNickname | ManageNicknames |
+              ManageEmojis | CreateInvite | ManageChannels
+              | AddReactions | ViewChannel | SendMessages | SendTTSMessages | ManageMessages | EmbedLinks |
+              AttachFiles | ReadMessageHistory | MentionEveryone
+              | UseExternalEmojis | Connect | Speak | MuteMembers | DeafenMembers | MoveMembers |
+              UseVoiceActivityDetection | PrioritySpeaker | ManagePermissions
+              | ManageWebHooks
     }
 }

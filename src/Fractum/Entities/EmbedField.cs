@@ -4,7 +4,9 @@ namespace Fractum.Entities
 {
     public sealed class EmbedField
     {
-        internal EmbedField() { }
+        internal EmbedField()
+        {
+        }
 
         [JsonProperty("name")]
         public string Name { get; internal set; }
