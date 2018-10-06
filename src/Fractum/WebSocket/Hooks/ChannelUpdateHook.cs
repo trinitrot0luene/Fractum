@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.WebSocket.Core;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
@@ -10,7 +11,7 @@ namespace Fractum.WebSocket.Hooks
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
             GuildChannel updatedChannel = null;
-            switch ((ChannelType)args.Value<int>("type"))
+            switch ((ChannelType) args.Value<int>("type"))
             {
                 case ChannelType.GuildCategory:
                     updatedChannel = args.ToObject<Category>();
@@ -27,7 +28,7 @@ namespace Fractum.WebSocket.Hooks
                 gc => { gc.Channels.AddOrUpdate(updatedChannel.Id, updatedChannel, (k, v) => updatedChannel ?? v); });
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
-                $"Channel {updatedChannel.Name} was updated", LogSeverity.Debug));
+                $"Channel {updatedChannel.Name} was updated", LogSeverity.Verbose));
 
             return Task.CompletedTask;
         }

@@ -4,14 +4,15 @@ using Fractum.Entities;
 using Fractum.Entities.Contracts;
 using Fractum.Entities.Extensions;
 using Fractum.Rest.Utils;
+using Fractum.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.Rest
 {
-    public sealed class FractumRestClient : FractumRestService, IRestClient
+    public class FractumRestClient : FractumRestService, IRestClient
     {
-        public FractumRestClient(FractumRestConfig config) : base(config)
+        public FractumRestClient(FractumConfig config) : base(config)
         {
         }
 
@@ -39,8 +40,8 @@ namespace Fractum.Rest
             return null;
         }
 
-        internal async Task<Message> CreateMessageAsync(Channel channel, string content, bool isTTS = false,
-            EmbedBuilder EmbedBuilder = null)
+        public async Task<Message> CreateMessageAsync(Channel channel, string content, bool isTTS = false,
+            EmbedBuilder embedBuilder = null)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channel.Id)
@@ -51,7 +52,7 @@ namespace Fractum.Rest
                 {
                     content,
                     tts = isTTS,
-                    embed = EmbedBuilder?.Create()
+                    embed = embedBuilder?.Create()
                 })));
 
             return (await resp.Content.ReadAsStringAsync()).Deserialize<Message>().WithClient(this) as Message;

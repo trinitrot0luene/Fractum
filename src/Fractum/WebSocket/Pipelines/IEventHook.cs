@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Fractum.WebSocket.Core;
 
 namespace Fractum.WebSocket.Pipelines
 {

@@ -10,15 +10,15 @@ namespace Fractum.Entities
 
         internal FractumRestClient Client { get; private set; }
 
-        internal FractumEntity WithClient(FractumRestClient restClient)
+        internal FractumEntity WithClient(FractumRestClient client)
         {
-            Client = restClient;
+            Client = client;
             return this;
         }
 
-        internal T WithClient<T>(FractumRestClient restClient) where T : FractumEntity
+        internal T WithClient<T>(FractumRestClient client) where T : FractumEntity
         {
-            Client = restClient;
+            Client = client;
             return this as T;
         }
     }

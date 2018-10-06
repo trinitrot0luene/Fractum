@@ -5,27 +5,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fractum.Rest.Compliance;
 using Fractum.Rest.Exceptions;
+using Fractum.WebSocket;
 
 namespace Fractum.Rest
 {
     public abstract class FractumRestService
     {
         private readonly ConcurrentDictionary<string, RatelimitInfo> _buckets;
-        private readonly FractumRestConfig _config;
 
         private readonly HttpClient _http;
 
         private readonly SemaphoreSlim _requestLock;
 
-        internal FractumRestService(FractumRestConfig config)
+        internal readonly FractumConfig Config;
+
+        internal FractumRestService(FractumConfig config)
         {
-            _config = config;
+            Config = config;
             _buckets = new ConcurrentDictionary<string, RatelimitInfo>();
             _http = new HttpClient();
             _requestLock = new SemaphoreSlim(1, 1);
 
             _http.DefaultRequestHeaders.Add("User-Agent", $"DiscordBot ({Consts.LIB_VERSION}, {Consts.GH_URL})");
-            _http.DefaultRequestHeaders.Add("Authorization", $"Bot {_config.Token}");
+            _http.DefaultRequestHeaders.Add("Authorization", $"Bot {Config.Token}");
         }
 
         protected async Task<HttpResponseMessage> SendRequestAsync(RestRequest request)

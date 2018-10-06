@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Entities;
-using Fractum.WebSocket.Events;
+using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
@@ -10,7 +11,7 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var guildMemberChunkEvent = args.ToObject<GuildMemberChunkEvent>();
+            var guildMemberChunkEvent = args.ToObject<GuildMemberChunkEventModel>();
             guildMemberChunkEvent.ApplyToCache(cache);
 
             client.InvokeLog(new LogMessage(nameof(GuildMembersChunkHook),

@@ -5,6 +5,10 @@ namespace Fractum.Entities
 {
     public class GuildChannel : Channel
     {
+        internal GuildChannel()
+        {
+        }
+
         [JsonProperty("position")]
         public int Position { get; private set; }
 
@@ -25,6 +29,8 @@ namespace Fractum.Entities
 
         [JsonProperty("nsfw")]
         public bool IsNsfw { get; private set; }
+
+        public override string ToString() => $"{Name} : {Id}";
 
         private Permissions ComputeBasePermissions(GuildMember member)
         {

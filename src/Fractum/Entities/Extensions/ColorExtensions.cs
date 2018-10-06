@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Fractum.Rest.Extensions
+namespace Fractum.Entities.Extensions
 {
     public static class ColorExtensions
     {

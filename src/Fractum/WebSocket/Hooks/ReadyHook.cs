@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.WebSocket.Core;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 

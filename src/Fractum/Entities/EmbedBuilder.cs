@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Fractum.Rest.Extensions;
+using Fractum.Entities.Extensions;
 
 namespace Fractum.Entities
 {
     public sealed class EmbedBuilder
     {
+        private readonly List<EmbedField> Fields;
         private Color Color;
 
         private string Description;
-
-        private readonly List<EmbedField> Fields;
         private EmbedFooter Footer;
 
         private DateTimeOffset? Timestamp;

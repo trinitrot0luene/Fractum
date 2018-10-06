@@ -6,27 +6,27 @@ namespace Fractum.Entities
     public sealed class Role : DiscordEntity
     {
         [JsonProperty("position")]
-        public int Position { get; private set; }
+        public int Position { get; internal set; }
 
         [JsonProperty("permissions")]
-        public Permissions Permissions { get; private set; }
+        public Permissions Permissions { get; internal set; }
 
         [JsonProperty("name")]
-        public string Name { get; private set; }
+        public string Name { get; internal set; }
 
         [JsonProperty("mentionable")]
-        public bool IsMentionable { get; private set; }
+        public bool IsMentionable { get; internal set; }
 
         [JsonProperty("managed")]
-        public bool IsManaged { get; private set; }
+        public bool IsManaged { get; internal set; }
 
         [JsonProperty("hoisted")]
-        public bool IsHoisted { get; private set; }
+        public bool IsHoisted { get; internal set; }
 
         [JsonIgnore]
         public Color Color => Color.FromArgb(ColorRaw);
 
         [JsonProperty("color")]
-        private int ColorRaw { get; set; }
+        internal int ColorRaw { get; set; }
     }
 }

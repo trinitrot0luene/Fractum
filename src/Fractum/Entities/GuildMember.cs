@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Fractum.Entities.Contracts;
-using Fractum.WebSocket.Entities;
+using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities

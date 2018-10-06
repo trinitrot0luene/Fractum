@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.WebSocket.Core;
 using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
@@ -17,7 +17,8 @@ namespace Fractum.WebSocket.Hooks
                 .FirstOrDefault(c => c.Id == args.Value<ulong>("channel_id"));
 
             client.InvokeMessagePinned(channel as TextChannel);
-            client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {channel.Name}", LogSeverity.Debug));
+            client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {channel.Name}",
+                LogSeverity.Debug));
 
             return Task.CompletedTask;
         }
