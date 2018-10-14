@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fractum.Rest.Exceptions
+namespace Fractum.Rest
 {
     /// <summary>
     ///     Thrown if the requested resource was not found on the server.

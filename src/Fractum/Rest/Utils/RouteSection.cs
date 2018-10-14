@@ -1,6 +1,6 @@
 ﻿namespace Fractum.Rest.Utils
 {
-    public struct RouteSection
+    internal struct RouteSection
     {
         public static RouteSection Create(string route, bool isMajor = false)
             => new RouteSection {BaseRoute = route, IsMajor = isMajor};

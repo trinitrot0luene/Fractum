@@ -6,7 +6,7 @@ using Fractum.Utilities;
 
 namespace Fractum.Entities.Extensions
 {
-    public static class TaskExtensions
+    internal static class TaskExtensions
     {
         public static async Task<T> WithCancellation<T>(
             this Task<T> task, CancellationToken cancellationToken)

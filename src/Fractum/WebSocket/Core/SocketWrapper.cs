@@ -149,13 +149,13 @@ namespace Fractum.WebSocket.Core
                     resultBuffer = ms.ToArray();
                 }
 
-                string responseText = default;
+                Payload responsePayload = default;
                 if (result.MessageType == WebSocketMessageType.Binary)
-                    responseText = await _converter.DecompressAsync(resultBuffer);
+                    responsePayload = await _converter.DecompressAsync(resultBuffer);
 
                 try
                 {
-                    _ = Task.Run(() => InvokeReceived(responseText.Deserialize<Payload>()));
+                    _ = Task.Run(() => InvokeReceived(responsePayload));
                 }
                 catch (Exception ex)
                 {

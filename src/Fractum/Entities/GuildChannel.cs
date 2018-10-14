@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using Fractum.Entities.Properties;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
@@ -9,6 +13,9 @@ namespace Fractum.Entities
         {
         }
 
+        [JsonProperty("name")]
+        public string Name { get; private set; }
+
         [JsonProperty("position")]
         public int Position { get; private set; }
 
@@ -16,21 +23,34 @@ namespace Fractum.Entities
         internal ulong GuildId { get; private set; }
 
         [JsonProperty("permission_overwrites")]
-        public PermissionsOverwrite[] Overwrites { get; private set; }
+        public ReadOnlyCollection<PermissionsOverwrite> Overwrites { get; private set; }
 
         [JsonIgnore]
         public Guild Guild { get; internal set; }
 
         [JsonProperty("parent_id")]
-        private string ParentIdRaw { get; set; }
-
-        [JsonIgnore]
-        public ulong? ParentId => ParentIdRaw is null ? default(ulong?) : ulong.Parse(ParentIdRaw);
+        public ulong? ParentId { get; internal set; }
 
         [JsonProperty("nsfw")]
         public bool IsNsfw { get; private set; }
 
         public override string ToString() => $"{Name} : {Id}";
+
+        public Task DeleteAsync()
+            => Client.RestClient.DeleteChannelAsync(Id);
+
+        public virtual async Task<GuildChannel> EditAsync(Action<GuildChannelProperties> editAction)
+        {
+            var props = new GuildChannelProperties()
+            {
+                Name = this.Name,
+                PermissionsOverwrites = this.Overwrites,
+                Position = this.Position
+            };
+            editAction(props);
+
+            return await Client.EditChannelAsync(Id, props);
+        }
 
         private Permissions ComputeBasePermissions(GuildMember member)
         {

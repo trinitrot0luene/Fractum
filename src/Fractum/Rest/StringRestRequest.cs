@@ -4,7 +4,7 @@ using Fractum.Rest.Utils;
 
 namespace Fractum.Rest
 {
-    public sealed class StringRestRequest : RestRequest
+    internal sealed class StringRestRequest : RestRequest
     {
         public StringRestRequest(RouteBuilder rb, HttpMethod verb, ulong majorParam = 0, string content = null) : base(
             rb, verb, majorParam)

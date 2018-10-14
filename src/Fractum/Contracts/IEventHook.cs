@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Fractum.WebSocket;
 using Fractum.WebSocket.Core;
 
-namespace Fractum.WebSocket.Pipelines
+namespace Fractum.Contracts
 {
     public interface IEventHook<TArgs>
     {

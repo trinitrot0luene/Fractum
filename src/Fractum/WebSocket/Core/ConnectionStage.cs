@@ -4,15 +4,17 @@ using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.Extensions;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Pipelines;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Core
 {
     /// <summary>
-    ///     Operates on the Gateway WebSocket to handle all connection-related logic.
+    ///     Operates on the gateway socket to handle all connection-related logic.
     /// </summary>
     internal sealed class ConnectionStage : IPipelineStage<Payload>
     {
@@ -27,6 +29,7 @@ namespace Fractum.WebSocket.Core
         }
 
         public Timer HeartbeatTimer { get; private set; }
+
         public ISession Session { get; }
 
         public FractumCache Cache { get; private set; }
@@ -49,7 +52,7 @@ namespace Fractum.WebSocket.Core
 
                 case OpCode.Hello:
                     // Regardless of what happens we want to start heartbeating on HELLO.
-                    var heartbeatInterval = payload.DataObject.Value<int>("heartbeat_interval");
+                    var heartbeatInterval = payload.Data.Value<int>("heartbeat_interval");
                     HeartbeatTimer = new Timer(_ => Task.Run(() => HeartbeatAsync()), null, heartbeatInterval,
                         heartbeatInterval);
                     // If we aren't resuming, re-identify.
@@ -143,7 +146,7 @@ namespace Fractum.WebSocket.Core
                 if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 4 == 0)
                 {
                     // Fetch connection info from the gateway with new Url: 
-                    var gatewayInfo = await Client.GetSocketUrlAsync();
+                    var gatewayInfo = await Client.RestClient.GetSocketUrlAsync();
                     if (gatewayInfo?.SessionStartLimit["remaining"] == 0)
                         throw new GatewayException("No new sessions can be started");
                     if (gatewayInfo != null)
@@ -181,7 +184,7 @@ namespace Fractum.WebSocket.Core
                 op = OpCode.Resume,
                 d = new
                 {
-                    token = Client.Config.Token,
+                    token = Client.RestClient.Config.Token,
                     session_id = Session.SessionId,
                     seq = Session.Seq
                 }
@@ -208,7 +211,7 @@ namespace Fractum.WebSocket.Core
                 op = OpCode.Identify,
                 d = new
                 {
-                    token = Cache.Client.Config.Token,
+                    token = Cache.Client.RestClient.Config.Token,
                     properties = new Dictionary<string, string>
                     {
                         {"$os", Environment.OSVersion.ToString()},
@@ -216,9 +219,11 @@ namespace Fractum.WebSocket.Core
                         {"$device", Assembly.GetExecutingAssembly().FullName}
                     },
                     compress = false,
-                    large_threshold = Cache.Client.Config.LargeThreshold
+                    large_threshold = Cache.Client.RestClient.Config.LargeThreshold
                 }
             }.Serialize();
+
+            Session.Duration = DateTimeOffset.UtcNow;
 
             Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Identifying", LogSeverity.Verbose));
 

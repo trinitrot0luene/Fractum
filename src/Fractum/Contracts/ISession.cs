@@ -1,10 +1,17 @@
-﻿namespace Fractum.WebSocket.Pipelines
+﻿using System;
+
+namespace Fractum.Contracts
 {
     /// <summary>
     ///     Provides connection-session level caching of payloads.
     /// </summary>
     public interface ISession
     {
+        /// <summary>
+        ///     The duration of the current session.
+        /// </summary>
+        DateTimeOffset Duration { get; set; }
+
         /// <summary>
         ///     The Id of the session started with the gateway, for resuming.
         /// </summary>

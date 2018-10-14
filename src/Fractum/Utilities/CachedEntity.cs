@@ -39,5 +39,12 @@ namespace Fractum.Utilities
         /// <returns></returns>
         public Task<TEntity> GetAsync()
             => _entity == default ? GetFunc : Task.FromResult(_entity);
+
+        /// <summary>
+        ///     Get the value of the cached item.
+        /// </summary>
+        /// <returns></returns>
+        public TEntity GetValue()
+            => _entity;
     }
 }

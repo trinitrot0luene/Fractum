@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fractum.Entities.Contracts
+namespace Fractum.Contracts
 {
     public interface IDiscordEntity
     {

@@ -1,4 +1,4 @@
-﻿namespace Fractum.Entities.Contracts
+﻿namespace Fractum.Contracts
 {
     public interface IUser : IDiscordEntity
     {
@@ -7,6 +7,8 @@
         short Discrim { get; }
 
         bool IsBot { get; }
+
+        string Mention { get; }
 
         string GetAvatarUrl();
     }

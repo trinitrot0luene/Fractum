@@ -24,6 +24,12 @@ namespace Fractum.Entities
         public bool IsHoisted { get; internal set; }
 
         [JsonIgnore]
+        public string Mention
+        {
+            get => string.Format(Consts.ROLE_MENTION, Id);
+        }
+
+        [JsonIgnore]
         public Color Color => Color.FromArgb(ColorRaw);
 
         [JsonProperty("color")]

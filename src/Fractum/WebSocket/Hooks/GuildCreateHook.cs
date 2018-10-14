@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public sealed class GuildCreateHook : IEventHook<JToken>
+    internal sealed class GuildCreateHook : IEventHook<JToken>
     {
         public async Task RunAsync(JToken data, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -15,7 +15,7 @@ namespace Fractum.WebSocket.Hooks
 
             guild.ApplyToCache(cache);
 
-            if (client.Config.AlwaysDownloadMembers)
+            if (client.RestClient.Config.AlwaysDownloadMembers && guild.MemberCount > client.RestClient.Config.LargeThreshold)
                 await client.RequestMembersAsync(guild.Id);
 
             client.InvokeLog(

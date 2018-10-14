@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal class GuildMembersChunkHook : IEventHook<JToken>
+    internal sealed class GuildMembersChunkHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {

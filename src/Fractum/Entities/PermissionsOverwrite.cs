@@ -2,13 +2,14 @@
 
 namespace Fractum.Entities
 {
-    public class PermissionsOverwrite
+    public sealed class PermissionsOverwrite
     {
-        [JsonProperty("id")]
-        private string IdRaw { get; set; }
+        internal PermissionsOverwrite()
+        {
+        }
 
-        [JsonIgnore]
-        public ulong Id => ulong.Parse(IdRaw);
+        [JsonProperty("id")]
+        public ulong Id { get; private set; }
 
         [JsonProperty("type")]
         private string TypeRaw { get; set; }
@@ -20,8 +21,11 @@ namespace Fractum.Entities
         public Permissions Deny { get; private set; }
 
         [JsonIgnore]
-        public OverwriteType Type => TypeRaw.ToLower() == "role" ? OverwriteType.Role :
-            TypeRaw.ToLower() == "member" ? OverwriteType.Member : OverwriteType.Member;
+        public OverwriteType Type
+        {
+            get => TypeRaw.ToLower() == "role" ? OverwriteType.Role :
+                TypeRaw.ToLower() == "member" ? OverwriteType.Member : OverwriteType.Member;
+        }
     }
 
     public enum OverwriteType

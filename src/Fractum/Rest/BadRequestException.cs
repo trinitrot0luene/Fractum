@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fractum.Rest.Exceptions
+namespace Fractum.Rest
 {
     /// <summary>
     ///     Thrown if an API request returned error code 400.

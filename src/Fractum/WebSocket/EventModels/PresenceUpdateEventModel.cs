@@ -2,6 +2,8 @@
 using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
+using System.Linq;
+using Fractum.Utilities;
 
 namespace Fractum.WebSocket.EventModels
 {
@@ -56,7 +58,7 @@ namespace Fractum.WebSocket.EventModels
         {
             cache.UpdateGuildCache(GuildId ?? 0, guildCache =>
             {
-                if (guildCache.Members.TryGetValue(User.Id, out var member))
+                if (guildCache.Members.FirstOrDefault(m => m.Id == User.Id) is GuildMember member)
                 {
                     member.RoleIds = Roles ?? member.RoleIds;
                     member.IsDeafened = User.Member?.IsDeafened ?? member.IsDeafened;
@@ -71,11 +73,10 @@ namespace Fractum.WebSocket.EventModels
                     if (NewStatus.HasValue)
                         newPresence.Status = NewStatus.Value;
 
-                    guildCache.Presences.AddOrUpdate(member.Id, newPresence, (id, presence) =>
+                    guildCache.Presences.AddOrUpdate((a, b) => a.User.Id == b.User.Id, newPresence, oldPresence => 
                     {
-                        presence.Activity = Activity;
-                        presence.Status = NewStatus ?? presence.Status;
-                        return presence;
+                        oldPresence.Activity = Activity;
+                        oldPresence.Status = NewStatus ?? oldPresence.Status;
                     });
                 }
             });

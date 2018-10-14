@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public class ChannelDeleteHook : IEventHook<JToken>
+    internal sealed class ChannelDeleteHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -25,7 +25,7 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
-            cache.UpdateGuildCache(deletedChannel.GuildId, gc => { gc.Channels.TryRemove(deletedChannel.Id, out _); });
+            cache.UpdateGuildCache(deletedChannel.GuildId, gc => { gc.Channels.Remove(deletedChannel); });
 
             client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {deletedChannel.Name} was deleted",
                 LogSeverity.Verbose));

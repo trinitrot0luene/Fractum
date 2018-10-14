@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fractum.Rest.Exceptions
+namespace Fractum.Rest
 {
     public sealed class NotAllowedException : Exception
     {

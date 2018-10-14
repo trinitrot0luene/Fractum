@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using Fractum.Entities.Contracts;
+using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
 
@@ -40,6 +40,12 @@ namespace Fractum.Entities
         public bool IsDeafened { get; internal set; }
 
         [JsonIgnore]
+        public string Mention
+        {
+            get => string.Format(Consts.USER_MENTION, Id);
+        }
+
+        [JsonIgnore]
         public ulong Id => User.Id;
 
         [JsonIgnore]
@@ -55,5 +61,8 @@ namespace Fractum.Entities
         public bool IsBot => User.IsBot;
 
         public string GetAvatarUrl() => User.GetAvatarUrl();
+
+        public override string ToString() =>
+            $"{(Nickname == null ? string.Empty : $"{Nickname} ")}({Username}#{Discrim:0000})";
     }
 }

@@ -1,12 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public class ChannelUpdateHook : IEventHook<JToken>
+    internal sealed class ChannelUpdateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -24,11 +26,17 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
+            updatedChannel.WithClient(client);
+
+            var oldChannel = cache.Guilds[updatedChannel.GuildId].Channels.FirstOrDefault(c => c.Id == updatedChannel.Id);
+
             cache.UpdateGuildCache(updatedChannel.GuildId,
-                gc => { gc.Channels.AddOrUpdate(updatedChannel.Id, updatedChannel, (k, v) => updatedChannel ?? v); });
+                gc => { gc.Channels.AddOrUpdate((a, b) => a.Id == b.Id, updatedChannel, old => old = updatedChannel ?? old); });
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {updatedChannel.Name} was updated", LogSeverity.Verbose));
+
+            client.InvokeChannelUpdated(new CachedEntity<GuildChannel>(oldChannel), updatedChannel);
 
             return Task.CompletedTask;
         }

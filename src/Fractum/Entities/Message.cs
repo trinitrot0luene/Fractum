@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Fractum.Entities.Contracts;
+using System.Threading.Tasks;
+using Fractum.Contracts;
+using Fractum.Entities.Properties;
 using Fractum.Entities.WebSocket;
+using Fractum.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
@@ -10,66 +14,85 @@ namespace Fractum.Entities
     public sealed class Message : DiscordEntity
     {
         [JsonProperty("tts")]
-        public bool IsTTS { get; private set; }
+        public bool IsTTS { get; internal set; }
 
         [JsonProperty("type")]
-        public MessageType Type { get; private set; }
+        public MessageType Type { get; internal set; }
 
         [JsonIgnore]
         public bool IsUserMessage => Type == MessageType.Default;
 
         [JsonProperty("timestamp")]
-        public DateTimeOffset Timestamp { get; private set; }
+        public DateTimeOffset Timestamp { get; internal set; }
 
         [JsonProperty("pinned")]
-        public bool IsPinned { get; private set; }
+        public bool IsPinned { get; internal set; }
 
         [JsonProperty("mentions")]
-        public ReadOnlyCollection<User> MentionedUsers { get; private set; }
+        public ReadOnlyCollection<User> MentionedUsers { get; internal set; }
 
         [JsonProperty("mention_roles")]
-        internal ulong[] MentionedRoleIds { get; private set; }
+        internal ulong[] MentionedRoleIds { get; set; }
 
         [JsonProperty("mention_everyone")]
-        public bool IsEveryoneMention { get; private set; }
+        public bool IsEveryoneMention { get; internal set; }
 
         [JsonProperty("embeds")]
-        public ReadOnlyCollection<Embed> Embeds { get; private set; }
+        public ReadOnlyCollection<Embed> Embeds { get; internal set; }
 
         [JsonProperty("edited_timestamp")]
-        public DateTimeOffset? LastEditedAt { get; private set; }
+        public DateTimeOffset? LastEditedAt { get; internal set; }
 
         [JsonProperty("content")]
-        public string Content { get; private set; }
+        public string Content { get; internal set; }
 
         [JsonProperty("channel_id")]
-        public ulong ChannelId { get; private set; }
+        public ulong ChannelId { get; internal set; }
 
         [JsonProperty("guild_id")]
-        public ulong? GuildId { get; private set; }
+        public ulong? GuildId { get; internal set; }
 
         [JsonProperty("member")]
-        internal PartialMember Member { get; private set; }
+        internal PartialMember Member { get; set; }
 
         [JsonProperty("author")]
-        private User AuthorUser { get; set; }
+        internal User AuthorUser { get; set; }
 
         [JsonIgnore]
         public IUser Author
         {
             get
             {
-                var member = Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id);
-                if (member is null)
+                if (Channel is PrivateChannel)
                     return AuthorUser;
-                return member;
+                return (Channel as TextChannel).Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id);
             }
         }
 
         [JsonIgnore]
-        public TextChannel Channel => Guild.TextChannels.FirstOrDefault(c => c.Id == ChannelId);
+        public IMessageChannel Channel { get; internal set; }
 
-        [JsonIgnore]
-        public Guild Guild { get; internal set; }
+        public Task CreateReactionAsync(Emoji emoji)
+            => Client.RestClient.CreateReactionAsync(this, emoji);
+
+        public Task DeleteReactionAsync(Emoji emoji, IUser user = null)
+            => Client.RestClient.DeleteReactionAsync(this, emoji, user != null ? user.Id : default);
+
+        public Task ClearReactionsAsync()
+            => Client.RestClient.ClearReactionsAsync(this);
+
+        public Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25)
+            => Client.RestClient.GetReactionsAsync(this, emoji, limit);
+
+        public Task<Message> EditAsync(Action<MessageEditProperties> updateAction)
+        {
+            var props = new MessageEditProperties();
+            updateAction(props);
+
+            return Client.EditMessageAsync(this, props);
+        }
+
+        public Task DeleteAsync()
+            => Client.RestClient.DeleteMessageAsync(this);
     }
 }

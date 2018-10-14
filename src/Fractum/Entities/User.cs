@@ -1,13 +1,14 @@
-﻿using Fractum.Entities.Contracts;
+﻿using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
-    public sealed class User : DiscordEntity, IUser
+    public class User : DiscordEntity, IUser
     {
-        [JsonProperty("discriminator")]
-        private string DiscrimRaw { get; set; }
+        internal User()
+        {
+        }
 
         [JsonProperty("avatar")]
         private string AvatarRaw { get; set; }
@@ -18,15 +19,17 @@ namespace Fractum.Entities
         [JsonProperty("username")]
         public string Username { get; internal set; }
 
-        [JsonIgnore]
-        public short Discrim
-        {
-            get => short.TryParse(DiscrimRaw ?? string.Empty, out var discrim) ? discrim : short.MinValue;
-            internal set => DiscrimRaw = value.ToString();
-        }
+        [JsonProperty("discriminator")]
+        public short Discrim { get; internal set; }
 
         [JsonProperty("bot")]
         public bool IsBot { get; private set; }
+
+        [JsonIgnore]
+        public string Mention
+        {
+            get => string.Format(Consts.USER_MENTION, Id);
+        }
 
         public string GetAvatarUrl()
         {
@@ -37,5 +40,8 @@ namespace Fractum.Entities
                     string.Format(Consts.CDN_USER_AVATAR, Id, AvatarRaw.Substring(2), "gif"));
             return string.Concat(Consts.CDN, string.Format(Consts.CDN_USER_AVATAR, Id, AvatarRaw, ".png"));
         }
+
+        public override string ToString()
+            => $"{Username}#{Discrim.ToString("0000")}";
     }
 }

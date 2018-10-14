@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Fractum.WebSocket.Pipelines
+namespace Fractum.Contracts
 {
     /// <summary>
     ///     A pipeline stage responsible for handling event data sent by payloads.

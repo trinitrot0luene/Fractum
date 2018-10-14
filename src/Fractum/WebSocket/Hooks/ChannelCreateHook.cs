@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public sealed class ChannelCreateHook : IEventHook<JToken>
+    internal sealed class ChannelCreateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -24,11 +25,14 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
+            createdChannel.WithClient(client);
             cache.UpdateGuildCache(createdChannel.GuildId,
-                gc => { gc.Channels.AddOrUpdate(createdChannel.Id, createdChannel, (k, v) => createdChannel ?? v); });
+                gc => { gc.Channels.AddOrUpdate((a, b) => a.Id == b.Id, createdChannel, oldChannel => oldChannel = createdChannel ?? oldChannel); });
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));
+
+            client.InvokeChannelCreated(createdChannel);
 
             return Task.CompletedTask;
         }

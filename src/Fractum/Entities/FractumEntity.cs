@@ -1,4 +1,5 @@
 ﻿using Fractum.Rest;
+using Fractum.WebSocket;
 
 namespace Fractum.Entities
 {
@@ -8,15 +9,15 @@ namespace Fractum.Entities
         {
         }
 
-        internal FractumRestClient Client { get; private set; }
+        internal FractumSocketClient Client { get; private set; }
 
-        internal FractumEntity WithClient(FractumRestClient client)
+        internal FractumEntity WithClient(FractumSocketClient client)
         {
             Client = client;
             return this;
         }
 
-        internal T WithClient<T>(FractumRestClient client) where T : FractumEntity
+        internal T WithClient<T>(FractumSocketClient client) where T : FractumEntity
         {
             Client = client;
             return this as T;

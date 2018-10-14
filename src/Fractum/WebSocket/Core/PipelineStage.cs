@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Pipelines;
 
 namespace Fractum.WebSocket.Core
 {

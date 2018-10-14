@@ -1,13 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.Extensions;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public sealed class PresenceUpdateHook : IEventHook<JToken>
+    internal sealed class PresenceUpdateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {

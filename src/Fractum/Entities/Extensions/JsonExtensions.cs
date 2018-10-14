@@ -1,9 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.Entities.Extensions
 {
-    public static class JsonExtensions
+    internal static class JsonExtensions
     {
         public static string Serialize(this object obj) => JsonConvert.SerializeObject(obj);
 

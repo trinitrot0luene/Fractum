@@ -59,7 +59,7 @@ namespace Fractum.Entities
 
         internal string SplashHash { get; set; }
 
-        public ReadOnlyCollection<Emoji> Emoji { get; internal set; }
+        public ReadOnlyCollection<GuildEmoji> Emoji { get; internal set; }
 
         public ReadOnlyCollection<Role> Roles { get; internal set; }
 

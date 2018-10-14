@@ -1,32 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.Entities.WebSocket
 {
-    public sealed class Payload
+    public sealed class Payload : IDisposable
     {
         [JsonProperty("op")]
         public OpCode OpCode { get; set; }
 
-        [JsonProperty("d")]
-        public JToken Data { get; set; }
-
-        [JsonIgnore]
-        public string DataValue
-        {
-            set => Data = JToken.Parse(value);
-        }
-
-        [JsonIgnore]
-        public JObject DataObject => Data as JObject;
-
-        [JsonIgnore]
-        public JArray DataArray => Data as JArray;
+        [JsonProperty("d", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public JToken Data;
 
         [JsonProperty("s", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Seq { get; set; }
 
         [JsonProperty("t", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Type { get; set; }
+
+        public void Dispose()
+        {
+            Data = null;
+        }
     }
 }

@@ -5,7 +5,7 @@ using Fractum.Rest.Utils;
 
 namespace Fractum.Rest
 {
-    public abstract class RestRequest
+    internal abstract class RestRequest
     {
         public RestRequest(RouteBuilder rb, HttpMethod method, ulong majorParam = 0)
         {

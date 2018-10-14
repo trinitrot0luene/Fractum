@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Fractum.Contracts;
 using Fractum.Entities;
 
 namespace Fractum.WebSocket.Core
 {
-    public sealed class FractumCache
+    public sealed class FractumCache : IEnumerable<GuildCache>
     {
         public FractumCache(FractumSocketClient client)
         {
@@ -25,14 +29,35 @@ namespace Fractum.WebSocket.Core
                 update(guild);
         }
 
-        public void AddAndPopulateMessage(Message message)
+        public void PopulateMessage(Message message)
         {
-            var guild = GetGuild(message.GuildId ?? 0);
-            message.Guild = guild;
+            var channel = Guilds.SelectMany(kvp => kvp.Value.Channels)
+                .FirstOrDefault(c => c.Id == message.ChannelId);
+
+            var msgChannel = channel as IMessageChannel ?? (Client.PrivateChannels.TryGetValue(message.ChannelId, out var dmChannel) ? dmChannel : default);
+
+            message.Channel = msgChannel;
+
             message.WithClient(Client);
+        }
+
+        public void PopulateChannel(GuildChannel channel)
+        {
+            var existingChannel = Guilds[channel.GuildId].Channels.FirstOrDefault(c => c.Id == channel.Id);
+            channel.Guild = existingChannel.Guild;
+            if (channel is TextChannel txtChannel)
+                (channel as TextChannel).Messages = (existingChannel as TextChannel)?.Messages;
+
+            existingChannel.WithClient(Client);
         }
 
         public void Clear()
             => Guilds = new ConcurrentDictionary<ulong, GuildCache>();
+
+        IEnumerator<GuildCache> IEnumerable<GuildCache>.GetEnumerator() 
+                => Guilds.Select(cachedGuild => cachedGuild.Value).GetEnumerator();
+
+        public IEnumerator GetEnumerator()
+            => Guilds.Select(cachedGuild => cachedGuild.Value).GetEnumerator();
     }
 }

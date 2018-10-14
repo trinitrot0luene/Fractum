@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Pipelines;
 
 namespace Fractum.WebSocket.Core
 {
@@ -16,6 +16,11 @@ namespace Fractum.WebSocket.Core
             Stages = new List<IPipelineStage<Payload>>();
         }
 
+        /// <summary>
+        ///     Add a stage to be executed by the pipeline.
+        /// </summary>
+        /// <param name="newStage"></param>
+        /// <returns></returns>
         public IPipeline<Payload> AddStage(IPipelineStage<Payload> newStage)
         {
             Stages.Add(newStage);
@@ -23,9 +28,17 @@ namespace Fractum.WebSocket.Core
             return this;
         }
 
+        /// <summary>
+        ///     Remove all stages from the pipeline.
+        /// </summary>
         public void Clear()
             => Stages = new List<IPipelineStage<Payload>>();
 
+        /// <summary>
+        ///     Asynchronously enter the pipeline and begin processing stages.
+        /// </summary>
+        /// <param name="payload"><see cref="Payload"/> to be processed by the pipeline during execution.</param>
+        /// <returns></returns>
         public async Task<LogMessage> CompleteAsync(Payload payload)
         {
             var exceptions = new List<Exception>();
@@ -52,6 +65,9 @@ namespace Fractum.WebSocket.Core
         private void InvokeLog(LogMessage msg)
             => Log?.Invoke(msg);
 
+        /// <summary>
+        ///     Raised when the <see cref="PayloadPipeline"/> encounters an error.
+        /// </summary>
         public event Func<LogMessage, Task> Log;
     }
 }

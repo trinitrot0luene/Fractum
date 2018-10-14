@@ -2,7 +2,7 @@
 
 namespace Fractum.Entities.Extensions
 {
-    public static class ColorExtensions
+    internal static class ColorExtensions
     {
         public static int ToRGB(this Color color)
             => color.R * 256 * 256 + color.G * 256 + color.B;

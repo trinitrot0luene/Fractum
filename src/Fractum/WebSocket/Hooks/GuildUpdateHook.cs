@@ -1,19 +1,26 @@
 ﻿using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Utilities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Fractum.WebSocket.Pipelines;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public class GuildUpdateHook : IEventHook<JToken>
+    internal sealed class GuildUpdateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
             var model = args.ToObject<GuildCreateEventModel>();
 
             var oldGuild = cache.GetGuild(model.Id);
+
+            if (model.IsUnavailable)
+            {
+                oldGuild.IsUnavailable = model.IsUnavailable;
+                client.InvokeGuildUnavailable(oldGuild);
+            }
 
             cache.UpdateGuildCache(model.Id, gc =>
             {
@@ -34,7 +41,7 @@ namespace Fractum.WebSocket.Hooks
                     guild.RequireMfa = model.RequireMfa;
                 });
                 foreach (var role in model.Roles)
-                    gc.Roles.AddOrUpdate(role.Id, role, (k, oldRole) =>
+                    gc.Roles.AddOrUpdate((a, b) => a.Id == b.Id, role, oldRole =>
                     {
                         oldRole.Name = role.Name;
                         oldRole.IsHoisted = role.IsHoisted;
@@ -42,17 +49,16 @@ namespace Fractum.WebSocket.Hooks
                         oldRole.IsMentionable = role.IsMentionable;
                         oldRole.Permissions = role.Permissions;
                         oldRole.ColorRaw = role.ColorRaw;
-                        return oldRole;
                     });
 
                 foreach (var emoji in model.Emojis)
-                    gc.Emojis.AddOrUpdate(emoji.Id, emoji, (k, oldEmoji) =>
+                {
+                    gc.Emojis.AddOrUpdate((a, b) => a.Id == b.Id, emoji, oldEmoji =>
                     {
                         oldEmoji.IsAnimated = emoji.IsAnimated;
                         oldEmoji.Name = emoji.Name;
-
-                        return oldEmoji;
                     });
+                }
             });
 
             client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {model.Name} was updated",

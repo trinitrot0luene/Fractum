@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Fractum.Entities;
 using Fractum.Rest.Compliance;
-using Fractum.Rest.Exceptions;
 using Fractum.WebSocket;
 
 namespace Fractum.Rest
 {
-    public abstract class FractumRestService
+    internal sealed class FractumRestService
     {
         private readonly ConcurrentDictionary<string, RatelimitInfo> _buckets;
 
@@ -17,7 +17,7 @@ namespace Fractum.Rest
 
         private readonly SemaphoreSlim _requestLock;
 
-        internal readonly FractumConfig Config;
+        private readonly FractumConfig Config;
 
         internal FractumRestService(FractumConfig config)
         {
@@ -30,14 +30,14 @@ namespace Fractum.Rest
             _http.DefaultRequestHeaders.Add("Authorization", $"Bot {Config.Token}");
         }
 
-        protected async Task<HttpResponseMessage> SendRequestAsync(RestRequest request)
+        internal async Task<HttpResponseMessage> SendRequestAsync(RestRequest request)
         {
             await _requestLock.WaitAsync();
             // If there is a bucket with no uses for this route that hasn't expired, wait until it expires.
             if (_buckets.TryGetValue(request.BucketId, out var bucket) && bucket.Remaining <= 0 &&
                 bucket.ExpiresAt > DateTimeOffset.UtcNow + bucket.Offset)
             {
-                Console.WriteLine($"429_PRE_EMPT with delay {bucket.RequiredDelay.TotalMilliseconds}ms");
+                InvokeLog(new LogMessage(nameof(FractumRestClient), $"Triggered pre-emptive ratelimit with delay {bucket.RequiredDelay.TotalMilliseconds}ms", LogSeverity.Warning));
                 await Task.Delay(bucket.RequiredDelay);
             }
 
@@ -45,12 +45,13 @@ namespace Fractum.Rest
             HttpResponseMessage response;
             try
             {
+                InvokeLog(new LogMessage(nameof(FractumRestClient), request.BucketId.ToString(), LogSeverity.Verbose));
                 response = await _http.SendAsync(request.BuildRequest());
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException httpex)
             {
-                // TODO: Log that the request failed.
-                return null;
+                InvokeLog(new LogMessage(nameof(FractumRestClient), "An exception was thrown by the HttpClient", LogSeverity.Error, httpex));
+                return default;
             }
 
             // Determine reaction by response code.
@@ -93,6 +94,8 @@ namespace Fractum.Rest
         private async Task Handle429(RestRequest request, HttpResponseMessage response,
             TaskCompletionSource<HttpResponseMessage> tcs, string bucketId)
         {
+            InvokeLog(new LogMessage(nameof(FractumRestClient), "Ratelimited! Handling...", LogSeverity.Warning));
+
             var global = response.Headers.TryGetValues("X-RateLimit-Global", out _);
             response.Headers.TryGetValues("Retry-After", out var retry_vals);
 
@@ -101,5 +104,13 @@ namespace Fractum.Rest
 
             await SendRequestAsync(request).ContinueWith(task => tcs.SetResult(task.Result));
         }
+
+        internal void InvokeLog(LogMessage msg)
+            => Log?.Invoke(msg);
+
+        /// <summary>
+        ///     Raised when the client receives a log event.
+        /// </summary>
+        public event Func<LogMessage, Task> Log;
     }
 }

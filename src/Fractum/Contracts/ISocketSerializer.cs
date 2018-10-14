@@ -1,4 +1,4 @@
-﻿namespace Fractum.Entities.Contracts
+﻿namespace Fractum.Contracts
 {
     internal interface ISocketSerializer
     {

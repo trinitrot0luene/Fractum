@@ -16,44 +16,39 @@ namespace Fractum.WebSocket.Core
 
         internal GuildCache(FractumSocketClient client, GuildCreateEventModel model)
         {
-            Presences = new ConcurrentDictionary<ulong, Presence>();
-            Emojis = new ConcurrentDictionary<ulong, Emoji>();
-            Members = new ConcurrentDictionary<ulong, GuildMember>();
-            Channels = new ConcurrentDictionary<ulong, GuildChannel>();
-            Roles = new ConcurrentDictionary<ulong, Role>();
-            Messages = new ConcurrentDictionary<ulong, CircularBuffer<Message>>();
+            Presences = new List<Presence>();
+            Emojis = new List<GuildEmoji>();
+            Members = new List<GuildMember>();
+            Channels = new List<GuildChannel>();
+            Roles = new List<Role>();
+            Messages = new Dictionary<ulong, CircularBuffer<Message>>();
 
             Client = client;
 
             Create(model);
         }
 
-        public ConcurrentDictionary<ulong, Presence> Presences { get; }
+        public List<Presence> Presences { get; }
 
-        public ConcurrentDictionary<ulong, Emoji> Emojis { get; }
+        public List<GuildEmoji> Emojis { get; }
 
-        public ConcurrentDictionary<ulong, GuildMember> Members { get; }
+        public List<GuildMember> Members { get; }
 
-        public ConcurrentDictionary<ulong, GuildChannel> Channels { get; }
+        public List<GuildChannel> Channels { get; }
 
-        public ConcurrentDictionary<ulong, Role> Roles { get; }
+        public List<Role> Roles { get; }
 
-        public ConcurrentDictionary<ulong, CircularBuffer<Message>> Messages { get; }
+        public Dictionary<ulong, CircularBuffer<Message>> Messages { get; }
 
         public Guild Value
         {
             get
             {
-                _cachedGuild.Channels = Channels.Select(kvp => kvp.Value)
-                    .ToList().AsReadOnly();
-                _cachedGuild.Roles = Roles.Select(kvp => kvp.Value)
-                    .ToList().AsReadOnly();
-                _cachedGuild.Emoji = Emojis.Select(kvp => kvp.Value)
-                    .ToList().AsReadOnly();
-                _cachedGuild.Presences = Presences.Select(kvp => kvp.Value)
-                    .ToList().AsReadOnly();
-                _cachedGuild.Members = Members.Select(kvp => kvp.Value)
-                    .ToList().AsReadOnly();
+                _cachedGuild.Channels = Channels.AsReadOnly();
+                _cachedGuild.Roles = Roles.AsReadOnly();
+                _cachedGuild.Emoji = Emojis.AsReadOnly();
+                _cachedGuild.Presences = Presences.AsReadOnly();
+                _cachedGuild.Members = Members.AsReadOnly();
 
                 foreach (var chn in _cachedGuild.Channels)
                     if (chn is TextChannel tc)
@@ -62,14 +57,14 @@ namespace Fractum.WebSocket.Core
                             : new List<Message>().AsReadOnly();
 
                 foreach (var member in _cachedGuild.Members)
-                    member.Presence = Presences.Select(kvp => kvp.Value)
+                    member.Presence = Presences
                         .FirstOrDefault(p => p.User.Id == member.Id);
 
                 return _cachedGuild;
             }
         }
 
-        public FractumRestClient Client { get; }
+        public FractumSocketClient Client { get; }
 
         internal void UpdateGuild(Action<Guild> updateAction)
             => updateAction(_cachedGuild);
@@ -80,26 +75,26 @@ namespace Fractum.WebSocket.Core
                 .WithClient<Guild>(Client);
 
             foreach (var presence in model.Presences)
-                Presences.TryAdd(presence.User.Id, presence);
+                Presences.Add(presence);
             foreach (var emoji in model.Emojis)
-                Emojis.TryAdd(emoji.Id, emoji.WithClient<Emoji>(Client));
+                Emojis.Add(emoji.WithClient<GuildEmoji>(Client));
             foreach (var member in model.Members)
             {
-                Members.TryAdd(member.Id, member.WithClient<GuildMember>(Client));
+                Members.Add(member.WithClient<GuildMember>(Client));
                 member.Guild = _cachedGuild;
             }
 
             foreach (var channel in model.Channels)
             {
-                Channels.TryAdd(channel.Id, channel.WithClient<GuildChannel>(Client));
+                Channels.Add(channel.WithClient<GuildChannel>(Client));
                 channel.Guild = _cachedGuild;
 
-                var newbuff = new CircularBuffer<Message>(Client.Config.MessageCacheLength);
-                Messages.AddOrUpdate(channel.Id, newbuff, (k, v) => v = newbuff);
+                var newbuff = new CircularBuffer<Message>(Client.RestClient.Config.MessageCacheLength);
+                Messages[channel.Id] = newbuff;
             }
 
             foreach (var role in model.Roles)
-                Roles.TryAdd(role.Id, role.WithClient<Role>(Client));
+                Roles.Add(role.WithClient<Role>(Client));
         }
     }
 }

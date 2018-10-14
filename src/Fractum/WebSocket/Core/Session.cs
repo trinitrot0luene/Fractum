@@ -1,9 +1,12 @@
-﻿using Fractum.WebSocket.Pipelines;
+﻿using System;
+using Fractum.Contracts;
 
 namespace Fractum.WebSocket.Core
 {
     public sealed class Session : ISession
     {
+        public DateTimeOffset Duration { get; set; }
+
         public string SessionId { get; set; }
 
         public string GatewayUrl { get; set; }

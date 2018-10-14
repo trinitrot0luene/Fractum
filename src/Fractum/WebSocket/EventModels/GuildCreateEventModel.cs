@@ -89,7 +89,7 @@ namespace Fractum.WebSocket.EventModels
         public List<Role> Roles;
 
         [JsonProperty("emojis")]
-        public List<Emoji> Emojis { get; private set; }
+        public List<GuildEmoji> Emojis { get; private set; }
 
         #endregion
 

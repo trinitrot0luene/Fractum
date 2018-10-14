@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Fractum.Entities;
+using Fractum.Utilities;
 using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
 
@@ -17,7 +18,7 @@ namespace Fractum.WebSocket.EventModels
         {
             if (cache.Guilds.TryGetValue(GuildId, out var guildCache))
                 foreach (var member in Members)
-                    guildCache.Members.AddOrUpdate(member.Id, member, (k, v) => v = member ?? v);
+                    guildCache.Members.AddOrUpdate((a, b) => a.Id == b.Id, member, oldMember => oldMember = member ?? oldMember);
         }
     }
 }

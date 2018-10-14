@@ -10,8 +10,5 @@ namespace Fractum.Entities
 
         [JsonProperty("type")]
         public ChannelType Type { get; private set; }
-
-        [JsonProperty("name")]
-        public string Name { get; private set; }
     }
 }
