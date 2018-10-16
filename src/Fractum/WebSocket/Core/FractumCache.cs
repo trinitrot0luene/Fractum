@@ -48,7 +48,7 @@ namespace Fractum.WebSocket.Core
 
             message.Channel = guild.GetChannels().First(x => x.Id == message.ChannelId) as IMessageChannel;
             message.MentionedRoles = guild.GetRoles()
-                .Where(role => message.MentionedRoleIds.Any(rid => rid == role.Id)).ToList().AsReadOnly();
+                .Where(role => message.MentionedRoleIds?.Any(rid => rid == role.Id) ?? false).ToList().AsReadOnly();
             message.WithClient(Client);
         }
 

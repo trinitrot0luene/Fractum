@@ -249,8 +249,9 @@ namespace Fractum.WebSocket
                 .Select(g => g.Guild)
                 .SelectMany(gc => gc.Channels)
                 .FirstOrDefault(cc => cc.Id == channelId);
-            
-            return new CachedEntity<GuildChannel>(existingChannel, this.GetChannelAsync(channelId));
+
+            Task<GuildChannel> getFunc() => GetChannelAsync(channelId);
+            return new CachedEntity<GuildChannel>(existingChannel, getFunc);
         }
 
         /// <summary>
@@ -264,7 +265,8 @@ namespace Fractum.WebSocket
             var channel = GetChannel(msgChannel.Id);
             var message = (channel.GetValue() as TextChannel)?.Messages.FirstOrDefault(m => m.Id == messageId);
 
-            return new CachedEntity<Message>(message, this.GetMessageAsync(msgChannel, messageId));
+            Task<Message> getFunc() => GetMessageAsync(msgChannel, messageId);
+            return new CachedEntity<Message>(message, getFunc);
         }
 
         /// <summary>
