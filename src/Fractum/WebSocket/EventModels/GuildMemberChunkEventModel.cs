@@ -16,9 +16,9 @@ namespace Fractum.WebSocket.EventModels
 
         public override void ApplyToCache(FractumCache cache)
         {
-            if (cache.Guilds.TryGetValue(GuildId, out var guildCache))
+            if (cache.HasGuild(GuildId))
                 foreach (var member in Members)
-                    guildCache.Members.AddOrUpdate((a, b) => a.Id == b.Id, member, oldMember => oldMember = member ?? oldMember);
+                    cache[GuildId].AddOrUpdate(member, old => old = member);
         }
     }
 }

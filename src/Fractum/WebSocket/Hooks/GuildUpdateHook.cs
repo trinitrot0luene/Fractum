@@ -14,57 +14,56 @@ namespace Fractum.WebSocket.Hooks
         {
             var model = args.ToObject<GuildCreateEventModel>();
 
-            var oldGuild = cache.GetGuild(model.Id);
+            var guildCache = cache[model.Id];
 
             if (model.IsUnavailable)
             {
-                oldGuild.IsUnavailable = model.IsUnavailable;
-                client.InvokeGuildUnavailable(oldGuild);
+                guildCache.IsUnavailable = model.IsUnavailable;
+                client.InvokeGuildUnavailable(guildCache.Guild);
             }
 
-            cache.UpdateGuildCache(model.Id, gc =>
+            guildCache.Update(guild => 
             {
-                gc.UpdateGuild(guild =>
-                {
-                    guild.OwnerId = model.OwnerId;
-                    guild.IsUnavailable = model.IsUnavailable;
-                    guild.Region = model.Region;
-                    guild.Name = model.Name;
-                    guild.MemberCount = model.MemberCount;
-                    guild.Lazy = model.Lazy;
-                    guild.Large = model.Large;
-                    guild.AfkTimeout = model.AfkTimeout;
-                    guild.AfkChannelId = model.AfkChannelId ?? guild.AfkChannelId;
-                    guild.VerificationLevel = (VerificationLevel) model.VerificationLevel;
-                    guild.MessageNotificationLevel = (MessageNotificationLevel) model.DefaultMessageNotifications;
-                    guild.ExplicitContentFilterLevel = (ExplicitContentFilterLevel) model.ExplicitContentFilter;
-                    guild.RequireMfa = model.RequireMfa;
-                });
-                foreach (var role in model.Roles)
-                    gc.Roles.AddOrUpdate((a, b) => a.Id == b.Id, role, oldRole =>
-                    {
-                        oldRole.Name = role.Name;
-                        oldRole.IsHoisted = role.IsHoisted;
-                        oldRole.IsManaged = role.IsManaged;
-                        oldRole.IsMentionable = role.IsMentionable;
-                        oldRole.Permissions = role.Permissions;
-                        oldRole.ColorRaw = role.ColorRaw;
-                    });
+                guild.OwnerId = model.OwnerId;
+                guild.IsUnavailable = model.IsUnavailable;
+                guild.Region = model.Region;
+                guild.Name = model.Name;
+                guild.MemberCount = model.MemberCount;
+                guild.Lazy = model.Lazy;
+                guild.Large = model.Large;
+                guild.AfkTimeout = model.AfkTimeout;
+                guild.AfkChannelId = model.AfkChannelId ?? guild.AfkChannelId;
+                guild.VerificationLevel = (VerificationLevel)model.VerificationLevel;
+                guild.MessageNotificationLevel = (MessageNotificationLevel)model.DefaultMessageNotifications;
+                guild.ExplicitContentFilterLevel = (ExplicitContentFilterLevel)model.ExplicitContentFilter;
+                guild.RequireMfa = model.RequireMfa;
 
-                foreach (var emoji in model.Emojis)
-                {
-                    gc.Emojis.AddOrUpdate((a, b) => a.Id == b.Id, emoji, oldEmoji =>
+                foreach (var role in model.Roles)
+                    guild.AddOrUpdate(role, old => 
                     {
-                        oldEmoji.IsAnimated = emoji.IsAnimated;
-                        oldEmoji.Name = emoji.Name;
+                        old.Name = role.Name;
+                        old.IsHoisted = role.IsHoisted;
+                        old.IsManaged = role.IsManaged;
+                        old.IsMentionable = role.IsMentionable;
+                        old.Permissions = role.Permissions;
+                        old.ColorRaw = role.ColorRaw;
+
+                        return old;
                     });
-                }
+                foreach (var emoji in model.Emojis)
+                    guild.AddOrUpdate(emoji, old => 
+                    {
+                        old.IsAnimated = emoji.IsAnimated;
+                        old.Name = emoji.Name;
+
+                        return old;
+                    });
             });
 
             client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {model.Name} was updated",
                 LogSeverity.Verbose));
 
-            client.InvokeGuildUpdated(cache.GetGuild(model.Id));
+            client.InvokeGuildUpdated(cache[model.Id].Guild);
 
             return Task.CompletedTask;
         }

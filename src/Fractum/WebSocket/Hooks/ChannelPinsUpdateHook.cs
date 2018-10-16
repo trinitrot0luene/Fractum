@@ -12,7 +12,7 @@ namespace Fractum.WebSocket.Hooks
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
             var channel = cache.Guilds
-                .SelectMany(kvp => kvp.Value.Channels)
+                .SelectMany(caches => caches.GetChannels())
                 .FirstOrDefault(c => c.Id == args.Value<ulong>("channel_id"));
 
             client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {channel.Name}",

@@ -29,7 +29,11 @@ namespace Fractum.WebSocket
 
         internal FractumRestClient RestClient;
 
+        internal DateTimeOffset LastSentHeartbeat;
+
         internal ConcurrentDictionary<ulong, PrivateChannel> PrivateChannels { get; private set; }
+
+        public int Latency { get; internal set; }
 
         public FractumSocketClient(FractumConfig config)
         {
@@ -39,7 +43,11 @@ namespace Fractum.WebSocket
 
             RestClient = new FractumRestClient(config);
 
-            RestClient.Log += Log;
+            RestClient.Log += (msg) =>
+            {
+                InvokeLog(msg);
+                return Task.CompletedTask;
+            };
         }
 
         /// <summary>
@@ -62,13 +70,32 @@ namespace Fractum.WebSocket
                 .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
                 .RegisterHook("GUILD_CREATE", new GuildCreateHook())
                 .RegisterHook("GUILD_UPDATE", new GuildUpdateHook())
+                .RegisterHook("GUILD_DELETE", new GuildDeleteHook())
+                .RegisterHook("GUILD_BAN_ADD", new BanAddHook())
+                .RegisterHook("GUILD_BAN_REMOVE", new BanRemoveHook())
+                .RegisterHook("GUILD_EMOJIS_UPDATE", new EmojisUpdatedHook())
+                .RegisterHook("GUILD_INTEGRATIONS_UPDATE", new IntegrationsUpdatedHook())
+                .RegisterHook("GUILD_MEMBER_ADD", new GuildMemberAddHook())
+                .RegisterHook("GUILD_MEMBER_REMOVE", new GuildMemberRemoveHook())
                 .RegisterHook("GUILD_MEMBER_UPDATE", new PresenceUpdateHook())
                 .RegisterHook("GUILD_MEMBERS_CHUNK", new GuildMembersChunkHook())
+                .RegisterHook("GUILD_ROLE_CREATE", new RoleCreateHook())
+                .RegisterHook("GUILD_ROLE_UPDATE", new RoleUpdateHook())
+                .RegisterHook("GUILD_ROLE_DELETE", new RoleDeleteHook())
                 .RegisterHook("CHANNEL_CREATE", new ChannelCreateHook())
                 .RegisterHook("CHANNEL_UPDATE", new ChannelUpdateHook())
                 .RegisterHook("CHANNEL_DELETE", new ChannelDeleteHook())
                 .RegisterHook("CHANNEL_PINS_UPDATE", new ChannelPinsUpdateHook())
-                .RegisterHook("MESSAGE_CREATE", new MessageReceivedHook());
+                .RegisterHook("MESSAGE_CREATE", new MessageReceivedHook())
+                .RegisterHook("MESSAGE_UPDATE", new MessageUpdateHook())
+                //.RegisterHook("MESSAGE_DELETE", new MesssageDeleteHook())
+                //.RegisterHook("MESSAGE_REACTION_ADD", new ReactionAddHook())
+                //.RegisterHook("MESSAGE_REACTION_REMOVE", new ReactionRemoveHook())
+                //.RegisterHook("MESSAGE_REACTION_REMOVE_ALL", new ReactionsClearHook())
+                //.RegisterHook("TYPING_START", new TypingStartHook())
+                //.RegisterHook("VOICE_STATE_UPDATE", new VoiceStateUpdateHook())
+                //.RegisterHook("WEBHOOKS_UPDATE", new WebhooksUpdateHook());
+                ;
 
         /// <summary>
         ///     Build the default <see cref="IPipelineStage{TData}"/> responsible for handling the gateway connection.
@@ -160,23 +187,35 @@ namespace Fractum.WebSocket
             EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
         {
             var message = await RestClient.CreateMessageAsync(channel, content, isTTS, embedBuilder, attachments).ConfigureAwait(false);
-            Cache.PopulateMessage(message);
+
+            Cache.Populate(message);
 
             return message;
         }
 
         internal async Task<Message> EditMessageAsync(Message message, MessageEditProperties props)
         {
-            var newMessage = await RestClient.EditMessageAsync(message, props);
-            Cache.PopulateMessage(newMessage);
+            var newMessage = await RestClient.EditMessageAsync(message, props).ConfigureAwait(false);
+
+            Cache.Populate(newMessage);
 
             return newMessage;
         }
 
+        internal async Task<GuildChannel> GetChannelAsync(ulong channelId)
+        {
+            var channel = await RestClient.GetChannelAsync(channelId).ConfigureAwait(false);
+
+            Cache.Populate(channel);
+
+            return channel;
+        }
+
         internal async Task<GuildChannel> EditChannelAsync(ulong channelId, GuildChannelProperties props)
         {
-            var channel = await RestClient.EditChannelAsync(channelId, props);
-            Cache.PopulateChannel(channel);
+            var channel = await RestClient.EditChannelAsync(channelId, props).ConfigureAwait(false);
+
+            Cache.Populate(channel);
 
             return channel;
         }
@@ -184,7 +223,8 @@ namespace Fractum.WebSocket
         private async Task<Message> GetMessageAsync(IMessageChannel channel, ulong messageId)
         {
             var message = await RestClient.GetMessageAsync(channel, messageId).ConfigureAwait(false);
-            Cache.PopulateMessage(message);
+
+            Cache.Populate(message);
 
             return message;
         }
@@ -193,7 +233,7 @@ namespace Fractum.WebSocket
         {
             var messages = await RestClient.GetMessagesAsync(channel, messageId, limit).ConfigureAwait(false);
             foreach (var message in messages)
-                Cache.PopulateMessage(message);
+                Cache.Populate(message);
 
             return messages;
         }
@@ -206,11 +246,11 @@ namespace Fractum.WebSocket
         public CachedEntity<GuildChannel> GetChannel(ulong channelId)
         {
             var existingChannel = Cache.Guilds
-                .Select(g => g.Value)
+                .Select(g => g.Guild)
                 .SelectMany(gc => gc.Channels)
                 .FirstOrDefault(cc => cc.Id == channelId);
             
-            return new CachedEntity<GuildChannel>(existingChannel, this.RestClient.GetChannelAsync(channelId));
+            return new CachedEntity<GuildChannel>(existingChannel, this.GetChannelAsync(channelId));
         }
 
         /// <summary>
@@ -233,7 +273,7 @@ namespace Fractum.WebSocket
         /// <param name="guildId">The id of the desired guild.</param>
         /// <returns></returns>
         public Guild GetGuild(ulong guildId)
-            => Cache.GetGuild(guildId);
+            => Cache[guildId]?.Guild;
 
         /// <summary>
         ///     Connect and listen on the socket. This method does not block.
@@ -278,6 +318,33 @@ namespace Fractum.WebSocket
 
         internal void InvokeChannelDeleted(CachedEntity<GuildChannel> channel)
             => ChannelDeleted?.Invoke(channel);
+
+        internal void InvokeMemberBanned(GuildMember member)
+            => MemberBanned?.Invoke(member);
+
+        internal void InvokeMemberUnbanned(User user)
+            => MemberUnbanned?.Invoke(user);
+
+        internal void InvokeEmojisUpdated(Guild guild)
+            => EmojisUpdated?.Invoke(guild);
+
+        internal void InvokeIntegrationsUpdated(Guild guild)
+            => IntegrationsUpdated?.Invoke(guild);
+
+        internal void InvokeMemberJoined(GuildMember member)
+            => MemberJoined?.Invoke(member);
+
+        internal void InvokeMemberLeft(IUser user)
+            => MemberLeft?.Invoke(user);
+
+        internal void InvokeRoleCreated(Guild guild, Role role)
+            => RoleCreated?.Invoke(guild, role);
+
+        internal void InvokeRoleUpdated(Guild guild, Role role)
+            => RoleUpdated?.Invoke(guild, role);
+
+        internal void InvokeRoleDeleted(Guild guild, Role role)
+            => RoleDeleted?.Invoke(guild, role);
 
         internal void InvokeReady()
             => Ready?.Invoke();
@@ -336,6 +403,51 @@ namespace Fractum.WebSocket
         ///     Raised when a channel is deleted.
         /// </summary>
         public event Func<CachedEntity<GuildChannel>, Task> ChannelDeleted;
+
+        /// <summary>
+        ///     Raised when a member is banned.
+        /// </summary>
+        public event Func<GuildMember, Task> MemberBanned;
+
+        /// <summary>
+        ///     Raised when a member is unbanned.
+        /// </summary>
+        public event Func<User, Task> MemberUnbanned;
+
+        /// <summary>
+        ///     Raised when emojis in a guild are updated.
+        /// </summary>
+        public event Func<Guild, Task> EmojisUpdated;
+
+        /// <summary>
+        ///     Raised when a guild's integrations are updated.
+        /// </summary>
+        public event Func<Guild, Task> IntegrationsUpdated;
+
+        /// <summary>
+        ///     Raised when a member joins a guild.
+        /// </summary>
+        public event Func<GuildMember, Task> MemberJoined;
+
+        /// <summary>
+        ///     Raised when a member leaves a guild.
+        /// </summary>
+        public event Func<IUser, Task> MemberLeft;
+
+        /// <summary>
+        ///     Raised when a role is created.
+        /// </summary>
+        public event Func<Guild, Role, Task> RoleCreated;
+
+        /// <summary>
+        ///     Raised when a role is updated.
+        /// </summary>
+        public event Func<Guild, Role, Task> RoleUpdated;
+
+        /// <summary>
+        ///     Raised when a role is deleted.
+        /// </summary>
+        public event Func<Guild, Role, Task> RoleDeleted;
 
         /// <summary>
         ///     Raised when the client has successfully identified and is ready to receive and send events and commands.

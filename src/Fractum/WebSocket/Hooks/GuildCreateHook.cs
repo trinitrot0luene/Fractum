@@ -21,7 +21,7 @@ namespace Fractum.WebSocket.Hooks
             client.InvokeLog(
                 new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
 
-            client.InvokeGuildCreated(cache.GetGuild(guild.Id));
+            client.InvokeGuildCreated(cache[guild.Id].Guild);
         }
     }
 }

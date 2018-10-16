@@ -41,7 +41,9 @@ namespace Fractum.Entities
 
         [JsonProperty("last_message_id")]
 
-        public ulong? LastMessageId { get; internal set; }
+        public ulong? LastMessageIdRaw { get; internal set; }
+
+        public ulong? LastMessageId => Messages.FirstOrDefault()?.Id ?? LastMessageIdRaw;
 
         public Task<Message> CreateMessageAsync(string content = "", bool isTTS = false, EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
             => Client.CreateMessageAsync(this, content, isTTS, embedBuilder, attachments);

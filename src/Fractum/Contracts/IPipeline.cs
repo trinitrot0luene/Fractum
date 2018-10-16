@@ -13,7 +13,7 @@ namespace Fractum.Contracts
         /// </summary>
         void Clear();
 
-        // <summary>
+        /// <summary>
         ///     Add a stage to be executed by the pipeline.
         /// </summary>
         /// <param name="newStage"></param>

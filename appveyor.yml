@@ -1,0 +1,65 @@
+version: 'build-{build}'
+
+image: Visual Studio 2017 Preview
+
+branches:
+  only:
+  - master
+  
+environment:
+    github_access_token:
+        secure: KUZYIRlShiQnKNd4DTYNP15wll3WmZkyQ2CVmM8RxZj+zhJjUdtRT3/zkubaocBV
+    github_email:
+        secure: ta7W/Clsr/+1SBHRB1X5BbkqjOtGrfOK9NnvJS+Re6Q=
+
+install:
+- cinst docfx
+
+build_script:
+- ps: dotnet restore .\src\Fractum.sln | Out-Host
+- ps: dotnet build .\src\Fractum.sln -c "Release" --no-restore | Out-Host
+
+deploy_script:
+- git config --global credential.helper store
+- ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+- git config --global user.email %github_email%
+- git config --global user.name "trinitrot0luene"
+- bash releaseDocs.sh
+
+after_build:
+- ps: >-
+    if ($Env:APPVEYOR_REPO_TAG -eq "false")
+    {
+       $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
+       dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
+    }
+    else
+    {
+        dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
+    }
+nuget:
+  disable_publish_on_pr: true
+
+pull_requests:
+  do_not_increment_build_number: true
+
+test: off
+
+artifacts:
+- path: .\artifacts\*.nupkg
+  name: NuGet
+  
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/trinitrotoluene/api/v2/package
+  api_key:
+    secure: zgT3KsZ/VPjHNJk6gJZKF79FiAumxmByouqaucf+tAcUAks0sSCCo5pHzVG9Xb0J
+  skip_symbols: true
+  on:
+    branch: master
+- provider: NuGet
+  api_key:
+    secure: GT8iybe774SWZF9TlBmnxV/xDIZF9/ZUl6nHsqL0E0Y4+fKWCYO4ZKtxTdBscngT
+  on:
+    branch: master
+appveyor_repo_tag: true

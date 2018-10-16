@@ -26,8 +26,9 @@ namespace Fractum.WebSocket.Hooks
             }
 
             createdChannel.WithClient(client);
-            cache.UpdateGuildCache(createdChannel.GuildId,
-                gc => { gc.Channels.AddOrUpdate((a, b) => a.Id == b.Id, createdChannel, oldChannel => oldChannel = createdChannel ?? oldChannel); });
+
+            if (cache.HasGuild(createdChannel.GuildId))
+                cache[createdChannel.GuildId].AddOrUpdate(createdChannel, old => old = createdChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));

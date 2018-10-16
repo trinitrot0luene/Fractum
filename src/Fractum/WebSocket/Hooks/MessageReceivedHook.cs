@@ -13,18 +13,11 @@ namespace Fractum.WebSocket.Hooks
         {
             var message = args.ToObject<Message>();
 
-            cache.PopulateMessage(message);
-            if (message.Channel is TextChannel txtChn)
-            cache.UpdateGuildCache(txtChn.Guild.Id, gc =>
+            if (message.GuildId.HasValue && cache.HasGuild(message.GuildId.Value))
             {
-                if (gc.Channels.FirstOrDefault(c => c.Id == message.ChannelId) is GuildChannel chn &&
-                    gc.Messages.TryGetValue(message.ChannelId, out var mc))
-                {
-                    (chn as TextChannel).LastMessageId = message.Id;
-
-                    mc.Add(message);
-                }
-            });
+                var guild = cache[message.GuildId.Value];
+                guild.AddOrCreate(message);
+            }
 
             client.InvokeLog(new LogMessage(nameof(MessageReceivedHook),
                 $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",

@@ -25,7 +25,8 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
-            cache.UpdateGuildCache(deletedChannel.GuildId, gc => { gc.Channels.Remove(deletedChannel); });
+            if (cache.HasGuild(deletedChannel.GuildId))
+                cache[deletedChannel.GuildId].Remove(deletedChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {deletedChannel.Name} was deleted",
                 LogSeverity.Verbose));

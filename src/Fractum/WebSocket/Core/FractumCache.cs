@@ -2,62 +2,88 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Fractum.Contracts;
 using Fractum.Entities;
 
 namespace Fractum.WebSocket.Core
 {
-    public sealed class FractumCache : IEnumerable<GuildCache>
+    public sealed class FractumCache
     {
+        private readonly object guildLock = new object();
+
+        private Dictionary<ulong, GuildCache> guilds = new Dictionary<ulong, GuildCache>();
+
+        internal FractumSocketClient Client;
+
         public FractumCache(FractumSocketClient client)
         {
-            Guilds = new ConcurrentDictionary<ulong, GuildCache>();
             Client = client;
         }
 
-        public ConcurrentDictionary<ulong, GuildCache> Guilds { get; internal set; }
+        public bool HasGuild(ulong id)
+            => guilds.ContainsKey(id);
 
-        public FractumSocketClient Client { get; }
-
-        public Guild GetGuild(ulong guildId)
-            => Guilds.TryGetValue(guildId, out var guild) ? guild.Value : default;
-
-        public void UpdateGuildCache(ulong guildId, Action<GuildCache> update)
+        public void Remove(ulong id)
         {
-            if (Guilds.TryGetValue(guildId, out var guild))
-                update(guild);
+            lock (guildLock)
+                guilds.Remove(id);
         }
 
-        public void PopulateMessage(Message message)
+        public ReadOnlyCollection<GuildCache> Guilds
         {
-            var channel = Guilds.SelectMany(kvp => kvp.Value.Channels)
-                .FirstOrDefault(c => c.Id == message.ChannelId);
+            get
+            {
+                lock (guildLock)
+                    return guilds.Select(x => x.Value).ToList().AsReadOnly();
+            }
+        }
 
-            var msgChannel = channel as IMessageChannel ?? (Client.PrivateChannels.TryGetValue(message.ChannelId, out var dmChannel) ? dmChannel : default);
+        public void Populate(Message message)
+        {
+            var guild = Guilds.FirstOrDefault(g => g.GetChannels().Any(c => c.Id == message.ChannelId));
+            if (guild is null)
+                return;
 
-            message.Channel = msgChannel;
-
+            message.Channel = guild.GetChannels().First(x => x.Id == message.ChannelId) as IMessageChannel;
+            message.MentionedRoles = guild.GetRoles()
+                .Where(role => message.MentionedRoleIds.Any(rid => rid == role.Id)).ToList().AsReadOnly();
             message.WithClient(Client);
         }
 
-        public void PopulateChannel(GuildChannel channel)
+        public void Populate(GuildChannel channel)
         {
-            var existingChannel = Guilds[channel.GuildId].Channels.FirstOrDefault(c => c.Id == channel.Id);
-            channel.Guild = existingChannel.Guild;
-            if (channel is TextChannel txtChannel)
-                (channel as TextChannel).Messages = (existingChannel as TextChannel)?.Messages;
+            var guild = this[channel.GuildId];
+            if (guild is null)
+                return;
 
-            existingChannel.WithClient(Client);
+            channel.Guild = guild.Guild;
+            channel.WithClient(Client);
+        }
+
+        public void AddOrUpdate(GuildCache newValue, Func<GuildCache, GuildCache> replaceAction)
+        {
+            lock (guildLock)
+            {
+                if (guilds.ContainsKey(newValue.Id))
+                    guilds[newValue.Id] = replaceAction(guilds[newValue.Id]);
+                else
+                    guilds.Add(newValue.Id, newValue);
+            }
+        }
+
+        public GuildCache this[ulong id]
+        {
+            get => guilds.TryGetValue(id, out var cache) ? cache : default;
+            set
+            {
+                lock (guildLock)
+                    guilds[id] = value;
+            }
         }
 
         public void Clear()
-            => Guilds = new ConcurrentDictionary<ulong, GuildCache>();
-
-        IEnumerator<GuildCache> IEnumerable<GuildCache>.GetEnumerator() 
-                => Guilds.Select(cachedGuild => cachedGuild.Value).GetEnumerator();
-
-        public IEnumerator GetEnumerator()
-            => Guilds.Select(cachedGuild => cachedGuild.Value).GetEnumerator();
+            => guilds = new Dictionary<ulong, GuildCache>();
     }
 }

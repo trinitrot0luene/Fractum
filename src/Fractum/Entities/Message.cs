@@ -31,6 +31,9 @@ namespace Fractum.Entities
         [JsonProperty("mentions")]
         public ReadOnlyCollection<User> MentionedUsers { get; internal set; }
 
+        [JsonIgnore]
+        public ReadOnlyCollection<Role> MentionedRoles { get; internal set; }
+
         [JsonProperty("mention_roles")]
         internal ulong[] MentionedRoleIds { get; set; }
 
@@ -65,7 +68,7 @@ namespace Fractum.Entities
             {
                 if (Channel is PrivateChannel)
                     return AuthorUser;
-                return (Channel as TextChannel).Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id);
+                return (Channel as TextChannel).Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id) ?? Author;
             }
         }
 
@@ -94,5 +97,8 @@ namespace Fractum.Entities
 
         public Task DeleteAsync()
             => Client.RestClient.DeleteMessageAsync(this);
+
+        public override string ToString()
+            => $"{Id} : {Content}";
     }
 }

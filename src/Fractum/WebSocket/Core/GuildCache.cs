@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.Rest;
 using Fractum.Utilities;
 using Fractum.WebSocket.EventModels;
 
@@ -12,89 +12,310 @@ namespace Fractum.WebSocket.Core
 {
     public sealed class GuildCache
     {
-        private Guild _cachedGuild;
+        private readonly object emojiLock = new object();
+        private readonly object roleLock = new object();
+        private readonly object channelLock = new object();
+        private readonly object memberLock = new object();
+        private readonly object presenceLock = new object();
+        private readonly object messageLock = new object();
+
+        internal FractumSocketClient Client;
+
+        private Dictionary<ulong, GuildEmoji> emojis = new Dictionary<ulong, GuildEmoji>();
+        private Dictionary<ulong, Role> roles = new Dictionary<ulong, Role>();
+        private Dictionary<ulong, GuildChannel> channels = new Dictionary<ulong, GuildChannel>();
+        private Dictionary<ulong, GuildMember> members = new Dictionary<ulong, GuildMember>();
+        private Dictionary<ulong, Presence> presences = new Dictionary<ulong, Presence>();
+        private Dictionary<ulong, CircularBuffer<Message>> messages = new Dictionary<ulong, CircularBuffer<Message>>();
+
+        public Guild Guild;
 
         internal GuildCache(FractumSocketClient client, GuildCreateEventModel model)
         {
-            Presences = new List<Presence>();
-            Emojis = new List<GuildEmoji>();
-            Members = new List<GuildMember>();
-            Channels = new List<GuildChannel>();
-            Roles = new List<Role>();
-            Messages = new Dictionary<ulong, CircularBuffer<Message>>();
-
             Client = client;
 
-            Create(model);
-        }
+            Id = model.Id;
+            OwnerId = model.OwnerId;
+            IsUnavailable = model.IsUnavailable;
+            Region = model.Region;
+            Name = model.Name;
+            MemberCount = model.MemberCount;
+            Lazy = model.Lazy;
+            Large = model.Large;
+            AfkTimeout = model.AfkTimeout;
+            AfkChannelId = model.AfkChannelId;
+            VerificationLevel = (VerificationLevel) model.VerificationLevel;
+            MessageNotificationLevel = (MessageNotificationLevel) model.DefaultMessageNotifications;
+            ExplicitContentFilterLevel = (ExplicitContentFilterLevel) model.ExplicitContentFilter;
+            RequireMfa = model.RequireMfa;
 
-        public List<Presence> Presences { get; }
-
-        public List<GuildEmoji> Emojis { get; }
-
-        public List<GuildMember> Members { get; }
-
-        public List<GuildChannel> Channels { get; }
-
-        public List<Role> Roles { get; }
-
-        public Dictionary<ulong, CircularBuffer<Message>> Messages { get; }
-
-        public Guild Value
-        {
-            get
-            {
-                _cachedGuild.Channels = Channels.AsReadOnly();
-                _cachedGuild.Roles = Roles.AsReadOnly();
-                _cachedGuild.Emoji = Emojis.AsReadOnly();
-                _cachedGuild.Presences = Presences.AsReadOnly();
-                _cachedGuild.Members = Members.AsReadOnly();
-
-                foreach (var chn in _cachedGuild.Channels)
-                    if (chn is TextChannel tc)
-                        tc.Messages = Messages.TryGetValue(tc.Id, out var messages)
-                            ? messages.ToList().AsReadOnly()
-                            : new List<Message>().AsReadOnly();
-
-                foreach (var member in _cachedGuild.Members)
-                    member.Presence = Presences
-                        .FirstOrDefault(p => p.User.Id == member.Id);
-
-                return _cachedGuild;
-            }
-        }
-
-        public FractumSocketClient Client { get; }
-
-        internal void UpdateGuild(Action<Guild> updateAction)
-            => updateAction(_cachedGuild);
-
-        private void Create(GuildCreateEventModel model)
-        {
-            _cachedGuild = new Guild(model)
-                .WithClient<Guild>(Client);
-
-            foreach (var presence in model.Presences)
-                Presences.Add(presence);
             foreach (var emoji in model.Emojis)
-                Emojis.Add(emoji.WithClient<GuildEmoji>(Client));
-            foreach (var member in model.Members)
             {
-                Members.Add(member.WithClient<GuildMember>(Client));
-                member.Guild = _cachedGuild;
+                emoji.WithClient(client);
+                AddOrUpdate(emoji, x => x = emoji);
+            }
+
+            foreach (var role in model.Roles)
+            {
+                role.WithClient(client);
+                AddOrUpdate(role, x => x = role);
             }
 
             foreach (var channel in model.Channels)
             {
-                Channels.Add(channel.WithClient<GuildChannel>(Client));
-                channel.Guild = _cachedGuild;
-
-                var newbuff = new CircularBuffer<Message>(Client.RestClient.Config.MessageCacheLength);
-                Messages[channel.Id] = newbuff;
+                channel.WithClient(client);
+                channel.Guild = Guild;
+                AddOrUpdate(channel, x => x = channel);
             }
 
-            foreach (var role in model.Roles)
-                Roles.Add(role.WithClient<Role>(Client));
+            foreach (var member in model.Members)
+            {
+                member.WithClient(client);
+                member.Guild = Guild;
+                AddOrUpdate(member, x => x = member);
+            }
+
+            foreach (var presence in model.Presences)
+            {
+                AddOrUpdate(presence, x => x = presence);
+            }
+
+            Guild = new Guild(this);
         }
+
+        #region Properties
+
+        public ulong Id { get; internal set; }
+
+        public ulong OwnerId { get; internal set; }
+
+        public bool IsUnavailable { get; internal set; }
+
+        public string Region { get; internal set; }
+
+        public string Name { get; internal set; }
+
+        public int MemberCount { get; internal set; }
+
+        public bool Lazy { get; internal set; }
+
+        public bool Large { get; internal set; }
+
+        public int AfkTimeout { get; internal set; }
+
+        public VerificationLevel VerificationLevel { get; internal set; }
+
+        public MessageNotificationLevel MessageNotificationLevel { get; internal set; }
+
+        public ExplicitContentFilterLevel ExplicitContentFilterLevel { get; internal set; }
+
+        public bool RequireMfa { get; internal set; }
+
+        internal ulong? AfkChannelId { get; set; }
+
+        internal string IconHash { get; set; }
+
+        internal string SplashHash { get; set; }
+
+        #endregion
+
+        #region Add | Update | Create
+
+        public void Update(Action<GuildCache> updateAction)
+            => updateAction(this);
+
+        public void AddOrUpdate(GuildEmoji emoji, Func<GuildEmoji, GuildEmoji> replaceAction)
+        {
+            lock (emojiLock)
+            {
+                if (emojis.ContainsKey(emoji.Id))
+                    emojis[emoji.Id] = replaceAction(emojis[emoji.Id]);
+                else
+                    emojis.Add(emoji.Id, emoji);
+
+                emojis[emoji.Id].WithClient(Client);
+            }
+        }
+
+        public void AddOrUpdate(Role role, Func<Role, Role> replaceAction)
+        {
+            lock (roleLock)
+            {
+                if (roles.ContainsKey(role.Id))
+                    roles[role.Id] = replaceAction(roles[role.Id]);
+                else
+                    roles.Add(role.Id, role);
+
+                roles[role.Id].WithClient(Client);
+            }
+        }
+
+        public void AddOrUpdate(GuildChannel channel, Func<GuildChannel, GuildChannel> replaceAction)
+        {
+            lock (channelLock)
+            {
+                if (channels.ContainsKey(channel.Id))
+                    channels[channel.Id] = replaceAction(channels[channel.Id]);
+                else
+                    channels.Add(channel.Id, channel);
+
+                var updatedChannel = channels[channel.Id];
+                updatedChannel.WithClient(Client);
+                updatedChannel.Guild = Guild;
+            }
+        }
+
+        public void AddOrUpdate(GuildMember member, Func<GuildMember, GuildMember> replaceAction)
+        {
+            lock (memberLock)
+            {
+                if (members.ContainsKey(member.Id))
+                    members[member.Id] = replaceAction(members[member.Id]);
+                else
+                    members.Add(member.Id, member);
+
+                var updatedMember = members[member.Id];
+                updatedMember.WithClient(Client);
+                updatedMember.Guild = Guild;
+            }
+        }
+
+        public void AddOrUpdate(Presence presence, Func<Presence, Presence> replaceAction)
+        {
+            lock (presenceLock)
+            {
+                if (presences.ContainsKey(presence.User.Id))
+                    presences[presence.User.Id] = replaceAction(presences[presence.User.Id]);
+                else
+                    presences.Add(presence.User.Id, presence);
+            }
+        }
+
+        public void AddOrCreate(Message message)
+        {
+            lock (messageLock)
+            {
+                CircularBuffer<Message> rb;
+                if (messages.ContainsKey(message.ChannelId))
+                {
+                    rb = messages[message.ChannelId];
+                }
+                else
+                {
+                    rb = new CircularBuffer<Message>(Client.RestClient.Config.MessageCacheLength);
+                    messages.Add(message.ChannelId, rb);
+                }
+
+                message.WithClient(Client);
+
+                TextChannel channel;
+                lock (channelLock)
+                    channel = GetChannels().FirstOrDefault(x => x.Id == message.ChannelId) as TextChannel;
+                message.Channel = channel;
+
+                var msgRoles = new List<Role>();
+                lock (roleLock)
+                    foreach (var rid in message.MentionedRoleIds)
+                        if (roles.TryGetValue(rid, out var role))
+                            msgRoles.Add(role);
+
+                message.MentionedRoles = msgRoles.AsReadOnly();
+
+                if (rb.FirstOrDefault(m => m.Id == message.Id) is Message oldMessage)
+                    rb[rb.IndexOf(oldMessage)] = message;
+                else
+                    rb.Add(message);
+            }
+        }
+
+        public void Remove(GuildEmoji emoji)
+        {
+            lock (emojiLock)
+                emojis.Remove(emoji.Id);
+        }
+
+        public void Remove(Role role)
+        {
+            lock (roleLock)
+                roles.Remove(role.Id);
+        }
+
+        public void Remove(GuildChannel channel)
+        {
+            lock (channelLock)
+                channels.Remove(channel.Id);
+        }
+
+        public void Remove(GuildMember member)
+        {
+            lock (memberLock)
+                members.Remove(member.Id);
+        }
+
+        public void Remove(Presence presence)
+        {
+            lock (presenceLock)
+                presences.Remove(presence.User.Id);
+        }
+
+        public void Replace(ReadOnlyCollection<GuildEmoji> newCollection)
+        {
+            lock (emojiLock)
+            {
+                emojis = new Dictionary<ulong, GuildEmoji>();
+
+                foreach (var emoji in newCollection)
+                {
+                    emoji.WithClient(Client);
+                    AddOrUpdate(emoji, x => x = emoji);
+                }
+            }
+        }
+
+        public ReadOnlyCollection<GuildEmoji> GetEmojis()
+        {
+            lock (emojiLock)
+                return emojis.Select(x => x.Value).ToList().AsReadOnly();
+        }
+
+        public ReadOnlyCollection<Role> GetRoles()
+        {
+            lock (roleLock)
+                return roles.Select(x => x.Value).ToList().AsReadOnly();
+        }
+
+        public ReadOnlyCollection<GuildChannel> GetChannels()
+        {
+            lock (channelLock)
+                return channels.Select(x =>
+                {
+                    if (x.Value is TextChannel txt)
+                        lock (messageLock)
+                            txt.Messages = messages.TryGetValue(txt.Id, out var buff)
+                                ? buff.ToList().AsReadOnly()
+                                : default;
+
+                    x.Value.Guild = Guild;
+                    return x.Value;
+                }).ToList().AsReadOnly();
+        }
+
+        public ReadOnlyCollection<GuildMember> GetMembers()
+        {
+            lock (memberLock)
+                return members.Select(x =>
+                {
+                    x.Value.Guild = Guild;
+                    return x.Value;
+                }).ToList().AsReadOnly();
+        }
+
+        public ReadOnlyCollection<Presence> GetPresences()
+        {
+            lock (presenceLock)
+                return presences.Select(x => x.Value).ToList().AsReadOnly();
+        }
+
+        #endregion
     }
 }

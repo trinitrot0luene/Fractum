@@ -15,7 +15,7 @@ namespace Fractum.WebSocket.Hooks
             guildMemberChunkEvent.ApplyToCache(cache);
 
             client.InvokeLog(new LogMessage(nameof(GuildMembersChunkHook),
-                $"Received a {guildMemberChunkEvent.Members.Count} member chunk for guild {cache.GetGuild(guildMemberChunkEvent.GuildId).Name}",
+                $"Received a {guildMemberChunkEvent.Members.Count} member chunk for guild {cache[guildMemberChunkEvent.GuildId].Guild.Name}",
                 LogSeverity.Debug));
             return Task.CompletedTask;
         }

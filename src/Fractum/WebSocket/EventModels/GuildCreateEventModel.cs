@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.EventModels
 {
-    public sealed class GuildCreateEventModel : BaseEventModel
+    internal sealed class GuildCreateEventModel : BaseEventModel
     {
         internal GuildCreateEventModel()
         {
@@ -78,7 +78,7 @@ namespace Fractum.WebSocket.EventModels
         public override void ApplyToCache(FractumCache cache)
         {
             var gc = new GuildCache(cache.Client, this);
-            cache.Guilds.AddOrUpdate(Id, gc, (k, v) => v = gc);
+            cache[gc.Id] = gc;
         }
 
         #region Cacheable Entities

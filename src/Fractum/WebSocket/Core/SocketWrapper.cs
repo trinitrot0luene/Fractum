@@ -123,7 +123,7 @@ namespace Fractum.WebSocket.Core
         {
             var buffer = new byte[32768];
             var bufferSegment = new ArraySegment<byte>(buffer);
-
+            
             byte[] resultBuffer = null;
             WebSocketReceiveResult result = null;
 
@@ -138,7 +138,7 @@ namespace Fractum.WebSocket.Core
                         result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
                         if (result.MessageType == WebSocketMessageType.Close)
                         {
-                            // Pass close information out of the loop.
+                            // TODO: Will this ever do anything?
                         }
                         else
                         {
@@ -155,7 +155,7 @@ namespace Fractum.WebSocket.Core
 
                 try
                 {
-                    _ = Task.Run(() => InvokeReceived(responsePayload));
+                    InvokeReceived(responsePayload); // TODO: Decide between fire and forgetting or waiting for handlers.
                 }
                 catch (Exception ex)
                 {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using Fractum.Entities;
@@ -11,6 +12,8 @@ namespace Fractum.Contracts
     {
         Task<Message> CreateMessageAsync(string content = "", bool isTTS = false, EmbedBuilder embedBuilder = null,
             params (string fileName, Stream fileStream)[] attachments);
+
+        ReadOnlyCollection<Message> Messages { get; }
 
         Task TriggerTypingAsync();
 

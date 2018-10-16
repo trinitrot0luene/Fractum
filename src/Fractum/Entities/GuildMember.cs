@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
@@ -15,8 +16,11 @@ namespace Fractum.Entities
         [JsonProperty("user")]
         internal User User { get; set; }
 
+        [JsonProperty("guild_id")]
+        internal ulong? GuildId { get; private set; }
+
         [JsonIgnore]
-        public Presence Presence { get; internal set; }
+        public Presence Presence => Guild.Presences.FirstOrDefault(x => x.User.Id == Id);
 
         [JsonIgnore]
         public Guild Guild { get; internal set; }
@@ -25,7 +29,7 @@ namespace Fractum.Entities
         internal ulong[] RoleIds { get; set; }
 
         [JsonIgnore]
-        public ReadOnlyCollection<Role> Roles { get; internal set; }
+        public ReadOnlyCollection<Role> Roles => Guild.Roles.Where(r => RoleIds.Any(rid => rid == r.Id)).ToList().AsReadOnly();
 
         [JsonProperty("nick")]
         public string Nickname { get; internal set; }
@@ -40,10 +44,7 @@ namespace Fractum.Entities
         public bool IsDeafened { get; internal set; }
 
         [JsonIgnore]
-        public string Mention
-        {
-            get => string.Format(Consts.USER_MENTION, Id);
-        }
+        public string Mention => string.Format(Consts.USER_MENTION, Id);
 
         [JsonIgnore]
         public ulong Id => User.Id;

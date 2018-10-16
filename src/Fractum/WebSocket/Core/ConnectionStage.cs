@@ -105,6 +105,7 @@ namespace Fractum.WebSocket.Core
                     return HeartbeatAsync();
                 case OpCode.HeartbeatACK:
                     Session.WaitingForACK = false;
+                    Client.Latency = (int) (DateTimeOffset.UtcNow - Client.LastSentHeartbeat).TotalMilliseconds;
                     Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Heartbeat ACK", LogSeverity.Debug));
                     return Task.CompletedTask;
 
@@ -248,6 +249,7 @@ namespace Fractum.WebSocket.Core
                 d = Session.Seq
             }.Serialize();
             Session.WaitingForACK = true;
+            Client.LastSentHeartbeat = DateTimeOffset.UtcNow;
 
             Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Heartbeat", LogSeverity.Debug));
 

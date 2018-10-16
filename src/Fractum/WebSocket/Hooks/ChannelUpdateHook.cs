@@ -26,12 +26,9 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
-            updatedChannel.WithClient(client);
+            var oldChannel = cache[updatedChannel.GuildId].GetChannels().FirstOrDefault(x => x.Id == updatedChannel.Id);
 
-            var oldChannel = cache.Guilds[updatedChannel.GuildId].Channels.FirstOrDefault(c => c.Id == updatedChannel.Id);
-
-            cache.UpdateGuildCache(updatedChannel.GuildId,
-                gc => { gc.Channels.AddOrUpdate((a, b) => a.Id == b.Id, updatedChannel, old => old = updatedChannel ?? old); });
+            cache[updatedChannel.GuildId].AddOrUpdate(updatedChannel, old => old = updatedChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {updatedChannel.Name} was updated", LogSeverity.Verbose));

@@ -42,6 +42,6 @@ namespace Fractum.Entities
         }
 
         public override string ToString()
-            => $"{Username}#{Discrim.ToString("0000")}";
+            => $"{Id}";
     }
 }

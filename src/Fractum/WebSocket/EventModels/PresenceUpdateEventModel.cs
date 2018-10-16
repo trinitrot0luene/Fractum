@@ -56,9 +56,10 @@ namespace Fractum.WebSocket.EventModels
 
         public override void ApplyToCache(FractumCache cache)
         {
-            cache.UpdateGuildCache(GuildId ?? 0, guildCache =>
+            if (GuildId.HasValue && cache.HasGuild(GuildId.Value))
             {
-                if (guildCache.Members.FirstOrDefault(m => m.Id == User.Id) is GuildMember member)
+                var guild = cache[GuildId.Value];
+                if (guild.GetMembers().FirstOrDefault(m => m.Id == User.Id) is GuildMember member)
                 {
                     member.RoleIds = Roles ?? member.RoleIds;
                     member.IsDeafened = User.Member?.IsDeafened ?? member.IsDeafened;
@@ -66,20 +67,20 @@ namespace Fractum.WebSocket.EventModels
                     member.Nickname = Nickname ?? member.Nickname;
                     member.User.Username = User.Username ?? member.User.Username;
                     member.User.Discrim = User.Discrim != short.MinValue ? User.Discrim : member.User.Discrim;
-
-                    var newPresence = new Presence();
-                    newPresence.Activity = Activity;
-                    newPresence.User = User;
-                    if (NewStatus.HasValue)
-                        newPresence.Status = NewStatus.Value;
-
-                    guildCache.Presences.AddOrUpdate((a, b) => a.User.Id == b.User.Id, newPresence, oldPresence => 
-                    {
-                        oldPresence.Activity = Activity;
-                        oldPresence.Status = NewStatus ?? oldPresence.Status;
-                    });
                 }
-            });
+
+                var newPresence = new Presence();
+                newPresence.Activity = Activity;
+                newPresence.User = User;
+                if (NewStatus.HasValue)
+                    newPresence.Status = NewStatus.Value;
+
+                guild.AddOrUpdate(newPresence, old => {
+                    old.Activity = Activity;
+                    old.Status = NewStatus ?? old.Status;
+                    return old;
+                });
+            }
         }
     }
 }
