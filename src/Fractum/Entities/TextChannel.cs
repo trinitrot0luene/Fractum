@@ -23,6 +23,12 @@ namespace Fractum.Entities
         }
 
         [JsonProperty("topic")]
+        private string TopicRaw
+        {
+            set => Topic = value ?? string.Empty;
+        }
+
+        [JsonIgnore]
         public string Topic { get; private set; }
 
         [JsonProperty("last_pin_timestamp")]

@@ -56,8 +56,8 @@ namespace Fractum.Entities
         [JsonProperty("guild_id")]
         public ulong? GuildId { get; private set; }
 
-        [JsonProperty("member")]
-        private PartialMember Member { get; set; } // TODO: See what to do with this.
+        // [JsonProperty("member")]
+        // private PartialMember Member { get; set; } TODO: See what to do with this.
 
         [JsonProperty("author")]
         private User AuthorUser { get; set; }
