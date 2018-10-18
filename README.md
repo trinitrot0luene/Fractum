@@ -19,3 +19,5 @@ Although in many ways less advanced than other wrappers for the API, Fractum all
 Fractum is in early stages of development, and I'll do my best to deal with any bugs that arise, as fast as possible. The goal of Fractum is to be both a framework that is simple to "plug-and-play" while at the same time supplying components to those who want to get closer to the "bare metal", so to speak. If either of these- or any point inbetween- sounds appealing to you, feel free to give Fractum a go once I've completed the initial portions of the library.
 
 Fractum is a passion project, but I do also hope to help those out that encounter issues with it, so if you do feel free to shoot me an email: tnt(at)codeforge.pw or contact me on Discord: trinitrotoluene#0001.
+
+[![](https://discordapp.com/api/guilds/490247210265739274/embed.png?style=banner1&v=1)](https://discord.gg/PCTnd6u)
