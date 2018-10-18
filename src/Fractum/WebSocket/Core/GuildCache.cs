@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
 using Fractum.Utilities;
@@ -64,7 +65,7 @@ namespace Fractum.WebSocket.Core
             foreach (var channel in model.Channels)
             {
                 channel.WithClient(client);
-                channel.Guild = Guild;
+                channel.Cache = this;
                 AddOrUpdate(channel, x => x = channel);
             }
 
@@ -161,7 +162,7 @@ namespace Fractum.WebSocket.Core
 
                 var updatedChannel = channels[channel.Id];
                 updatedChannel.WithClient(Client);
-                updatedChannel.Guild = Guild;
+                updatedChannel.Cache = this;
             }
         }
 
@@ -207,19 +208,7 @@ namespace Fractum.WebSocket.Core
                 }
 
                 message.WithClient(Client);
-
-                TextChannel channel;
-                lock (channelLock)
-                    channel = GetChannels().FirstOrDefault(x => x.Id == message.ChannelId) as TextChannel;
-                message.Channel = channel;
-
-                var msgRoles = new List<Role>();
-                lock (roleLock)
-                    foreach (var rid in message.MentionedRoleIds)
-                        if (roles.TryGetValue(rid, out var role))
-                            msgRoles.Add(role);
-
-                message.MentionedRoles = msgRoles.AsReadOnly();
+                message.Guild = this;
 
                 if (rb.FirstOrDefault(m => m.Id == message.Id) is Message oldMessage)
                     rb[rb.IndexOf(oldMessage)] = message;
@@ -277,7 +266,7 @@ namespace Fractum.WebSocket.Core
             lock (emojiLock)
                 return emojis.Select(x => x.Value).ToList().AsReadOnly();
         }
-
+        
         public ReadOnlyCollection<Role> GetRoles()
         {
             lock (roleLock)
@@ -287,17 +276,15 @@ namespace Fractum.WebSocket.Core
         public ReadOnlyCollection<GuildChannel> GetChannels()
         {
             lock (channelLock)
-                return channels.Select(x =>
-                {
-                    if (x.Value is TextChannel txt)
-                        lock (messageLock)
-                            txt.Messages = messages.TryGetValue(txt.Id, out var buff)
-                                ? buff.ToList().AsReadOnly()
-                                : default;
+                return channels.Select(x => x.Value).ToList().AsReadOnly();
+        }
 
-                    x.Value.Guild = Guild;
-                    return x.Value;
-                }).ToList().AsReadOnly();
+        public ReadOnlyCollection<Message> GetMessages(ulong channelId)
+        {
+            lock (messageLock)
+                return messages.TryGetValue(channelId, out var messageCache)
+                    ? messageCache.ToList().AsReadOnly()
+                    : new ReadOnlyCollection<Message>(new List<Message>());
         }
 
         public ReadOnlyCollection<GuildMember> GetMembers()

@@ -3,12 +3,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Fractum.Entities.Properties;
+using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
     public class GuildChannel : Channel
     {
+        internal GuildCache Cache { get; set; }
+
         internal GuildChannel()
         {
         }
@@ -26,10 +29,13 @@ namespace Fractum.Entities
         public ReadOnlyCollection<PermissionsOverwrite> Overwrites { get; private set; }
 
         [JsonIgnore]
-        public Guild Guild { get; internal set; }
+        public Guild Guild => Cache.Guild;
 
         [JsonProperty("parent_id")]
-        public ulong? ParentId { get; internal set; }
+        internal ulong? ParentId { get; set; }
+
+        [JsonIgnore]
+        public Category Category => Cache.GetChannels().FirstOrDefault(x => x.Id == (ParentId ?? default)) as Category;
 
         [JsonProperty("nsfw")]
         public bool IsNsfw { get; private set; }

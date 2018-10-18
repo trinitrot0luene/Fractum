@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
@@ -56,7 +57,7 @@ namespace Fractum.WebSocket.Core
                     HeartbeatTimer = new Timer(_ => Task.Run(() => HeartbeatAsync()), null, heartbeatInterval,
                         heartbeatInterval);
                     // If we aren't resuming, re-identify.
-                    if (!Session.Resuming)
+                    if (!Session.Resuming || Session.ReconnectionAttempts < 3)
                     {
                         Session.Invalidate();
                         Cache = new FractumCache(Client);
@@ -144,15 +145,26 @@ namespace Fractum.WebSocket.Core
             Session.Resuming = true; // Lock other closed event handlers and op2 Handling
             do
             {
-                if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 4 == 0)
+                // Make 3 attempts to connect (and resume) then try to refetch the gateway url. After the first 3 attempts we will only attempt to identify.
+                if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 3 == 0)
                 {
-                    // Fetch connection info from the gateway with new Url: 
-                    var gatewayInfo = await Client.RestClient.GetSocketUrlAsync();
-                    if (gatewayInfo?.SessionStartLimit["remaining"] == 0)
-                        throw new GatewayException("No new sessions can be started");
-                    if (gatewayInfo != null)
-                        Session.GatewayUrl = gatewayInfo.Url;
-                    Socket.UpdateUrl(new Uri(Session.GatewayUrl + Consts.GATEWAY_PARAMS));
+                    try
+                    {
+                        // Fetch connection info from the gateway with new Url: 
+                        var gatewayInfo = await Client.RestClient.GetSocketUrlAsync()
+                            .ContinueWith(task => !task.IsFaulted ? task.Result : default);
+                        if (gatewayInfo?.SessionStartLimit["remaining"] == 0)
+                            throw new GatewayException("No new sessions can be started");
+                        if (gatewayInfo != null)
+                            Session.GatewayUrl = gatewayInfo.Url;
+                        Socket.UpdateUrl(new Uri(Session.GatewayUrl + Consts.GATEWAY_PARAMS));
+                    }
+                    // If there's no network connection this will fail, don't update with new session data.
+                    catch (Exception)
+                    {
+                        Client.InvokeLog(new LogMessage(nameof(ConnectionStage),
+                            "Failed to update session with new gateway url", LogSeverity.Warning));
+                    }
                 }
 
                 var computedBackoff =
@@ -161,14 +173,14 @@ namespace Fractum.WebSocket.Core
 
                 await Task.Delay(computedBackoff <= 900000 ? computedBackoff : 900000);
 
-                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnection attempt {backoffPower}",
+                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnection attempt {Session.ReconnectionAttempts}",
                     LogSeverity.Warning));
 
                 await Socket.ConnectAsync(); // Try to reconnect
 
                 backoffPower++;
                 Session.ReconnectionAttempts++; // Increment reconnection attempts.
-            } while (Socket.State != WebSocketState.Open); // No listener and we haven't tried 3 reconnections.
+            } while (Socket.State != WebSocketState.Open); // Socket isn't open yet
 
             // Connection resumed successfully, the close handler can now exit.
             Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Reconnected Successfully", LogSeverity.Warning));

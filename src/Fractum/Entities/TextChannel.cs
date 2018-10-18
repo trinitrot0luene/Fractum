@@ -9,6 +9,7 @@ using Fractum.Entities.Extensions;
 using Fractum.Entities.Properties;
 using Fractum.Utilities;
 using Fractum.WebSocket;
+using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
@@ -30,20 +31,14 @@ namespace Fractum.Entities
         [JsonProperty("rate_limit_per_user")]
         public int PerUserRatelimit { get; private set; }
 
-        [JsonIgnore]
-        public ReadOnlyCollection<Message> Messages { get; internal set; }
-
-        [JsonIgnore]
-        public string Mention
-        {
-            get => string.Format(Consts.CHANNEL_MENTION, Id);
-        }
-
         [JsonProperty("last_message_id")]
+        public ulong? LastMessageId { get; internal set; }
 
-        public ulong? LastMessageIdRaw { get; internal set; }
+        [JsonIgnore]
+        public ReadOnlyCollection<Message> Messages => Cache.GetMessages(Id);
 
-        public ulong? LastMessageId => Messages.FirstOrDefault()?.Id ?? LastMessageIdRaw;
+        [JsonIgnore]
+        public string Mention => string.Format(Consts.CHANNEL_MENTION, Id);
 
         public Task<Message> CreateMessageAsync(string content = "", bool isTTS = false, EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
             => Client.CreateMessageAsync(this, content, isTTS, embedBuilder, attachments);

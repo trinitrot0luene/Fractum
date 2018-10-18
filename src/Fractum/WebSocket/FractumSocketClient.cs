@@ -188,7 +188,7 @@ namespace Fractum.WebSocket
         {
             var message = await RestClient.CreateMessageAsync(channel, content, isTTS, embedBuilder, attachments).ConfigureAwait(false);
 
-            Cache.Populate(message);
+            message.Guild = Cache[message.GuildId ?? default];
 
             return message;
         }
@@ -197,7 +197,7 @@ namespace Fractum.WebSocket
         {
             var newMessage = await RestClient.EditMessageAsync(message, props).ConfigureAwait(false);
 
-            Cache.Populate(newMessage);
+            message.Guild = Cache[message.GuildId ?? default];
 
             return newMessage;
         }
@@ -224,7 +224,7 @@ namespace Fractum.WebSocket
         {
             var message = await RestClient.GetMessageAsync(channel, messageId).ConfigureAwait(false);
 
-            Cache.Populate(message);
+            message.Guild = Cache[message];
 
             return message;
         }
@@ -232,8 +232,9 @@ namespace Fractum.WebSocket
         internal async Task<IReadOnlyCollection<Message>> GetMessagesAsync(IMessageChannel channel, ulong messageId, int limit)
         {
             var messages = await RestClient.GetMessagesAsync(channel, messageId, limit).ConfigureAwait(false);
+            var guild = Cache[messages.First()];
             foreach (var message in messages)
-                Cache.Populate(message);
+                message.Guild = guild;
 
             return messages;
         }

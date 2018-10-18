@@ -7,12 +7,16 @@ using Fractum.Contracts;
 using Fractum.Entities.Properties;
 using Fractum.Entities.WebSocket;
 using Fractum.WebSocket;
+using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
     public sealed class Message : DiscordEntity
     {
+        [JsonIgnore]
+        internal GuildCache Guild;
+
         [JsonProperty("tts")]
         public bool IsTTS { get; internal set; }
 
@@ -31,49 +35,56 @@ namespace Fractum.Entities
         [JsonProperty("mentions")]
         public ReadOnlyCollection<User> MentionedUsers { get; internal set; }
 
-        [JsonIgnore]
-        public ReadOnlyCollection<Role> MentionedRoles { get; internal set; }
-
         [JsonProperty("mention_roles")]
-        internal ulong[] MentionedRoleIds { get; set; }
+        private ulong[] MentionedRoleIds { get; set; }
 
         [JsonProperty("mention_everyone")]
         public bool IsEveryoneMention { get; internal set; }
 
         [JsonProperty("embeds")]
-        public ReadOnlyCollection<Embed> Embeds { get; internal set; }
+        public ReadOnlyCollection<Embed> Embeds { get; private set; }
 
         [JsonProperty("edited_timestamp")]
-        public DateTimeOffset? LastEditedAt { get; internal set; }
+        public DateTimeOffset? LastEditedAt { get; private set; }
 
         [JsonProperty("content")]
-        public string Content { get; internal set; }
+        public string Content { get; private set; }
 
         [JsonProperty("channel_id")]
-        public ulong ChannelId { get; internal set; }
+        public ulong ChannelId { get; private set; }
 
         [JsonProperty("guild_id")]
-        public ulong? GuildId { get; internal set; }
+        public ulong? GuildId { get; private set; }
 
         [JsonProperty("member")]
-        internal PartialMember Member { get; set; }
+        private PartialMember Member { get; set; } // TODO: See what to do with this.
 
         [JsonProperty("author")]
-        internal User AuthorUser { get; set; }
+        private User AuthorUser { get; set; }
 
         [JsonIgnore]
-        public IUser Author
+        public IUser Author =>  Guild.GetMembers().FirstOrDefault(x => x.Id == AuthorUser.Id) as IUser ?? AuthorUser;
+
+        [JsonIgnore]
+        public IMessageChannel Channel => Guild.GetChannels().First(x => x.Id == ChannelId) as IMessageChannel;
+
+        internal void Update(Message message)
         {
-            get
-            {
-                if (Channel is PrivateChannel)
-                    return AuthorUser;
-                return (Channel as TextChannel).Guild.Members.FirstOrDefault(m => m.Id == AuthorUser.Id) ?? Author;
-            }
+            MentionedUsers = message.MentionedUsers ?? MentionedUsers;
+            Embeds = message.Embeds ?? Embeds;
+            IsTTS = message.IsTTS;
+            Timestamp = message.Timestamp;
+            IsPinned = message.IsPinned;
+            IsEveryoneMention = message.IsEveryoneMention;
+            LastEditedAt = message.LastEditedAt;
+            Content = message.Content ?? Content;
+
+            MentionedRoleIds = message.MentionedRoleIds ?? MentionedRoleIds;
         }
 
         [JsonIgnore]
-        public IMessageChannel Channel { get; internal set; }
+        public ReadOnlyCollection<Role> MentionedRoles =>
+            Guild.GetRoles().Where(x => MentionedRoleIds?.Any(rid => rid == x.Id) ?? false).ToList().AsReadOnly();
 
         public Task CreateReactionAsync(Emoji emoji)
             => Client.RestClient.CreateReactionAsync(this, emoji);

@@ -15,16 +15,13 @@ namespace Fractum.WebSocket.Hooks
             var newMessage = args.ToObject<Message>();
 
             var oldMessage = (cache.Guilds.SelectMany(x => x.GetChannels())
-                    .FirstOrDefault(c => c.Id == newMessage.ChannelId)
+                    .FirstOrDefault(c => c.Id == newMessage.ChannelId && ((c as IMessageChannel)?.Messages.Any() ?? false))
                 as IMessageChannel)?.Messages.FirstOrDefault(m => m.Id == newMessage.Id);
 
-            // oldMessage.Content = newMessage.Content ?? oldMessage.Content;
-            // oldMessage.MentionedRoleIds = newMessage.MentionedRoleIds ?? oldMessage.MentionedRoleIds;
-            // oldMessage.MentionedUsers = newMessage.MentionedUsers ?? oldMessage.MentionedUsers;
-            // oldMessage.Embeds = newMessage.Embeds ?? oldMessage.Embeds;
             // TODO: Add the rest of the message properties, e.g. attachments
+            // TODO: Clone the message. (May need to rethink how cached properties are pulled in Message for that)
 
-            cache.Populate(newMessage);
+            oldMessage.Update(newMessage);
 
             client.InvokeMessageUpdated(new CachedEntity<Message>(oldMessage), newMessage);
 

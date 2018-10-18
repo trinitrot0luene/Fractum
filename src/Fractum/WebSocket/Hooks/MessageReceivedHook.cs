@@ -18,6 +18,7 @@ namespace Fractum.WebSocket.Hooks
                 var guild = cache[message.GuildId.Value];
                 guild.AddOrCreate(message);
             }
+            else return Task.CompletedTask;
 
             client.InvokeLog(new LogMessage(nameof(MessageReceivedHook),
                 $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",

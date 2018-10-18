@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
+    /// <summary>
+    ///     Cached data of a member of a <see cref="Fractum.Entities.Guild"/>.
+    /// </summary>
     public sealed class GuildMember : FractumEntity, IUser
     {
         internal GuildMember()

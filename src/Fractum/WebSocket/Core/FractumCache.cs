@@ -40,25 +40,13 @@ namespace Fractum.WebSocket.Core
             }
         }
 
-        public void Populate(Message message)
-        {
-            var guild = Guilds.FirstOrDefault(g => g.GetChannels().Any(c => c.Id == message.ChannelId));
-            if (guild is null)
-                return;
-
-            message.Channel = guild.GetChannels().First(x => x.Id == message.ChannelId) as IMessageChannel;
-            message.MentionedRoles = guild.GetRoles()
-                .Where(role => message.MentionedRoleIds?.Any(rid => rid == role.Id) ?? false).ToList().AsReadOnly();
-            message.WithClient(Client);
-        }
-
         public void Populate(GuildChannel channel)
         {
             var guild = this[channel.GuildId];
             if (guild is null)
                 return;
 
-            channel.Guild = guild.Guild;
+            channel.Cache = guild;
             channel.WithClient(Client);
         }
 
@@ -81,6 +69,13 @@ namespace Fractum.WebSocket.Core
                 lock (guildLock)
                     guilds[id] = value;
             }
+        }
+
+        public GuildCache this[Message msg]
+        {
+            get => guilds.TryGetValue(msg.GuildId ?? 0, out var cache)
+                    ? cache
+                    : guilds.First(x => x.Value.GetChannels().Any(c => c.Id == msg.ChannelId)).Value;
         }
 
         public void Clear()
