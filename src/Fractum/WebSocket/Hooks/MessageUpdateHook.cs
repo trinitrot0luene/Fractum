@@ -21,6 +21,9 @@ namespace Fractum.WebSocket.Hooks
             // TODO: Add the rest of the message properties, e.g. attachments
             // TODO: Clone the message. (May need to rethink how cached properties are pulled in Message for that)
 
+            if (oldMessage is null)
+                return Task.CompletedTask;
+
             oldMessage.Update(newMessage);
 
             client.InvokeMessageUpdated(new CachedEntity<Message>(oldMessage), newMessage);
