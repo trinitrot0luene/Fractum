@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fractum.Contracts;
+using Fractum.Entities;
+using Fractum.Utilities;
 using Fractum.WebSocket.Core;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +21,10 @@ namespace Fractum.WebSocket.Hooks
                 var message = gc.GetMessages(args.Value<ulong>("channel_id"))
                     .FirstOrDefault(x => x.Id == args.Value<ulong>("id"));
                 if (message != null)
+                {
+                    client.InvokeMessageDeleted(new CachedEntity<Message>(message));
                     gc.Remove(message);
+                }
             }
 
             return Task.CompletedTask;

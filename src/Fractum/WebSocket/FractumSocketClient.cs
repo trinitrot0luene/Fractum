@@ -313,6 +313,9 @@ namespace Fractum.WebSocket
         internal void InvokeMessageUpdated(CachedEntity<Message> oldMessage, Message newMessage)
             => MessageUpdated?.Invoke(oldMessage, newMessage);
 
+        internal void InvokeMessageDeleted(CachedEntity<Message> cachedMessage)
+            => MessageDeleted?.Invoke(cachedMessage);
+
         internal void InvokeChannelCreated(GuildChannel channel)
             => ChannelCreated?.Invoke(channel);
 
@@ -390,7 +393,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a message is deleted.
         /// </summary>
-        public event Func<CachedEntity<Message>> MessageDeleted;
+        public event Func<CachedEntity<Message>, Task> MessageDeleted;
 
         /// <summary>
         ///     Raised when a channel is created.

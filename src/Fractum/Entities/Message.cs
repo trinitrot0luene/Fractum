@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
-    public sealed class Message : DiscordEntity
+    public sealed class Message : DiscordEntity, ICloneable
     {
         [JsonIgnore]
         internal GuildCache Guild;
@@ -35,6 +35,9 @@ namespace Fractum.Entities
         [JsonProperty("mentions")]
         public ReadOnlyCollection<User> MentionedUsers { get; internal set; }
 
+        [JsonProperty("attachments")]
+        public ReadOnlyCollection<Attachment> Attachments { get; internal set; }
+
         [JsonProperty("mention_roles")]
         private ulong[] MentionedRoleIds { get; set; }
 
@@ -51,10 +54,10 @@ namespace Fractum.Entities
         public string Content { get; private set; }
 
         [JsonProperty("channel_id")]
-        public ulong ChannelId { get; private set; }
+        internal ulong ChannelId { get; private set; }
 
         [JsonProperty("guild_id")]
-        public ulong? GuildId { get; private set; }
+        internal ulong? GuildId { get; private set; }
 
         // [JsonProperty("member")]
         // private PartialMember Member { get; set; } TODO: See what to do with this.
@@ -68,6 +71,29 @@ namespace Fractum.Entities
         [JsonIgnore]
         public IMessageChannel Channel => Guild.GetChannels().First(x => x.Id == ChannelId) as IMessageChannel;
 
+        public object Clone()
+        {
+            return new Message()
+            {
+                Id = this.Id,
+                ChannelId = this.ChannelId,
+                GuildId = this.GuildId,
+                Timestamp = this.Timestamp,
+                Guild = this.Guild,
+                AuthorUser = this.AuthorUser,
+                Content = this.Content,
+                LastEditedAt = this.LastEditedAt,
+                Embeds = this.Embeds,
+                Attachments = this.Attachments,
+                IsEveryoneMention = this.IsEveryoneMention,
+                MentionedRoleIds = this.MentionedRoleIds,
+                MentionedUsers = this.MentionedUsers, 
+                IsPinned = this.IsPinned,
+                IsTTS = this .IsTTS,
+                Type = this.Type
+            };
+        }
+
         internal void Update(Message message)
         {
             MentionedUsers = message.MentionedUsers ?? MentionedUsers;
@@ -78,6 +104,7 @@ namespace Fractum.Entities
             IsEveryoneMention = message.IsEveryoneMention;
             LastEditedAt = message.LastEditedAt;
             Content = message.Content ?? Content;
+            Attachments = message.Attachments ?? Attachments;
 
             MentionedRoleIds = message.MentionedRoleIds ?? MentionedRoleIds;
         }
