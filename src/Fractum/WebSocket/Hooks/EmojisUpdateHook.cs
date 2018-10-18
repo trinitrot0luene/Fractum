@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class EmojisUpdatedHook : IEventHook<JToken>
+    internal sealed class EmojisUpdateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -17,7 +17,7 @@ namespace Fractum.WebSocket.Hooks
 
             guild.Replace(eventArgs.Emojis);
 
-            client.InvokeLog(new LogMessage(nameof(EmojisUpdatedHook),
+            client.InvokeLog(new LogMessage(nameof(EmojisUpdateHook),
                 $"Emojis updated for {guild?.Guild.Name ?? "Unknown Guild"}", LogSeverity.Debug));
 
             client.InvokeEmojisUpdated(guild?.Guild);

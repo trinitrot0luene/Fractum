@@ -247,6 +247,13 @@ namespace Fractum.WebSocket.Core
                 presences.Remove(presence.User.Id);
         }
 
+        public void Remove(Message message)
+        {
+            lock (messageLock)
+                if (messages.TryGetValue(message.ChannelId, out var msgBuff))
+                    msgBuff.Remove(message);
+        }
+
         public void Replace(ReadOnlyCollection<GuildEmoji> newCollection)
         {
             lock (emojiLock)

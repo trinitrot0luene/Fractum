@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class MessageReceivedHook : IEventHook<JToken>
+    internal sealed class MessageCreateHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
@@ -20,7 +20,7 @@ namespace Fractum.WebSocket.Hooks
             }
             else return Task.CompletedTask;
 
-            client.InvokeLog(new LogMessage(nameof(MessageReceivedHook),
+            client.InvokeLog(new LogMessage(nameof(MessageCreateHook),
                 $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",
                 LogSeverity.Verbose));
 
