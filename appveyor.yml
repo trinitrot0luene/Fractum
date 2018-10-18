@@ -18,8 +18,6 @@ install:
 build_script:
 - ps: dotnet restore .\src\Fractum.sln | Out-Host
 - ps: dotnet build .\src\Fractum.sln -c "Release" --no-restore | Out-Host
-
-deploy_script:
 - git config --global credential.helper store
 - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
 - git config --global user.email %github_email%
