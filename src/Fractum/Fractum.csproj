@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Authors>trinitrot0luene</Authors>
+    <Description>Gateway &amp; HTTPS REST API Wrapper for Discord, targeting .NET Standard 2.0</Description>
+    <PackageLicenseUrl>https://github.com/trinitrot0luene/Fractum/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/trinitrot0luene/Fractum</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/trinitrot0luene/Fractum</RepositoryUrl>
+    <PackageTags>discord,discord-bot, discord-api</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+</Project>
