@@ -1,0 +1,710 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class TextChannel
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class TextChannel
+   ">
+    <meta name="generator" content="docfx 2.40.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Fractum.Entities.TextChannel">
+  
+  
+  <h1 id="Fractum_Entities_TextChannel" data-uid="Fractum.Entities.TextChannel" class="text-break">Class TextChannel
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="Fractum.Entities.FractumEntity.html">FractumEntity</a></div>
+    <div class="level2"><a class="xref" href="Fractum.Entities.DiscordEntity.html">DiscordEntity</a></div>
+    <div class="level3"><a class="xref" href="Fractum.Entities.Channel.html">Channel</a></div>
+    <div class="level4"><a class="xref" href="Fractum.Entities.GuildChannel.html">GuildChannel</a></div>
+    <div class="level5"><span class="xref">TextChannel</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IEquatable</span>&lt;<a class="xref" href="Fractum.Entities.DiscordEntity.html">DiscordEntity</a>&gt;</div>
+    <div><a class="xref" href="Fractum.Contracts.IMessageChannel.html">IMessageChannel</a></div>
+    <div><a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_Name">GuildChannel.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_Position">GuildChannel.Position</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_Overwrites">GuildChannel.Overwrites</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_Guild">GuildChannel.Guild</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_Category">GuildChannel.Category</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_IsNsfw">GuildChannel.IsNsfw</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_ToString">GuildChannel.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_DeleteAsync">GuildChannel.DeleteAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.GuildChannel.html#Fractum_Entities_GuildChannel_EditAsync_System_Action_Fractum_Entities_Properties_GuildChannelProperties__">GuildChannel.EditAsync(Action&lt;GuildChannelProperties&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.Channel.html#Fractum_Entities_Channel_Type">Channel.Type</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_Id">DiscordEntity.Id</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_CreatedAt">DiscordEntity.CreatedAt</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_Equals_Fractum_Entities_DiscordEntity_">DiscordEntity.Equals(DiscordEntity)</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_GetHashCode">DiscordEntity.GetHashCode()</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Fractum.Entities.html">Fractum.Entities</a></h6>
+  <h6><strong>Assembly</strong>: Fractum.dll</h6>
+  <h5 id="Fractum_Entities_TextChannel_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class TextChannel : GuildChannel, IEquatable&lt;DiscordEntity&gt;, IMessageChannel, IDiscordEntity</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_LastMessageId.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.LastMessageId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L40">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_LastMessageId_" data-uid="Fractum.Entities.TextChannel.LastMessageId*"></a>
+  <h4 id="Fractum_Entities_TextChannel_LastMessageId" data-uid="Fractum.Entities.TextChannel.LastMessageId">LastMessageId</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;last_message_id&quot;)]
+public ulong? LastMessageId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.UInt64</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_LastPinAt.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.LastPinAt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L34">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_LastPinAt_" data-uid="Fractum.Entities.TextChannel.LastPinAt*"></a>
+  <h4 id="Fractum_Entities_TextChannel_LastPinAt" data-uid="Fractum.Entities.TextChannel.LastPinAt">LastPinAt</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;last_pin_timestamp&quot;)]
+public DateTimeOffset? LastPinAt { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.DateTimeOffset</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_Mention.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.Mention%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L46">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_Mention_" data-uid="Fractum.Entities.TextChannel.Mention*"></a>
+  <h4 id="Fractum_Entities_TextChannel_Mention" data-uid="Fractum.Entities.TextChannel.Mention">Mention</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonIgnore]
+public string Mention { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_Messages.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.Messages%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L43">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_Messages_" data-uid="Fractum.Entities.TextChannel.Messages*"></a>
+  <h4 id="Fractum_Entities_TextChannel_Messages" data-uid="Fractum.Entities.TextChannel.Messages">Messages</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonIgnore]
+public ReadOnlyCollection&lt;Message&gt; Messages { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.ObjectModel.ReadOnlyCollection</span>&lt;<a class="xref" href="Fractum.Entities.Message.html">Message</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_PerUserRatelimit.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.PerUserRatelimit%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L37">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_PerUserRatelimit_" data-uid="Fractum.Entities.TextChannel.PerUserRatelimit*"></a>
+  <h4 id="Fractum_Entities_TextChannel_PerUserRatelimit" data-uid="Fractum.Entities.TextChannel.PerUserRatelimit">PerUserRatelimit</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonProperty(&quot;rate_limit_per_user&quot;)]
+public int PerUserRatelimit { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_Topic.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.Topic%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L31">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_Topic_" data-uid="Fractum.Entities.TextChannel.Topic*"></a>
+  <h4 id="Fractum_Entities_TextChannel_Topic" data-uid="Fractum.Entities.TextChannel.Topic">Topic</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonIgnore]
+public string Topic { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_BeginTyping.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.BeginTyping%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L81">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_BeginTyping_" data-uid="Fractum.Entities.TextChannel.BeginTyping*"></a>
+  <h4 id="Fractum_Entities_TextChannel_BeginTyping" data-uid="Fractum.Entities.TextChannel.BeginTyping">BeginTyping()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DisposableScope&lt;VotedAsyncAction&lt;IMessageChannel&gt;&gt; BeginTyping()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Fractum.Utilities.DisposableScope-1.html">DisposableScope</a>&lt;<a class="xref" href="Fractum.Utilities.VotedAsyncAction-1.html">VotedAsyncAction</a>&lt;<a class="xref" href="Fractum.Contracts.IMessageChannel.html">IMessageChannel</a>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_CreateMessageAsync_System_String_System_Boolean_Fractum_Entities_EmbedBuilder_System_ValueTuple_System_String_System_IO_Stream____.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.CreateMessageAsync(System.String%2CSystem.Boolean%2CFractum.Entities.EmbedBuilder%2CSystem.ValueTuple%7BSystem.String%2CSystem.IO.Stream%7D%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L49">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_CreateMessageAsync_" data-uid="Fractum.Entities.TextChannel.CreateMessageAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_CreateMessageAsync_System_String_System_Boolean_Fractum_Entities_EmbedBuilder_System_ValueTuple_System_String_System_IO_Stream____" data-uid="Fractum.Entities.TextChannel.CreateMessageAsync(System.String,System.Boolean,Fractum.Entities.EmbedBuilder,System.ValueTuple{System.String,System.IO.Stream}[])">CreateMessageAsync(String, Boolean, EmbedBuilder, (String fileName, Stream fileStream)[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Message&gt; CreateMessageAsync(string content = &quot;&quot;, bool isTTS = false, EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">content</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">isTTS</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Fractum.Entities.EmbedBuilder.html">EmbedBuilder</a></td>
+        <td><span class="parametername">embedBuilder</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.String</span>, <span class="xref">System.IO.Stream</span>&gt;[]</td>
+        <td><span class="parametername">attachments</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Fractum.Entities.Message.html">Message</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_DeleteMessagesAsync_System_Collections_Generic_IEnumerable_Fractum_Entities_Message__.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.DeleteMessagesAsync(System.Collections.Generic.IEnumerable%7BFractum.Entities.Message%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L61">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_DeleteMessagesAsync_" data-uid="Fractum.Entities.TextChannel.DeleteMessagesAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_DeleteMessagesAsync_System_Collections_Generic_IEnumerable_Fractum_Entities_Message__" data-uid="Fractum.Entities.TextChannel.DeleteMessagesAsync(System.Collections.Generic.IEnumerable{Fractum.Entities.Message})">DeleteMessagesAsync(IEnumerable&lt;Message&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task DeleteMessagesAsync(IEnumerable&lt;Message&gt; messages)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="Fractum.Entities.Message.html">Message</a>&gt;</td>
+        <td><span class="parametername">messages</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_EditAsync_System_Action_Fractum_Entities_Properties_TextChannelProperties__.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.EditAsync(System.Action%7BFractum.Entities.Properties.TextChannelProperties%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L64">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_EditAsync_" data-uid="Fractum.Entities.TextChannel.EditAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_EditAsync_System_Action_Fractum_Entities_Properties_TextChannelProperties__" data-uid="Fractum.Entities.TextChannel.EditAsync(System.Action{Fractum.Entities.Properties.TextChannelProperties})">EditAsync(Action&lt;TextChannelProperties&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;TextChannel&gt; EditAsync(Action&lt;TextChannelProperties&gt; editAction)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Action</span>&lt;<a class="xref" href="Fractum.Entities.Properties.TextChannelProperties.html">TextChannelProperties</a>&gt;</td>
+        <td><span class="parametername">editAction</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Fractum.Entities.TextChannel.html">TextChannel</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_GetMessageAsync_System_UInt64_.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.GetMessageAsync(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L55">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_GetMessageAsync_" data-uid="Fractum.Entities.TextChannel.GetMessageAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_GetMessageAsync_System_UInt64_" data-uid="Fractum.Entities.TextChannel.GetMessageAsync(System.UInt64)">GetMessageAsync(UInt64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;Message&gt; GetMessageAsync(ulong messageId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">messageId</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="Fractum.Entities.Message.html">Message</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_GetMessagesAsync_System_Int32_.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.GetMessagesAsync(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L58">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_GetMessagesAsync_" data-uid="Fractum.Entities.TextChannel.GetMessagesAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_GetMessagesAsync_System_Int32_" data-uid="Fractum.Entities.TextChannel.GetMessagesAsync(System.Int32)">GetMessagesAsync(Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IReadOnlyCollection&lt;Message&gt;&gt; GetMessagesAsync(int limit = 100)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">limit</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Collections.Generic.IReadOnlyCollection</span>&lt;<a class="xref" href="Fractum.Entities.Message.html">Message</a>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel_TriggerTypingAsync.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel.TriggerTypingAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L52">View Source</a>
+  </span>
+  <a id="Fractum_Entities_TextChannel_TriggerTypingAsync_" data-uid="Fractum.Entities.TextChannel.TriggerTypingAsync*"></a>
+  <h4 id="Fractum_Entities_TextChannel_TriggerTypingAsync" data-uid="Fractum.Entities.TextChannel.TriggerTypingAsync">TriggerTypingAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task TriggerTypingAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IEquatable&lt;T&gt;</span>
+  </div>
+  <div>
+      <a class="xref" href="Fractum.Contracts.IMessageChannel.html">IMessageChannel</a>
+  </div>
+  <div>
+      <a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_TextChannel.md&amp;value=---%0Auid%3A%20Fractum.Entities.TextChannel%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/TextChannel.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
