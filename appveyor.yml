@@ -13,7 +13,7 @@ environment:
         secure: ta7W/Clsr/+1SBHRB1X5BbkqjOtGrfOK9NnvJS+Re6Q=
 
 install:
-- choco install docfx -y
+- choco install docfx -y --version 2.40
 
 build_script:
 - ps: dotnet restore .\src\Fractum.sln | Out-Host
