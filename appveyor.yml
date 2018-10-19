@@ -1,5 +1,3 @@
-# Stolen from https://github.com/Quahu/Qmmands/blob/master/appveyor.yml :^)
-
 version: 'build-{build}'
 
 image: Visual Studio 2017 Preview
