@@ -3554,6 +3554,64 @@ references:
   isSpec: "True"
   fullName: Fractum.Entities.Properties.VoiceChannelProperties.UserLimit
   nameWithType: VoiceChannelProperties.UserLimit
+- uid: Fractum.Entities.Reaction
+  name: Reaction
+  href: api/Fractum.Entities.Reaction.html
+  commentId: T:Fractum.Entities.Reaction
+  fullName: Fractum.Entities.Reaction
+  nameWithType: Reaction
+- uid: Fractum.Entities.Reaction.ChannelId
+  name: ChannelId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_ChannelId
+  commentId: P:Fractum.Entities.Reaction.ChannelId
+  fullName: Fractum.Entities.Reaction.ChannelId
+  nameWithType: Reaction.ChannelId
+- uid: Fractum.Entities.Reaction.ChannelId*
+  name: ChannelId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_ChannelId_
+  commentId: Overload:Fractum.Entities.Reaction.ChannelId
+  isSpec: "True"
+  fullName: Fractum.Entities.Reaction.ChannelId
+  nameWithType: Reaction.ChannelId
+- uid: Fractum.Entities.Reaction.Emoji
+  name: Emoji
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_Emoji
+  commentId: P:Fractum.Entities.Reaction.Emoji
+  fullName: Fractum.Entities.Reaction.Emoji
+  nameWithType: Reaction.Emoji
+- uid: Fractum.Entities.Reaction.Emoji*
+  name: Emoji
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_Emoji_
+  commentId: Overload:Fractum.Entities.Reaction.Emoji
+  isSpec: "True"
+  fullName: Fractum.Entities.Reaction.Emoji
+  nameWithType: Reaction.Emoji
+- uid: Fractum.Entities.Reaction.GuildId
+  name: GuildId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_GuildId
+  commentId: P:Fractum.Entities.Reaction.GuildId
+  fullName: Fractum.Entities.Reaction.GuildId
+  nameWithType: Reaction.GuildId
+- uid: Fractum.Entities.Reaction.GuildId*
+  name: GuildId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_GuildId_
+  commentId: Overload:Fractum.Entities.Reaction.GuildId
+  isSpec: "True"
+  fullName: Fractum.Entities.Reaction.GuildId
+  nameWithType: Reaction.GuildId
+- uid: Fractum.Entities.Reaction.UserId
+  name: UserId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_UserId
+  commentId: P:Fractum.Entities.Reaction.UserId
+  fullName: Fractum.Entities.Reaction.UserId
+  nameWithType: Reaction.UserId
+- uid: Fractum.Entities.Reaction.UserId*
+  name: UserId
+  href: api/Fractum.Entities.Reaction.html#Fractum_Entities_Reaction_UserId_
+  commentId: Overload:Fractum.Entities.Reaction.UserId
+  isSpec: "True"
+  fullName: Fractum.Entities.Reaction.UserId
+  nameWithType: Reaction.UserId
 - uid: Fractum.Entities.Role
   name: Role
   href: api/Fractum.Entities.Role.html
@@ -3854,6 +3912,19 @@ references:
   commentId: T:Fractum.Entities.User
   fullName: Fractum.Entities.User
   nameWithType: User
+- uid: Fractum.Entities.User.Clone
+  name: Clone()
+  href: api/Fractum.Entities.User.html#Fractum_Entities_User_Clone
+  commentId: M:Fractum.Entities.User.Clone
+  fullName: Fractum.Entities.User.Clone()
+  nameWithType: User.Clone()
+- uid: Fractum.Entities.User.Clone*
+  name: Clone
+  href: api/Fractum.Entities.User.html#Fractum_Entities_User_Clone_
+  commentId: Overload:Fractum.Entities.User.Clone
+  isSpec: "True"
+  fullName: Fractum.Entities.User.Clone
+  nameWithType: User.Clone
 - uid: Fractum.Entities.User.Discrim
   name: Discrim
   href: api/Fractum.Entities.User.html#Fractum_Entities_User_Discrim
@@ -6401,6 +6472,24 @@ references:
   commentId: E:Fractum.WebSocket.FractumSocketClient.MessageUpdated
   fullName: Fractum.WebSocket.FractumSocketClient.MessageUpdated
   nameWithType: FractumSocketClient.MessageUpdated
+- uid: Fractum.WebSocket.FractumSocketClient.ReactionAdded
+  name: ReactionAdded
+  href: api/Fractum.WebSocket.FractumSocketClient.html#Fractum_WebSocket_FractumSocketClient_ReactionAdded
+  commentId: E:Fractum.WebSocket.FractumSocketClient.ReactionAdded
+  fullName: Fractum.WebSocket.FractumSocketClient.ReactionAdded
+  nameWithType: FractumSocketClient.ReactionAdded
+- uid: Fractum.WebSocket.FractumSocketClient.ReactionRemoved
+  name: ReactionRemoved
+  href: api/Fractum.WebSocket.FractumSocketClient.html#Fractum_WebSocket_FractumSocketClient_ReactionRemoved
+  commentId: E:Fractum.WebSocket.FractumSocketClient.ReactionRemoved
+  fullName: Fractum.WebSocket.FractumSocketClient.ReactionRemoved
+  nameWithType: FractumSocketClient.ReactionRemoved
+- uid: Fractum.WebSocket.FractumSocketClient.ReactionsCleared
+  name: ReactionsCleared
+  href: api/Fractum.WebSocket.FractumSocketClient.html#Fractum_WebSocket_FractumSocketClient_ReactionsCleared
+  commentId: E:Fractum.WebSocket.FractumSocketClient.ReactionsCleared
+  fullName: Fractum.WebSocket.FractumSocketClient.ReactionsCleared
+  nameWithType: FractumSocketClient.ReactionsCleared
 - uid: Fractum.WebSocket.FractumSocketClient.Ready
   name: Ready
   href: api/Fractum.WebSocket.FractumSocketClient.html#Fractum_WebSocket_FractumSocketClient_Ready
@@ -6480,28 +6569,9 @@ references:
   isSpec: "True"
   fullName: Fractum.WebSocket.FractumSocketClient.UsePipeline
   nameWithType: FractumSocketClient.UsePipeline
-- uid: Fractum.WebSocket.Hooks
-  name: Fractum.WebSocket.Hooks
-  href: api/Fractum.WebSocket.Hooks.html
-  commentId: N:Fractum.WebSocket.Hooks
-  fullName: Fractum.WebSocket.Hooks
-  nameWithType: Fractum.WebSocket.Hooks
-- uid: Fractum.WebSocket.Hooks.MessageDeleteHook
-  name: MessageDeleteHook
-  href: api/Fractum.WebSocket.Hooks.MessageDeleteHook.html
-  commentId: T:Fractum.WebSocket.Hooks.MessageDeleteHook
-  fullName: Fractum.WebSocket.Hooks.MessageDeleteHook
-  nameWithType: MessageDeleteHook
-- uid: Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync(Newtonsoft.Json.Linq.JToken,Fractum.WebSocket.Core.FractumCache,Fractum.Contracts.ISession,Fractum.WebSocket.FractumSocketClient)
-  name: RunAsync(JToken, FractumCache, ISession, FractumSocketClient)
-  href: api/Fractum.WebSocket.Hooks.MessageDeleteHook.html#Fractum_WebSocket_Hooks_MessageDeleteHook_RunAsync_Newtonsoft_Json_Linq_JToken_Fractum_WebSocket_Core_FractumCache_Fractum_Contracts_ISession_Fractum_WebSocket_FractumSocketClient_
-  commentId: M:Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync(Newtonsoft.Json.Linq.JToken,Fractum.WebSocket.Core.FractumCache,Fractum.Contracts.ISession,Fractum.WebSocket.FractumSocketClient)
-  fullName: Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync(Newtonsoft.Json.Linq.JToken, Fractum.WebSocket.Core.FractumCache, Fractum.Contracts.ISession, Fractum.WebSocket.FractumSocketClient)
-  nameWithType: MessageDeleteHook.RunAsync(JToken, FractumCache, ISession, FractumSocketClient)
-- uid: Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync*
-  name: RunAsync
-  href: api/Fractum.WebSocket.Hooks.MessageDeleteHook.html#Fractum_WebSocket_Hooks_MessageDeleteHook_RunAsync_
-  commentId: Overload:Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync
-  isSpec: "True"
-  fullName: Fractum.WebSocket.Hooks.MessageDeleteHook.RunAsync
-  nameWithType: MessageDeleteHook.RunAsync
+- uid: Fractum.WebSocket.FractumSocketClient.UserUpdated
+  name: UserUpdated
+  href: api/Fractum.WebSocket.FractumSocketClient.html#Fractum_WebSocket_FractumSocketClient_UserUpdated
+  commentId: E:Fractum.WebSocket.FractumSocketClient.UserUpdated
+  fullName: Fractum.WebSocket.FractumSocketClient.UserUpdated
+  nameWithType: FractumSocketClient.UserUpdated

@@ -87,6 +87,7 @@
     <div><span class="xref">System.IEquatable</span>&lt;<a class="xref" href="Fractum.Entities.DiscordEntity.html">DiscordEntity</a>&gt;</div>
     <div><a class="xref" href="Fractum.Contracts.IUser.html">IUser</a></div>
     <div><a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a></div>
+    <div><span class="xref">System.ICloneable</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -122,7 +123,7 @@
   <h6><strong>Assembly</strong>: Fractum.dll</h6>
   <h5 id="Fractum_Entities_User_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class User : DiscordEntity, IEquatable&lt;DiscordEntity&gt;, IUser, IDiscordEntity</code></pre>
+    <pre><code class="lang-csharp hljs">public class User : DiscordEntity, IEquatable&lt;DiscordEntity&gt;, IUser, IDiscordEntity, ICloneable</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -131,7 +132,7 @@
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_Discrim.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.Discrim%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L22">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L23">View Source</a>
   </span>
   <a id="Fractum_Entities_User_Discrim_" data-uid="Fractum.Entities.User.Discrim*"></a>
   <h4 id="Fractum_Entities_User_Discrim" data-uid="Fractum.Entities.User.Discrim">Discrim</h4>
@@ -162,7 +163,7 @@ public short Discrim { get; }</code></pre>
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_IsBot.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.IsBot%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L25">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L26">View Source</a>
   </span>
   <a id="Fractum_Entities_User_IsBot_" data-uid="Fractum.Entities.User.IsBot*"></a>
   <h4 id="Fractum_Entities_User_IsBot" data-uid="Fractum.Entities.User.IsBot">IsBot</h4>
@@ -193,7 +194,7 @@ public bool IsBot { get; }</code></pre>
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_Mention.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.Mention%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L28">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L29">View Source</a>
   </span>
   <a id="Fractum_Entities_User_Mention_" data-uid="Fractum.Entities.User.Mention*"></a>
   <h4 id="Fractum_Entities_User_Mention" data-uid="Fractum.Entities.User.Mention">Mention</h4>
@@ -224,7 +225,7 @@ public string Mention { get; }</code></pre>
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_Username.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.Username%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L19">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L20">View Source</a>
   </span>
   <a id="Fractum_Entities_User_Username_" data-uid="Fractum.Entities.User.Username*"></a>
   <h4 id="Fractum_Entities_User_Username" data-uid="Fractum.Entities.User.Username">Username</h4>
@@ -254,10 +255,40 @@ public string Username { get; }</code></pre>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_Clone.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L48">View Source</a>
+  </span>
+  <a id="Fractum_Entities_User_Clone_" data-uid="Fractum.Entities.User.Clone*"></a>
+  <h4 id="Fractum_Entities_User_Clone" data-uid="Fractum.Entities.User.Clone">Clone()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public object Clone()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_GetAvatarUrl.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.GetAvatarUrl%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L34">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L35">View Source</a>
   </span>
   <a id="Fractum_Entities_User_GetAvatarUrl_" data-uid="Fractum.Entities.User.GetAvatarUrl*"></a>
   <h4 id="Fractum_Entities_User_GetAvatarUrl" data-uid="Fractum.Entities.User.GetAvatarUrl">GetAvatarUrl()</h4>
@@ -287,7 +318,7 @@ public string Username { get; }</code></pre>
     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User_ToString.md&amp;value=---%0Auid%3A%20Fractum.Entities.User.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L44">View Source</a>
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L45">View Source</a>
   </span>
   <a id="Fractum_Entities_User_ToString_" data-uid="Fractum.Entities.User.ToString*"></a>
   <h4 id="Fractum_Entities_User_ToString" data-uid="Fractum.Entities.User.ToString">ToString()</h4>
@@ -324,6 +355,9 @@ public string Username { get; }</code></pre>
   <div>
       <a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a>
   </div>
+  <div>
+      <span class="xref">System.ICloneable</span>
+  </div>
 </article>
           </div>
           
@@ -335,7 +369,7 @@ public string Username { get; }</code></pre>
                     <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_User.md&amp;value=---%0Auid%3A%20Fractum.Entities.User%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L7" class="contribution-link">View Source</a>
+                    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/User.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
