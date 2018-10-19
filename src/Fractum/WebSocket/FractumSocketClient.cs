@@ -89,9 +89,10 @@ namespace Fractum.WebSocket
                 .RegisterHook("MESSAGE_CREATE", new MessageCreateHook())
                 .RegisterHook("MESSAGE_UPDATE", new MessageUpdateHook())
                 .RegisterHook("MESSAGE_DELETE", new MessageDeleteHook())
-                //.RegisterHook("MESSAGE_REACTION_ADD", new ReactionAddHook())
-                //.RegisterHook("MESSAGE_REACTION_REMOVE", new ReactionRemoveHook())
-                //.RegisterHook("MESSAGE_REACTION_REMOVE_ALL", new ReactionsClearHook())
+                .RegisterHook("MESSAGE_REACTION_ADD", new ReactionAddHook())
+                .RegisterHook("MESSAGE_REACTION_REMOVE", new ReactionRemoveHook())
+                .RegisterHook("MESSAGE_REACTION_REMOVE_ALL", new ReactionsClearHook())
+                .RegisterHook("USER_UPDATE", new UserUpdateHook())
                 //.RegisterHook("TYPING_START", new TypingStartHook())
                 //.RegisterHook("VOICE_STATE_UPDATE", new VoiceStateUpdateHook())
                 //.RegisterHook("WEBHOOKS_UPDATE", new WebhooksUpdateHook());
@@ -225,7 +226,7 @@ namespace Fractum.WebSocket
             var message = await RestClient.GetMessageAsync(channel, messageId).ConfigureAwait(false);
 
             message.Guild = Cache[message];
-
+            message.WithClient(message.Guild?.Client);
             return message;
         }
 
@@ -352,6 +353,18 @@ namespace Fractum.WebSocket
         internal void InvokeRoleDeleted(Guild guild, Role role)
             => RoleDeleted?.Invoke(guild, role);
 
+        internal void InvokeReactionAdded(Reaction reaction)
+            => ReactionAdded?.Invoke(reaction);
+
+        internal void InvokeReactionRemoved(Reaction reaction)
+          => ReactionAdded?.Invoke(reaction);
+
+        internal void InvokeReactionsCleared(ulong messageId, ulong channelId, ulong? guildId)
+            => ReactionsCleared?.Invoke(messageId, channelId, guildId);
+
+        internal void InvokeUserUpdated(CachedEntity<User> oldUser, User user)
+            => UserUpdated?.Invoke(oldUser, user);
+
         internal void InvokeReady()
             => Ready?.Invoke();
 
@@ -454,6 +467,26 @@ namespace Fractum.WebSocket
         ///     Raised when a role is deleted.
         /// </summary>
         public event Func<Guild, Role, Task> RoleDeleted;
+
+        /// <summary>
+        ///     Raised when a reaction is added to a message.
+        /// </summary>
+        public event Func<Reaction, Task> ReactionAdded;
+
+        /// <summary>
+        ///     Raised when a reaction is removed from a message.
+        /// </summary>
+        public event Func<Reaction, Task> ReactionRemoved;
+
+        /// <summary>
+        ///     Raised when the reactions for a message are cleared.
+        /// </summary>
+        public event Func<ulong, ulong, ulong?, Task> ReactionsCleared;
+
+        /// <summary>
+        ///     Raised when a user is updated.
+        /// </summary>
+        public event Func<CachedEntity<User>, User, Task> UserUpdated;
 
         /// <summary>
         ///     Raised when the client has successfully identified and is ready to receive and send events and commands.

@@ -1,10 +1,11 @@
-﻿using Fractum.Contracts;
+﻿using System;
+using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
-    public class User : DiscordEntity, IUser
+    public class User : DiscordEntity, IUser, ICloneable
     {
         internal User()
         {
@@ -43,5 +44,18 @@ namespace Fractum.Entities
 
         public override string ToString()
             => $"{Id}";
+
+        public object Clone()
+        {
+            return new User
+            {
+                Id = this.Id,
+                AvatarRaw = this.AvatarRaw,
+                Member = this.Member,
+                Username = this.Username,
+                Discrim = this.Discrim,
+                IsBot = this.IsBot
+            };
+        }
     }
 }

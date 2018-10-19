@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    public class MessageDeleteHook : IEventHook<JToken>
+    internal sealed class MessageDeleteHook : IEventHook<JToken>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {
