@@ -13,7 +13,7 @@ namespace Fractum.Contracts
         Task<Message> CreateMessageAsync(string content = "", bool isTTS = false, EmbedBuilder embedBuilder = null,
             params (string fileName, Stream fileStream)[] attachments);
 
-        ReadOnlyCollection<Message> Messages { get; }
+        IReadOnlyCollection<Message> Messages { get; }
 
         Task TriggerTypingAsync();
 

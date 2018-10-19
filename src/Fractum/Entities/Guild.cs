@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
@@ -49,45 +50,42 @@ namespace Fractum.Entities
 
         internal string SplashHash => _cache.SplashHash;
 
-        public ReadOnlyCollection<GuildEmoji> Emojis => _cache.GetEmojis();
+        public IReadOnlyCollection<GuildEmoji> Emojis => _cache.GetEmojis();
 
-        public ReadOnlyCollection<Role> Roles => _cache.GetRoles();
+        public IReadOnlyCollection<Role> Roles => _cache.GetRoles();
 
-        public ReadOnlyCollection<GuildMember> Members => _cache.GetMembers();
+        public IReadOnlyCollection<GuildMember> Members => _cache.GetMembers();
 
-        public GuildMember Owner => Members.FirstOrDefault(m => m.Id == OwnerId);
+        public GuildMember Owner => _cache.GetMember(OwnerId);
 
-        public ReadOnlyCollection<GuildChannel> Channels => _cache.GetChannels();
+        public IReadOnlyCollection<GuildChannel> Channels => _cache.GetChannels();
 
-        public ReadOnlyCollection<TextChannel> TextChannels => Channels
+        public IReadOnlyCollection<TextChannel> TextChannels => Channels
             .Where(c => c.Type == ChannelType.GuildText)
-            .Cast<TextChannel>()
-            .ToList()
-            .AsReadOnly();
+            .Cast<TextChannel>() 
+            as IReadOnlyCollection<TextChannel>;
 
-        public ReadOnlyCollection<VoiceChannel> VoiceChannels => Channels
+        public IReadOnlyCollection<VoiceChannel> VoiceChannels => Channels
             .Where(c => c.Type == ChannelType.GuildVoice)
             .Cast<VoiceChannel>()
-            .ToList()
-            .AsReadOnly();
+            as IReadOnlyCollection<VoiceChannel>;
 
-        public ReadOnlyCollection<Category> Categories => Channels
+        public IReadOnlyCollection<Category> Categories => Channels
             .Where(c => c.Type == ChannelType.GuildCategory)
             .Cast<Category>()
-            .ToList()
-            .AsReadOnly();
+            as IReadOnlyCollection<Category>;
 
-        public ReadOnlyCollection<Presence> Presences => _cache.GetPresences();
+        public IReadOnlyCollection<Presence> Presences => _cache.GetPresences();
 
         public string GetIconUrl() => IconHash == null
             ? default
-            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_ICON, Id, IconHash, "png"));
+            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_ICON, Id.ToString(), IconHash, "png"));
 
         public string GetSplashUrl() => SplashHash == null
             ? default
-            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_SPLASH, Id, SplashHash, ".png"));
+            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_SPLASH, Id.ToString(), SplashHash, ".png"));
 
         public override string ToString()
-            => $"{Name} : {Id}";
+            => $"{Name} : {Id.ToString()}";
     }
 }

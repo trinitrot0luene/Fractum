@@ -14,14 +14,11 @@ namespace Fractum.WebSocket.Hooks
         {
             var user = args.ToObject<User>();
 
-            var members = cache.Guilds.SelectMany(x => x.GetMembers()).Where(x => x.Id == user.Id);
+            var oldUser = cache.GetUserOrDefault(user.Id).Clone();
 
-            var clonedUser = members.FirstOrDefault()?.User.Clone() as User;
+            cache.AddUser(user);
 
-            foreach (var member in members)
-                member.User = user;
-
-            client.InvokeUserUpdated(new CachedEntity<User>(clonedUser), user);
+            client.InvokeUserUpdated(new CachedEntity<User>(oldUser as User), user);
 
             return Task.CompletedTask;
         }

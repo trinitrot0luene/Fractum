@@ -25,7 +25,7 @@ namespace Fractum.WebSocket.EventModels
         public override void ApplyToCache(FractumCache cache)
         {
             foreach (var guild in guilds)
-                cache[guild.Id] = new GuildCache(cache.Client, guild);
+                cache[guild.Id] = new GuildCache(cache.Client, guild, cache);
         }
     }
 }

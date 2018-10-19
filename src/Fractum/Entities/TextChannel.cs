@@ -41,7 +41,7 @@ namespace Fractum.Entities
         public ulong? LastMessageId { get; internal set; }
 
         [JsonIgnore]
-        public ReadOnlyCollection<Message> Messages => Cache.GetMessages(Id);
+        public IReadOnlyCollection<Message> Messages => Cache.GetMessages(Id);
 
         [JsonIgnore]
         public string Mention => string.Format(Consts.CHANNEL_MENTION, Id);

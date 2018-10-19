@@ -12,8 +12,10 @@ namespace Fractum.WebSocket.Core
     public sealed class FractumCache
     {
         private readonly object guildLock = new object();
+        private readonly object userLock = new object();
 
         private Dictionary<ulong, GuildCache> guilds = new Dictionary<ulong, GuildCache>();
+        private Dictionary<ulong, User> users = new Dictionary<ulong, User>();
 
         internal FractumSocketClient Client;
 
@@ -29,6 +31,24 @@ namespace Fractum.WebSocket.Core
         {
             lock (guildLock)
                 guilds.Remove(id);
+        }
+
+        public void AddUser(User user)
+        {
+            lock (userLock)
+                users[user.Id] = user;
+        }
+
+        public void RemoveUser(ulong id)
+        {
+            lock (userLock)
+                users.Remove(id);
+        }
+
+        public User GetUserOrDefault(ulong id)
+        {
+            lock (userLock)
+                return users.TryGetValue(id, out var user) ? user : default;
         }
 
         public ReadOnlyCollection<GuildCache> Guilds

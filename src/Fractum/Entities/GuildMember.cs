@@ -15,8 +15,8 @@ namespace Fractum.Entities
         internal GuildMember()
         {
         }
-
-        [JsonProperty("user")]
+        
+        [JsonIgnore]
         internal User User { get; set; }
 
         [JsonProperty("guild_id")]

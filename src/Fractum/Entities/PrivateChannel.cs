@@ -24,7 +24,7 @@ namespace Fractum.Entities
         public ReadOnlyCollection<IUser> Recipients { get; private set; }
 
         [JsonIgnore]
-        public ReadOnlyCollection<Message> Messages { get; internal set; }
+        public IReadOnlyCollection<Message> Messages { get; internal set; }
 
         public Task<Message> CreateMessageAsync(EmbedBuilder embedBuilder)
             => Client.CreateMessageAsync(this, null, embedBuilder: embedBuilder);

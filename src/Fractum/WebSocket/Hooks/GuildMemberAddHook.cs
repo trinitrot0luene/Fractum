@@ -12,6 +12,10 @@ namespace Fractum.WebSocket.Hooks
         {
             var member = args.ToObject<GuildMember>();
 
+            var user = args.Value<User>("user");
+
+            cache.AddUser(user);
+
             cache[member.GuildId.Value]?.AddOrUpdate(member, old => old = member);
 
             client.InvokeMemberJoined(member);

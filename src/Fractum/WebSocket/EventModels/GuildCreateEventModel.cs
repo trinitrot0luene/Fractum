@@ -77,7 +77,7 @@ namespace Fractum.WebSocket.EventModels
 
         public override void ApplyToCache(FractumCache cache)
         {
-            var gc = new GuildCache(cache.Client, this);
+            var gc = new GuildCache(cache.Client, this, cache);
             cache[gc.Id] = gc;
         }
 

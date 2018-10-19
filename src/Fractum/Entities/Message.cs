@@ -66,10 +66,10 @@ namespace Fractum.Entities
         private User AuthorUser { get; set; }
 
         [JsonIgnore]
-        public IUser Author =>  Guild.GetMembers().FirstOrDefault(x => x.Id == AuthorUser.Id) as IUser ?? AuthorUser;
+        public IUser Author =>  Guild.GetMember(AuthorUser.Id) as IUser ?? AuthorUser;
 
         [JsonIgnore]
-        public IMessageChannel Channel => Guild.GetChannels().First(x => x.Id == ChannelId) as IMessageChannel;
+        public IMessageChannel Channel => Guild.GetChannel(ChannelId) as IMessageChannel;
 
         public object Clone()
         {

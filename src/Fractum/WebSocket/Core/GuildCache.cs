@@ -21,6 +21,7 @@ namespace Fractum.WebSocket.Core
         private readonly object messageLock = new object();
 
         internal FractumSocketClient Client;
+        internal FractumCache Cache;
 
         private Dictionary<ulong, GuildEmoji> emojis = new Dictionary<ulong, GuildEmoji>();
         private Dictionary<ulong, Role> roles = new Dictionary<ulong, Role>();
@@ -31,9 +32,10 @@ namespace Fractum.WebSocket.Core
 
         public Guild Guild;
 
-        internal GuildCache(FractumSocketClient client, GuildCreateEventModel model)
+        internal GuildCache(FractumSocketClient client, GuildCreateEventModel model, FractumCache cache)
         {
             Client = client;
+            Cache = cache;
 
             Id = model.Id;
             OwnerId = model.OwnerId;
@@ -268,46 +270,103 @@ namespace Fractum.WebSocket.Core
             }
         }
 
-        public ReadOnlyCollection<GuildEmoji> GetEmojis()
+        public IReadOnlyCollection<GuildEmoji> GetEmojis()
         {
-            lock (emojiLock)
-                return emojis.Select(x => x.Value).ToList().AsReadOnly();
+            IEnumerable<GuildEmoji> yieldEmojis()
+            {
+                lock (emojiLock)
+                    foreach (var emoji in emojis)
+                        yield return emoji.Value;
+            }
+
+            return yieldEmojis() as IReadOnlyCollection<GuildEmoji>;
         }
         
-        public ReadOnlyCollection<Role> GetRoles()
+        public IReadOnlyCollection<Role> GetRoles()
         {
-            lock (roleLock)
-                return roles.Select(x => x.Value).ToList().AsReadOnly();
+            IEnumerable<Role> yieldRoles()
+            {
+                lock (roleLock)
+                    foreach (var role in roles)
+                        yield return role.Value;
+            }
+
+            return yieldRoles() as IReadOnlyCollection<Role>;
         }
 
-        public ReadOnlyCollection<GuildChannel> GetChannels()
+        public IReadOnlyCollection<GuildChannel> GetChannels()
         {
-            lock (channelLock)
-                return channels.Select(x => x.Value).ToList().AsReadOnly();
+            IEnumerable<GuildChannel> yieldChannels()
+            {
+                lock (channelLock)
+                    foreach (var channel in channels)
+                    {
+                        channel.Value.Cache = this;
+                        yield return channel.Value;
+                    }
+            }
+
+            return yieldChannels() as IReadOnlyCollection<GuildChannel>;
         }
 
-        public ReadOnlyCollection<Message> GetMessages(ulong channelId)
+        public IReadOnlyCollection<Message> GetMessages(ulong channelId)
         {
             lock (messageLock)
                 return messages.TryGetValue(channelId, out var messageCache)
-                    ? messageCache.ToList().AsReadOnly()
+                    ? messageCache.ToList() as IReadOnlyCollection<Message>
                     : new ReadOnlyCollection<Message>(new List<Message>());
         }
 
-        public ReadOnlyCollection<GuildMember> GetMembers()
+        public IReadOnlyCollection<GuildMember> GetMembers()
         {
-            lock (memberLock)
-                return members.Select(x =>
-                {
-                    x.Value.Guild = Guild;
-                    return x.Value;
-                }).ToList().AsReadOnly();
+            IEnumerable<GuildMember> yieldMembers()
+            {
+                lock (memberLock)
+                    foreach (var member in members)
+                    {
+                        member.Value.Guild = this.Guild;
+                        member.Value.WithClient(this.Client);
+                        yield return member.Value;
+                    }
+            }
+
+            return yieldMembers() as IReadOnlyCollection<GuildMember>;
         }
 
-        public ReadOnlyCollection<Presence> GetPresences()
+        public IReadOnlyCollection<Presence> GetPresences()
+        {
+            IEnumerable<Presence> yieldPresences()
+            {
+                lock (presenceLock)
+                    foreach (var presence in presences)
+                        yield return presence.Value;
+            }
+            
+            return yieldPresences() as IReadOnlyCollection<Presence>;
+        }
+
+        public Presence GetPresence(ulong userId)
         {
             lock (presenceLock)
-                return presences.Select(x => x.Value).ToList().AsReadOnly();
+                return presences.TryGetValue(userId, out var presence) ? presence : default;
+        }
+
+        public Role GetRole(ulong roleId)
+        {
+            lock (roleLock)
+                return roles.TryGetValue(roleId, out var role) ? role : default;
+        }
+
+        public GuildMember GetMember(ulong userId)
+        {
+            lock (memberLock)
+                return members.TryGetValue(userId, out var member) ? member : default;
+        }
+
+        public GuildChannel GetChannel(ulong channelId)
+        {
+            lock (channelLock)
+                return channels.TryGetValue(channelId, out var channel) ? channel : default;
         }
 
         #endregion
