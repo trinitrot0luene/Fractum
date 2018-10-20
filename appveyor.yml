@@ -30,9 +30,9 @@ build_script:
 
 after_build:
 - ps: >-
-    if ($Env:APPVEYOR_REPO_BRANCH -eq "master")
+    if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And $Env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
     {
-        if ($Env:APPVEYOR_REPO_TAG -eq "false" -And $Env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
+        if ($Env:APPVEYOR_REPO_TAG -eq "false")
         {
            $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
            dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
@@ -44,7 +44,7 @@ after_build:
     }
     else
     {
-        echo "Not building on master. Docs and package will not be built or deployed"
+        echo "Not building on master (or on a pull request). Docs and package will not be built or deployed"
     }
 nuget:
   disable_publish_on_pr: true
