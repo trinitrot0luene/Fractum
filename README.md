@@ -1,11 +1,11 @@
-![AppVeyor](https://img.shields.io/appveyor/ci/trinitrot0luene/Fractum.svg) ![NuGet](https://img.shields.io/nuget/v/Fractum.svg) ![MyGet Pre Release](https://img.shields.io/myget/trinitrotoluene/vpre/Fractum.svg)
+![AppVeyor](https://img.shields.io/appveyor/ci/trinitrot0luene/Fractum.svg) ![NuGet](https://img.shields.io/nuget/v/Fractum.svg) ![MyGet Pre Release](https://img.shields.io/myget/fractum/vpre/Fractum.svg)
 
 ## Links
 Guides and tutorials can be found in the [docs](https://trinitrot0luene.github.io/Fractum/articles/intro.html), as well as the [api reference](https://trinitrot0luene.github.io/Fractum/api/index.html).
 
 For nightly builds, add the MyGet repository as a NuGet package source and check the `Include Prerelease` option (in Visual Studio)
 ```
-https://www.myget.org/F/trinitrotoluene/api/v3/index.json
+https://www.myget.org/F/fractum/api/v3/index.json
 ```
 
 ## About
