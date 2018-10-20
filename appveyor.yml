@@ -44,7 +44,7 @@ after_build:
     }
     else
     {
-        echo "Not building on master. Docs and 
+        echo "Not building on master. Docs and package will not be built or deployed"
     }
 nuget:
   disable_publish_on_pr: true
