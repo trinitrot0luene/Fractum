@@ -3,7 +3,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
+using Fractum.Contracts;
+using Fractum.Entities.Extensions;
 using Fractum.Entities.WebSocket;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.Core
@@ -20,6 +23,8 @@ namespace Fractum.WebSocket.Core
         private MemoryStream DecompressedStream;
         private DeflateStream DecompressionStream;
 
+        private Encoding _utf8 = Encoding.UTF8;
+
         public WebSocketMessageConverter()
         {
             CompressedStream = new MemoryStream();
@@ -33,7 +38,7 @@ namespace Fractum.WebSocket.Core
             DecompressionStream = new DeflateStream(CompressedStream, CompressionMode.Decompress);
         }
 
-        public async Task<Payload> DecompressAsync(byte[] buffer)
+        public async Task<IPayload<EventModelBase>> DecompressAsync(byte[] buffer)
         {
             if (buffer[0] == 0x78)
                 await CompressedStream.WriteAsync(buffer, 2, buffer.Length - 2);
@@ -50,21 +55,103 @@ namespace Fractum.WebSocket.Core
                 await DecompressionStream.CopyToAsync(DecompressedStream);
 
             DecompressedStream.Position = 0;
-            Payload resultPayload;
-            using (var sr = new StreamReader(DecompressedStream, Encoding.UTF8))
-            using (var jr = new JsonTextReader(sr))
-            {
-                var serializer = new JsonSerializer();
 
-                resultPayload = serializer.Deserialize<Payload>(jr);
-            }
+            var decompressedString = _utf8.GetString(DecompressedStream.ToArray());
+
+            var payload = decompressedString.Deserialize<Payload>();
 
             DecompressedStream = new MemoryStream();
 
             CompressedStream.Position = 0;
             CompressedStream.SetLength(0);
 
-            return resultPayload;
+            return SelectPayload(payload, decompressedString);
+        }
+
+        private IPayload<EventModelBase> SelectPayload(Payload payload, string decompressedString)
+        {
+            switch (payload.OpCode)
+            {
+                case OpCode.Hello:
+                    return decompressedString.Deserialize<Payload<HelloEventModel>>();
+                case OpCode.InvalidSession:
+                {
+                    var resumable = decompressedString.Deserialize<bool>();
+                    var invalidSessionModel = new InvalidSessionEventModel { Resumable = resumable };
+                    return new Payload<InvalidSessionEventModel>()
+                    {
+                        OpCode = payload.OpCode,
+                        Data = invalidSessionModel
+                    };
+                }
+                #region Dispatches
+
+                case OpCode.Dispatch:
+                    switch (payload.Type)
+                    {
+                        case "BAN_ADD":
+                            return decompressedString.Deserialize<Payload<BanAddEventModel>>();
+                        case "BAN_REMOVE":
+                            return decompressedString.Deserialize<Payload<BanRemoveEventModel>>();
+                        case "CHANNEL_CREATE":
+                            return decompressedString.Deserialize<Payload<ChannelCreateEventModel>>();
+                        case "CHANNEL_DELETE":
+                            return decompressedString.Deserialize<Payload<ChannelDeleteEventModel>>();
+                        case "CHANNEL_PINS_UPDATE":
+                            return decompressedString.Deserialize<Payload<ChannelPinsUpdateEventModel>>();
+                        case "CHANNEL_UPDATE":
+                            return decompressedString.Deserialize<Payload<ChannelPinsUpdateEventModel>>();
+                        case "EMOJIS_UPDATE":
+                            return decompressedString.Deserialize<Payload<EmojisUpdateEventModel>>();
+                        case "GUILD_CREATE":
+                            return decompressedString.Deserialize<Payload<GuildCreateEventModel>>();
+                        case "GUILD_DELETE":
+                            return decompressedString.Deserialize<Payload<GuildDeleteEventModel>>();
+                        case "GUILD_MEMBER_ADD":
+                            return decompressedString.Deserialize<Payload<GuildMemberAddEventModel>>();
+                        case "GUILD_MEMBER_REMOVE":
+                            return decompressedString.Deserialize<Payload<GuildMemberRemoveEventModel>>();
+                        case "GUILD_MEMBERS_CHUNK":
+                            return decompressedString.Deserialize<Payload<GuildMembersChunkEventModel>>();
+                        case "GUILD_MEMBER_UPDATE":
+                            return decompressedString.Deserialize<Payload<GuildMemberUpdateEventModel>>();
+                        case "INTEGRATIONS_UPDATED":
+                            return decompressedString.Deserialize<Payload<IntegrationsUpdatedEventModel>>();
+                        case "MESSAGE_CREATE":
+                            return decompressedString.Deserialize<Payload<MessageCreateEventModel>>();
+                        case "MESSAGE_DELETE":
+                            return decompressedString.Deserialize<Payload<MessageDeleteEventModel>>();
+                        case "MESSAGE_UPDATE":
+                            return decompressedString.Deserialize<Payload<MessageUpdateEventModel>>();
+                        case "PRESENCE_UPDATE":
+                            return decompressedString.Deserialize<Payload<PresenceUpdateEventModel>>();
+                        case "REACTION_ADD":
+                            return decompressedString.Deserialize<Payload<ReactionAddEventModel>>();
+                        case "REACTION_REMOVE":
+                            return decompressedString.Deserialize<Payload<ReactionRemoveEventModel>>();
+                        case "REACTIONS_CLEAR":
+                            return decompressedString.Deserialize<Payload<ReactionsClearEventModel>>();
+                        case "ROLE_CREATE":
+                            return decompressedString.Deserialize<Payload<RoleCreateEventModel>>();
+                        case "ROLE_DELETE":
+                            return decompressedString.Deserialize<Payload<RoleDeleteEventModel>>();
+                        case "ROLE_UPDATE":
+                            return decompressedString.Deserialize<Payload<RoleUpdateEventModel>>();
+                        case "USER_UPDATE":
+                            return decompressedString.Deserialize<Payload<UserUpdateEventModel>>();
+                        default:
+                            throw new GatewayException("Unknown event type");
+                    }
+
+                #endregion
+
+                default:
+                    return new Payload<EmptyEventModel>()
+                    {
+                        OpCode = payload.OpCode,
+                        Data = new EmptyEventModel()
+                    };
+            } 
         }
     }
 }

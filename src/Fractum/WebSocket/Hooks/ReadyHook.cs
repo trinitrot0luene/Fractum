@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ReadyHook : IEventHook<JToken>
+    internal sealed class ReadyHook : IEventHook<EventModelBase>
     {
         public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
         {

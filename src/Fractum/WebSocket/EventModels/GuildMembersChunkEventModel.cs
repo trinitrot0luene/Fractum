@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class GuildMemberChunkEventModel : BaseEventModel
+    internal sealed class GuildMembersChunkEventModel : EventModelBase
     {
         [JsonProperty("guild_id")]
         public ulong GuildId { get; set; }

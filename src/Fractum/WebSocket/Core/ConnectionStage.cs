@@ -9,6 +9,7 @@ using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.Extensions;
 using Fractum.Entities.WebSocket;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -17,7 +18,7 @@ namespace Fractum.WebSocket.Core
     /// <summary>
     ///     Operates on the gateway socket to handle all connection-related logic.
     /// </summary>
-    internal sealed class ConnectionStage : IPipelineStage<Payload>
+    internal sealed class ConnectionStage : IPipelineStage<IPayload<EventModelBase>>
     {
         public ConnectionStage(FractumSocketClient client)
         {
@@ -44,7 +45,7 @@ namespace Fractum.WebSocket.Core
         /// </summary>
         /// <param name="payload">The payload the stage will receive as input.</param>
         /// <returns></returns>
-        public Task CompleteAsync(Payload payload)
+        public Task CompleteAsync(IPayload<EventModelBase> payload)
         {
             Session.Seq = payload.Seq ?? Session.Seq;
             switch (payload.OpCode)
@@ -53,7 +54,7 @@ namespace Fractum.WebSocket.Core
 
                 case OpCode.Hello:
                     // Regardless of what happens we want to start heartbeating on HELLO.
-                    var heartbeatInterval = payload.Data.Value<int>("heartbeat_interval");
+                    var heartbeatInterval = payload.Data.Cast<HelloEventModel>().HeartbeatInterval;
                     HeartbeatTimer = new Timer(_ => Task.Run(() => HeartbeatAsync()), null, heartbeatInterval,
                         heartbeatInterval);
                     // If we aren't resuming, re-identify.
@@ -82,7 +83,7 @@ namespace Fractum.WebSocket.Core
                 #region Invalid Session
 
                 case OpCode.InvalidSession:
-                    var isValid = payload.Data.ToObject<bool>();
+                    var isValid = payload.Data.Cast<InvalidSessionEventModel>().Resumable;
                     // d: false, invalidate session and re-identify.
                     if (!isValid)
                     {

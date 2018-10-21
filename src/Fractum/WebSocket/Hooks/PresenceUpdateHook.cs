@@ -9,11 +9,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class PresenceUpdateHook : IEventHook<JToken>
+    internal sealed class PresenceUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var presenceUpdate = args.ToObject<PresenceUpdateEventModel>();
+            var presenceUpdate = args.Cast<PresenceUpdateEventModel>();
 
             presenceUpdate.ApplyToCache(cache);
 

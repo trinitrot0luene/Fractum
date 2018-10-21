@@ -2,15 +2,16 @@
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class GuildMemberAddHook : IEventHook<JToken>
+    internal sealed class GuildMemberAddHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var member = args.ToObject<GuildMember>();
+            var member = args.Cast<GuildMemberAddEventModel>();
 
             var user = args.Value<User>("user");
 

@@ -8,11 +8,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class BanRemoveHook : IEventHook<JToken>
+    internal sealed class BanRemoveHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventData = args.ToObject<GuildBanEventModel>();
+            var eventData = args.Cast<BanRemoveEventModel>();
 
             var guild = cache[eventData.GuildId];
 

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class GuildCreateEventModel : BaseEventModel
+    internal sealed class GuildCreateEventModel : EventModelBase
     {
         internal GuildCreateEventModel()
         {

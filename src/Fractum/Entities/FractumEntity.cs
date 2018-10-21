@@ -1,26 +1,21 @@
 ﻿using Fractum.Rest;
 using Fractum.WebSocket;
+using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities
 {
     public abstract class FractumEntity
     {
-        internal FractumEntity()
+        internal FractumEntity(EventModelBase model, FractumCache cache)
         {
+            Cache = cache;
         }
 
-        internal FractumSocketClient Client { get; private set; }
+        internal FractumCache Cache { get; }
 
-        internal FractumEntity WithClient(FractumSocketClient client)
-        {
-            Client = client;
-            return this;
-        }
+        internal FractumSocketClient Client => Cache.Client;
 
-        internal T WithClient<T>(FractumSocketClient client) where T : FractumEntity
-        {
-            Client = client;
-            return this as T;
-        }
+        internal abstract void ApplyModel();
     }
 }

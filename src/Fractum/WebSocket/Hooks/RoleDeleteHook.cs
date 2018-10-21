@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class RoleDeleteHook : IEventHook<JToken>
+    internal sealed class RoleDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventArgs = args.ToObject<GuildRoleEventModel>();
+            var eventArgs = args.Cast<RoleDeleteEventModel>();
 
             var role = cache[eventArgs.GuildId].GetRoles().First(x => x.Id == eventArgs.RoleId.Value);
 

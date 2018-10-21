@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities.WebSocket;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Core
 {
-    public sealed class EventStage : IPipelineStage<Payload>
+    public sealed class EventStage : IPipelineStage<IPayload<EventModelBase>>
     {
-        private readonly Dictionary<string, List<IEventHook<JToken>>> Hooks;
+        private readonly Dictionary<string, List<IEventHook<EventModelBase>>> Hooks;
 
         public EventStage(FractumSocketClient client)
         {
@@ -17,7 +18,7 @@ namespace Fractum.WebSocket.Core
             Socket = client.Socket;
             Client = client;
 
-            Hooks = new Dictionary<string, List<IEventHook<JToken>>>();
+            Hooks = new Dictionary<string, List<IEventHook<EventModelBase>>>();
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace Fractum.WebSocket.Core
         /// </summary>
         /// <param name="data">The data to operate on.</param>
         /// <returns></returns>
-        public async Task CompleteAsync(Payload payload)
+        public async Task CompleteAsync(IPayload<EventModelBase> payload)
         {
             if (Hooks.TryGetValue(payload.Type ?? string.Empty, out var hooks))
                 foreach (var hook in hooks)
@@ -58,12 +59,12 @@ namespace Fractum.WebSocket.Core
         /// <param name="eventName">The target dispatch name.</param>
         /// <param name="hook">The hook to be executed.</param>
         /// <returns></returns>
-        public EventStage RegisterHook(string eventName, IEventHook<JToken> hook)
+        public EventStage RegisterHook(string eventName, IEventHook<EventModelBase> hook)
         {
             if (Hooks.TryGetValue(eventName.ToUpper(), out var existingHooks))
                 existingHooks.Add(hook);
             else
-                Hooks.Add(eventName.ToUpper(), new List<IEventHook<JToken>> {hook});
+                Hooks.Add(eventName.ToUpper(), new List<IEventHook<EventModelBase>> {hook});
 
             return this;
         }

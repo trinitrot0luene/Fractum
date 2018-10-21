@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class GuildCreateHook : IEventHook<JToken>
+    internal sealed class GuildCreateHook : IEventHook<EventModelBase>
     {
-        public async Task RunAsync(JToken data, FractumCache cache, ISession session, FractumSocketClient client)
+        public async Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var guild = data.ToObject<GuildCreateEventModel>();
+            var guild = args.Cast<GuildCreateEventModel>();
 
             guild.ApplyToCache(cache);
 

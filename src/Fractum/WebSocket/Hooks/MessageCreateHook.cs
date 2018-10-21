@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class MessageCreateHook : IEventHook<JToken>
+    internal sealed class MessageCreateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var message = args.ToObject<Message>();
+            var message = args.Cast<MessageCreateEventModel>();
 
             if (message.GuildId.HasValue && cache.HasGuild(message.GuildId.Value))
             {

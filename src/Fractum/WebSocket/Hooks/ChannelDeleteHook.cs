@@ -3,16 +3,19 @@ using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Utilities;
 using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ChannelDeleteHook : IEventHook<JToken>
+    internal sealed class ChannelDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
+            var eventArgs = args.Cast<ChannelDeleteEventModel>();
+
             GuildChannel deletedChannel = null;
-            switch ((ChannelType) args.Value<int>("type"))
+            switch (eventArgs.)
             {
                 case ChannelType.GuildCategory:
                     deletedChannel = args.ToObject<Category>();

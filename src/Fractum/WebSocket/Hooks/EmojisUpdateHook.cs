@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class EmojisUpdateHook : IEventHook<JToken>
+    internal sealed class EmojisUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventArgs = args.ToObject<EmojiUpdatedEventModel>();
+            var eventArgs = args.Cast<EmojisUpdateEventModel>();
 
             var guild = cache[eventArgs.GuildId];
 
