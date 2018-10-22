@@ -107,6 +107,8 @@ namespace Fractum.WebSocket.Core
                             return decompressedString.Deserialize<Payload<GuildCreateEventModel>>();
                         case "GUILD_DELETE":
                             return decompressedString.Deserialize<Payload<GuildDeleteEventModel>>();
+                        case "GUILD_UPDATE":
+                            return decompressedString.Deserialize<Payload<GuildUpdateEventModel>>();
                         case "GUILD_MEMBER_ADD":
                             return decompressedString.Deserialize<Payload<GuildMemberAddEventModel>>();
                         case "GUILD_MEMBER_REMOVE":
@@ -124,7 +126,7 @@ namespace Fractum.WebSocket.Core
                         case "MESSAGE_UPDATE":
                             return decompressedString.Deserialize<Payload<MessageUpdateEventModel>>();
                         case "PRESENCE_UPDATE":
-                            return decompressedString.Deserialize<Payload<GuildMemberUpdateEventModel>>();
+                            return decompressedString.Deserialize<Payload<PresenceUpdateEventModel>>();
                         case "MESSAGE_REACTION_ADD":
                             return decompressedString.Deserialize<Payload<ReactionAddEventModel>>();
                         case "MESSAGE_REACTION_REMOVE":

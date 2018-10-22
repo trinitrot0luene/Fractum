@@ -14,22 +14,17 @@ namespace Fractum.WebSocket.Core
         private readonly object emojiLock = new object();
         private readonly object memberLock = new object();
         private readonly object messageLock = new object();
-        private readonly object presenceLock = new object();
         private readonly object roleLock = new object();
+
         internal FractumCache Cache;
-        private readonly Dictionary<ulong, CachedGuildChannel> channels = new Dictionary<ulong, CachedGuildChannel>();
-
         internal FractumSocketClient Client;
-
-        private Dictionary<ulong, GuildEmoji> emojis = new Dictionary<ulong, GuildEmoji>();
         internal CachedGuild Guild;
-        private readonly Dictionary<ulong, CachedMember> members = new Dictionary<ulong, CachedMember>();
 
-        private readonly Dictionary<ulong, CircularBuffer<CachedMessage>> messages =
-            new Dictionary<ulong, CircularBuffer<CachedMessage>>();
-
-        private readonly Dictionary<ulong, Presence> presences = new Dictionary<ulong, Presence>();
         private Dictionary<ulong, Role> roles = new Dictionary<ulong, Role>();
+        private Dictionary<ulong, GuildEmoji> emojis = new Dictionary<ulong, GuildEmoji>();
+        private readonly Dictionary<ulong, CachedMember> members = new Dictionary<ulong, CachedMember>();
+        private readonly Dictionary<ulong, CachedGuildChannel> channels = new Dictionary<ulong, CachedGuildChannel>();
+        private readonly Dictionary<ulong, CircularBuffer<CachedMessage>> messages = new Dictionary<ulong, CircularBuffer<CachedMessage>>();
 
         internal SyncedGuildCache(FractumCache cache, GuildCreateEventModel model)
         {
@@ -87,11 +82,8 @@ namespace Fractum.WebSocket.Core
                         members.Add(member.User.Id, new CachedMember(Cache, member, Id));
             }
 
-            lock (presenceLock)
-            {
-                foreach (var presence in model.Presences)
-                    presences.Add(presence.User.Id, presence);
-            }
+            foreach (var presence in model.Presences)
+                Cache.AddPresence(new CachedPresence(presence));
 
             Guild = new CachedGuild(Cache, Id);
         }
@@ -185,17 +177,6 @@ namespace Fractum.WebSocket.Core
             }
         }
 
-        public void AddOrUpdate(Presence presence, Func<Presence, Presence> replaceAction)
-        {
-            lock (presenceLock)
-            {
-                if (presences.ContainsKey(presence.User.Id))
-                    presences[presence.User.Id] = replaceAction(presences[presence.User.Id]);
-                else
-                    presences.Add(presence.User.Id, presence);
-            }
-        }
-
         public void AddOrCreate(CachedMessage message)
         {
             lock (messageLock)
@@ -247,14 +228,6 @@ namespace Fractum.WebSocket.Core
             lock (memberLock)
             {
                 members.Remove(member.Id);
-            }
-        }
-
-        public void Remove(Presence presence)
-        {
-            lock (presenceLock)
-            {
-                presences.Remove(presence.User.Id);
             }
         }
 
@@ -332,23 +305,6 @@ namespace Fractum.WebSocket.Core
             {
                 foreach (var member in members)
                     yield return member.Value;
-            }
-        }
-
-        public IEnumerable<Presence> GetPresences()
-        {
-            lock (presenceLock)
-            {
-                foreach (var presence in presences)
-                    yield return presence.Value;
-            }
-        }
-
-        public Presence GetPresence(ulong userId)
-        {
-            lock (presenceLock)
-            {
-                return presences.TryGetValue(userId, out var presence) ? presence : default;
             }
         }
 

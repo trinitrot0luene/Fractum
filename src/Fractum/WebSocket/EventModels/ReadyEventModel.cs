@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class ReadyEventModel : EventModelBase
+    internal class ReadyEventModel : EventModelBase
     {
         [JsonProperty("v")]
         public int ProtoVersion { get; private set; }

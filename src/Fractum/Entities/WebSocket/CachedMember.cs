@@ -39,18 +39,9 @@ namespace Fractum.Entities.WebSocket
             User.Username = model.User.Username ?? User.Username;
             User.Discrim = model.User.Discrim != short.MinValue ? User.Discrim : User.Discrim;
 
-            var newPresence = new Presence();
-            newPresence.Activity = model.Activity;
-            newPresence.User = User;
-            if (model.NewStatus.HasValue)
-                newPresence.Status = model.NewStatus.Value;
+            var newPresence = new CachedPresence(Id, model.Activity, model.NewStatus ?? Presence.Status);
 
-            Cache[GuildId]?.AddOrUpdate(newPresence, old =>
-            {
-                old.Activity = model.Activity;
-                old.Status = model.NewStatus ?? old.Status;
-                return old;
-            });
+            Cache.AddPresence(newPresence);
         }
 
         public override string ToString() =>
@@ -72,7 +63,7 @@ namespace Fractum.Entities.WebSocket
 
         public CachedGuild Guild => Cache[GuildId].Guild;
 
-        public Presence Presence => Cache[GuildId].GetPresence(Id);
+        public CachedPresence Presence => Cache.GetPresenceOrDefault(Id);
 
         public IEnumerable<Role> Roles
         {

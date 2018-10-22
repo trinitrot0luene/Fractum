@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels.Entities
 {
-    internal class GuildEmojiModel
+    public sealed class GuildEmojiModel
     {
         [JsonProperty("id")]
         public ulong Id { get; private set; }

@@ -11,10 +11,13 @@ namespace Fractum.WebSocket.Core
     {
         private readonly object guildLock = new object();
         private readonly object userLock = new object();
+        private readonly object presenceLock = new object();
 
         internal FractumSocketClient Client;
 
         private Dictionary<ulong, SyncedGuildCache> guilds = new Dictionary<ulong, SyncedGuildCache>();
+
+        private readonly Dictionary<ulong, CachedPresence> presences = new Dictionary<ulong, CachedPresence>();
         private readonly Dictionary<ulong, User> users = new Dictionary<ulong, User>();
 
         public FractumCache(FractumSocketClient client)
@@ -68,6 +71,15 @@ namespace Fractum.WebSocket.Core
                     users.Add(user.Id, user);
             }
         }
+
+        public void AddPresence(CachedPresence presence)
+        {
+            lock (presenceLock)
+                presences[presence.UserId] = presence;
+        }
+
+        public CachedPresence GetPresenceOrDefault(ulong userId) =>
+            presences.TryGetValue(userId, out var presence) ? presence : default;
 
         public void RemoveUser(ulong id)
         {

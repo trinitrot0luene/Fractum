@@ -65,8 +65,6 @@ namespace Fractum.Entities.WebSocket
             .Where(c => c.Type == ChannelType.GuildCategory)
             .Cast<CachedCategory>();
 
-        public IEnumerable<Presence> Presences => GuildCache.GetPresences();
-
         public string GetIconUrl() => IconHash == null
             ? default
             : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_ICON, Id.ToString(), IconHash, "png"));

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class GuildCreateEventModel : EventModelBase
+    public class GuildCreateEventModel : EventModelBase
     {
         #region Cacheable Entities
 
@@ -14,7 +14,7 @@ namespace Fractum.WebSocket.EventModels
         public List<ChannelCreateUpdateOrDeleteEventModel> Channels { get; private set; }
 
         [JsonProperty("presences")]
-        public List<Presence> Presences { get; private set; }
+        public List<PresenceModel> Presences { get; private set; }
 
         [JsonProperty("members")]
         public List<GuildMemberAddEventModel> Members { get; private set; }

@@ -1,11 +1,12 @@
 ﻿using System;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.WebSocket
 {
-    public sealed class Presence
+    public sealed class PresenceModel
     {
-        internal Presence()
+        internal PresenceModel()
         {
             Since = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             Activity = null;
@@ -14,7 +15,7 @@ namespace Fractum.Entities.WebSocket
         }
 
         [JsonProperty("user", NullValueHandling = NullValueHandling.Ignore)]
-        internal User User { get; set; }
+        public User User { get; private set; }
 
         [JsonProperty("since")]
         public long Since { get; set; }
@@ -24,6 +25,9 @@ namespace Fractum.Entities.WebSocket
 
         [JsonProperty("status")]
         private string StatusString { get; set; }
+
+        [JsonIgnore]
+        private Status StatusValue { get; set; }
 
         [JsonIgnore]
         public Status Status
@@ -40,6 +44,8 @@ namespace Fractum.Entities.WebSocket
                         return Status.Idle;
                     case "invisible":
                         return Status.Invisible;
+                    case "offline":
+                        return Status.Offline;
                     default:
                         return Status.Offline;
                 }

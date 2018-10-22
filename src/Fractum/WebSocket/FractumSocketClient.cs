@@ -65,7 +65,7 @@ namespace Fractum.WebSocket
         public IPipelineStage<IPayload<EventModelBase>> BuildDefaultEventStage()
             => new EventStage(this)
                 .RegisterHook("READY", new ReadyHook())
-                .RegisterHook("PRESENCE_UPDATE", new GuildMemberUpdateHook())
+                .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
                 .RegisterHook("GUILD_CREATE", new GuildCreateHook())
                 .RegisterHook("GUILD_UPDATE", new GuildUpdateHook())
                 .RegisterHook("GUILD_DELETE", new GuildDeleteHook())
@@ -148,7 +148,7 @@ namespace Fractum.WebSocket
             var payload = new
             {
                 op = OpCode.StatusUpdate,
-                d = new Presence
+                d = new PresenceModel
                 {
                     Activity = new Activity
                     {

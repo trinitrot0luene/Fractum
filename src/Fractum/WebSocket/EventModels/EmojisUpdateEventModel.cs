@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class EmojisUpdateEventModel : EventModelBase
+    public class EmojisUpdateEventModel : EventModelBase
     {
         [JsonProperty("guild_id")]
         public ulong GuildId { get; private set; }

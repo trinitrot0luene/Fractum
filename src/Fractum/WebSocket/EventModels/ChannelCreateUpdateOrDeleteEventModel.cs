@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class ChannelCreateUpdateOrDeleteEventModel : EventModelBase
+    public class ChannelCreateUpdateOrDeleteEventModel : EventModelBase
     {
         [JsonProperty("id")]
         public ulong Id { get; private set; }
