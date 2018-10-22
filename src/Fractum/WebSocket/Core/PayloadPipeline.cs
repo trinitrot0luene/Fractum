@@ -38,7 +38,7 @@ namespace Fractum.WebSocket.Core
         /// <summary>
         ///     Asynchronously enter the pipeline and begin processing stages.
         /// </summary>
-        /// <param name="payload"><see cref="Payload"/> to be processed by the pipeline during execution.</param>
+        /// <param name="payload"><see cref="Payload" /> to be processed by the pipeline during execution.</param>
         /// <returns></returns>
         public async Task<LogMessage> CompleteAsync(IPayload<EventModelBase> payload)
         {
@@ -67,7 +67,7 @@ namespace Fractum.WebSocket.Core
             => Log?.Invoke(msg);
 
         /// <summary>
-        ///     Raised when the <see cref="PayloadPipeline"/> encounters an error.
+        ///     Raised when the <see cref="PayloadPipeline" /> encounters an error.
         /// </summary>
         public event Func<LogMessage, Task> Log;
     }

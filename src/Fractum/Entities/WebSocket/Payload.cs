@@ -1,8 +1,6 @@
-﻿using System;
-using Fractum.Contracts;
+﻿using Fractum.Contracts;
 using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.Entities.WebSocket
 {

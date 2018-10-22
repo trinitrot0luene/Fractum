@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Fractum.Entities.WebSocket
+namespace Fractum.Entities
 {
     public sealed class Activity
     {

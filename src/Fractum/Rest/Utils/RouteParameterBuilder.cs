@@ -6,16 +6,17 @@ namespace Fractum.Rest.Utils
 {
     internal sealed class RouteParameterBuilder
     {
-        private Dictionary<string, string> _values;
-
         private const string _paramFormat = "{0}={1}{2}";
 
         private const char _separatorChar = '&';
 
         private const char _queryChar = '?';
+        private readonly Dictionary<string, string> _values;
 
         public RouteParameterBuilder()
-            => _values = new Dictionary<string, string>();
+        {
+            _values = new Dictionary<string, string>();
+        }
 
         public RouteParameterBuilder Add(string key, string value)
         {

@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
+using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -11,12 +10,16 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventArgs = args.Cast<GuildMemberRemoveEventModel>();
+            var eventArgs = (GuildMemberRemoveEventModel) args;
 
-            var member = cache[eventArgs.GuildId]?.GetMembers().First(x => x.Id == eventArgs.User.Id);
+            var member = cache[eventArgs.GuildId]?.GetMember(eventArgs.User.Id);
 
             if (member != null)
                 cache[eventArgs.GuildId]?.Remove(member);
+
+            client.InvokeLog(new LogMessage(nameof(GuildMemberRemoveHook),
+                $"{member?.ToString() ?? eventArgs.User.ToString()} left {member?.Guild?.Name ?? "Unknown Guild"}",
+                LogSeverity.Info));
 
             client.InvokeMemberLeft(member as IUser ?? eventArgs.User);
 

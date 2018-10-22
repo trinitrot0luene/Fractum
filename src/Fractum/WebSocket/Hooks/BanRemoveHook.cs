@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,7 +10,7 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventData = args.Cast<BanRemoveEventModel>();
+            var eventData = (BanRemoveEventModel) args;
 
             var guild = cache[eventData.GuildId];
 

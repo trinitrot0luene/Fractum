@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,20 +11,22 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var message = args.Cast<MessageCreateEventModel>();
+            var eventModel = (MessageCreateEventModel) args;
 
-            if (message.GuildId.HasValue && cache.HasGuild(message.GuildId.Value))
+            if (eventModel.GuildId.HasValue && cache.HasGuild(eventModel.GuildId.Value))
             {
-                var guild = cache[message.GuildId.Value];
+                var guild = cache[eventModel.GuildId.Value];
+
+                var message = new CachedMessage(cache, eventModel);
+
                 guild.AddOrCreate(message);
+
+                client.InvokeLog(new LogMessage(nameof(MessageCreateHook),
+                    $"Received message from {(message.Author as CachedMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",
+                    LogSeverity.Verbose));
+
+                client.InvokeMessageCreated(message);
             }
-            else return Task.CompletedTask;
-
-            client.InvokeLog(new LogMessage(nameof(MessageCreateHook),
-                $"Received message from {(message.Author as GuildMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",
-                LogSeverity.Verbose));
-
-            client.InvokeMessageCreated(message);
 
             return Task.CompletedTask;
         }

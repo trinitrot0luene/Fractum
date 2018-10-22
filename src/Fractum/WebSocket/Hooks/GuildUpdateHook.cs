@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.Utilities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,58 +10,40 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var model = args.Cast<GuildUpdateEventModel>();
+            var eventModel = (GuildUpdateEventModel) args;
 
-            var guildCache = cache[model.Id];
+            var guildCache = cache[eventModel.Id];
 
-            if (model.IsUnavailable)
+            if (eventModel.IsUnavailable)
             {
-                guildCache.IsUnavailable = model.IsUnavailable;
+                guildCache.IsUnavailable = eventModel.IsUnavailable;
                 client.InvokeGuildUnavailable(guildCache.Guild);
             }
 
-            guildCache.Update(guild => 
+            guildCache.Update(guild =>
             {
-                guild.OwnerId = model.OwnerId;
-                guild.IsUnavailable = model.IsUnavailable;
-                guild.Region = model.Region;
-                guild.Name = model.Name;
-                guild.MemberCount = model.MemberCount;
-                guild.Lazy = model.Lazy;
-                guild.Large = model.Large;
-                guild.AfkTimeout = model.AfkTimeout;
-                guild.AfkChannelId = model.AfkChannelId ?? guild.AfkChannelId;
-                guild.VerificationLevel = (VerificationLevel)model.VerificationLevel;
-                guild.MessageNotificationLevel = (MessageNotificationLevel)model.DefaultMessageNotifications;
-                guild.ExplicitContentFilterLevel = (ExplicitContentFilterLevel)model.ExplicitContentFilter;
-                guild.RequireMfa = model.RequireMfa;
+                guild.OwnerId = eventModel.OwnerId;
+                guild.IsUnavailable = eventModel.IsUnavailable;
+                guild.Region = eventModel.Region;
+                guild.Name = eventModel.Name;
+                guild.MemberCount = eventModel.MemberCount;
+                guild.Lazy = eventModel.Lazy;
+                guild.Large = eventModel.Large;
+                guild.AfkTimeout = eventModel.AfkTimeout;
+                guild.AfkChannelId = eventModel.AfkChannelId ?? guild.AfkChannelId;
+                guild.VerificationLevel = (VerificationLevel) eventModel.VerificationLevel;
+                guild.MessageNotificationLevel = (MessageNotificationLevel) eventModel.DefaultMessageNotifications;
+                guild.ExplicitContentFilterLevel = (ExplicitContentFilterLevel) eventModel.ExplicitContentFilter;
+                guild.RequireMfa = eventModel.RequireMfa;
 
-                foreach (var role in model.Roles)
-                    guild.AddOrUpdate(role, old => 
-                    {
-                        old.Name = role.Name;
-                        old.IsHoisted = role.IsHoisted;
-                        old.IsManaged = role.IsManaged;
-                        old.IsMentionable = role.IsMentionable;
-                        old.Permissions = role.Permissions;
-                        old.ColorRaw = role.ColorRaw;
-
-                        return old;
-                    });
-                foreach (var emoji in model.Emojis)
-                    guild.AddOrUpdate(emoji, old => 
-                    {
-                        old.IsAnimated = emoji.IsAnimated;
-                        old.Name = emoji.Name;
-
-                        return old;
-                    });
+                guild.Replace(eventModel.Roles);
+                guild.Replace(eventModel.Emojis);
             });
 
-            client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {model.Name} was updated",
+            client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {eventModel.Name} was updated",
                 LogSeverity.Verbose));
 
-            client.InvokeGuildUpdated(cache[model.Id].Guild);
+            client.InvokeGuildUpdated(cache[eventModel.Id].Guild);
 
             return Task.CompletedTask;
         }

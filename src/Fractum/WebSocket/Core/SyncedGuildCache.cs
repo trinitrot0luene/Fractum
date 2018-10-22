@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
 using Fractum.Utilities;
@@ -11,30 +8,32 @@ using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Core
 {
-    public sealed class GuildCache
+    public sealed class SyncedGuildCache
     {
-        private readonly object emojiLock = new object();
-        private readonly object roleLock = new object();
         private readonly object channelLock = new object();
+        private readonly object emojiLock = new object();
         private readonly object memberLock = new object();
-        private readonly object presenceLock = new object();
         private readonly object messageLock = new object();
+        private readonly object presenceLock = new object();
+        private readonly object roleLock = new object();
+        internal FractumCache Cache;
+        private readonly Dictionary<ulong, CachedGuildChannel> channels = new Dictionary<ulong, CachedGuildChannel>();
 
         internal FractumSocketClient Client;
-        internal FractumCache Cache;
 
         private Dictionary<ulong, GuildEmoji> emojis = new Dictionary<ulong, GuildEmoji>();
+        internal CachedGuild Guild;
+        private readonly Dictionary<ulong, CachedMember> members = new Dictionary<ulong, CachedMember>();
+
+        private readonly Dictionary<ulong, CircularBuffer<CachedMessage>> messages =
+            new Dictionary<ulong, CircularBuffer<CachedMessage>>();
+
+        private readonly Dictionary<ulong, Presence> presences = new Dictionary<ulong, Presence>();
         private Dictionary<ulong, Role> roles = new Dictionary<ulong, Role>();
-        private Dictionary<ulong, GuildChannel> channels = new Dictionary<ulong, GuildChannel>();
-        private Dictionary<ulong, GuildMember> members = new Dictionary<ulong, GuildMember>();
-        private Dictionary<ulong, Presence> presences = new Dictionary<ulong, Presence>();
-        private Dictionary<ulong, CircularBuffer<Message>> messages = new Dictionary<ulong, CircularBuffer<Message>>();
 
-        public Guild Guild;
-
-        internal GuildCache(FractumSocketClient client, GuildCreateEventModel model, FractumCache cache)
+        internal SyncedGuildCache(FractumCache cache, GuildCreateEventModel model)
         {
-            Client = client;
+            Client = cache.Client;
             Cache = cache;
 
             Id = model.Id;
@@ -52,43 +51,54 @@ namespace Fractum.WebSocket.Core
             ExplicitContentFilterLevel = (ExplicitContentFilterLevel) model.ExplicitContentFilter;
             RequireMfa = model.RequireMfa;
 
-            foreach (var emoji in model.Emojis)
+            lock (emojiLock)
             {
-                emoji.WithClient(client);
-                AddOrUpdate(emoji, x => x = emoji);
+                foreach (var emoji in model.Emojis)
+                    emojis.Add(emoji.Id, new GuildEmoji(Cache, emoji));
             }
 
-            foreach (var role in model.Roles)
+            lock (roleLock)
             {
-                role.WithClient(client);
-                AddOrUpdate(role, x => x = role);
+                foreach (var role in model.Roles)
+                    roles.Add(role.Id, role);
             }
 
-            foreach (var channel in model.Channels)
+            lock (channelLock)
             {
-                channel.WithClient(client);
-                channel.Cache = this;
-                AddOrUpdate(channel, x => x = channel);
+                foreach (var channel in model.Channels)
+                    switch (channel.Type)
+                    {
+                        case ChannelType.GuildCategory:
+                            channels.Add(channel.Id, new CachedCategory(Cache, channel, Id));
+                            break;
+                        case ChannelType.GuildText:
+                            channels.Add(channel.Id, new CachedTextChannel(Cache, channel, Id));
+                            break;
+                        case ChannelType.GuildVoice:
+                            channels.Add(channel.Id, new CachedVoiceChannel(Cache, channel, Id));
+                            break;
+                    }
             }
 
-            foreach (var member in model.Members)
+            lock (memberLock)
             {
-                member.WithClient(client);
-                member.Guild = Guild;
-                AddOrUpdate(member, x => x = member);
+                foreach (var member in model.Members)
+                    if (!members.ContainsKey(member.User.Id))
+                        members.Add(member.User.Id, new CachedMember(Cache, member, Id));
             }
 
-            foreach (var presence in model.Presences)
+            lock (presenceLock)
             {
-                AddOrUpdate(presence, x => x = presence);
+                foreach (var presence in model.Presences)
+                    presences.Add(presence.User.Id, presence);
             }
 
-            Guild = new Guild(this);
+            Guild = new CachedGuild(Cache, Id);
         }
 
         #region Properties
 
-        public ulong Id { get; internal set; }
+        public ulong Id { get; }
 
         public ulong OwnerId { get; internal set; }
 
@@ -124,7 +134,7 @@ namespace Fractum.WebSocket.Core
 
         #region Add | Update | Create
 
-        public void Update(Action<GuildCache> updateAction)
+        public void Update(Action<SyncedGuildCache> updateAction)
             => updateAction(this);
 
         public void AddOrUpdate(GuildEmoji emoji, Func<GuildEmoji, GuildEmoji> replaceAction)
@@ -135,8 +145,6 @@ namespace Fractum.WebSocket.Core
                     emojis[emoji.Id] = replaceAction(emojis[emoji.Id]);
                 else
                     emojis.Add(emoji.Id, emoji);
-
-                emojis[emoji.Id].WithClient(Client);
             }
         }
 
@@ -148,12 +156,10 @@ namespace Fractum.WebSocket.Core
                     roles[role.Id] = replaceAction(roles[role.Id]);
                 else
                     roles.Add(role.Id, role);
-
-                roles[role.Id].WithClient(Client);
             }
         }
 
-        public void AddOrUpdate(GuildChannel channel, Func<GuildChannel, GuildChannel> replaceAction)
+        public void AddOrUpdate(CachedGuildChannel channel, Func<CachedGuildChannel, CachedGuildChannel> replaceAction)
         {
             lock (channelLock)
             {
@@ -163,12 +169,10 @@ namespace Fractum.WebSocket.Core
                     channels.Add(channel.Id, channel);
 
                 var updatedChannel = channels[channel.Id];
-                updatedChannel.WithClient(Client);
-                updatedChannel.Cache = this;
             }
         }
 
-        public void AddOrUpdate(GuildMember member, Func<GuildMember, GuildMember> replaceAction)
+        public void AddOrUpdate(CachedMember member, Func<CachedMember, CachedMember> replaceAction)
         {
             lock (memberLock)
             {
@@ -178,8 +182,6 @@ namespace Fractum.WebSocket.Core
                     members.Add(member.Id, member);
 
                 var updatedMember = members[member.Id];
-                updatedMember.WithClient(Client);
-                updatedMember.Guild = Guild;
             }
         }
 
@@ -194,25 +196,22 @@ namespace Fractum.WebSocket.Core
             }
         }
 
-        public void AddOrCreate(Message message)
+        public void AddOrCreate(CachedMessage message)
         {
             lock (messageLock)
             {
-                CircularBuffer<Message> rb;
+                CircularBuffer<CachedMessage> rb;
                 if (messages.ContainsKey(message.ChannelId))
                 {
                     rb = messages[message.ChannelId];
                 }
                 else
                 {
-                    rb = new CircularBuffer<Message>(Client.RestClient.Config.MessageCacheLength);
+                    rb = new CircularBuffer<CachedMessage>(Client.RestClient.Config.MessageCacheLength);
                     messages.Add(message.ChannelId, rb);
                 }
 
-                message.WithClient(Client);
-                message.Guild = this;
-
-                if (rb.FirstOrDefault(m => m.Id == message.Id) is Message oldMessage)
+                if (rb.FirstOrDefault(m => m.Id == message.Id) is CachedMessage oldMessage)
                     rb[rb.IndexOf(oldMessage)] = message;
                 else
                     rb.Add(message);
@@ -222,151 +221,159 @@ namespace Fractum.WebSocket.Core
         public void Remove(GuildEmoji emoji)
         {
             lock (emojiLock)
+            {
                 emojis.Remove(emoji.Id);
+            }
         }
 
         public void Remove(Role role)
         {
             lock (roleLock)
+            {
                 roles.Remove(role.Id);
+            }
         }
 
-        public void Remove(GuildChannel channel)
+        public void Remove(CachedGuildChannel channel)
         {
             lock (channelLock)
+            {
                 channels.Remove(channel.Id);
+            }
         }
 
-        public void Remove(GuildMember member)
+        public void Remove(CachedMember member)
         {
             lock (memberLock)
+            {
                 members.Remove(member.Id);
+            }
         }
 
         public void Remove(Presence presence)
         {
             lock (presenceLock)
+            {
                 presences.Remove(presence.User.Id);
+            }
         }
 
-        public void Remove(Message message)
+        public void Remove(CachedMessage message)
         {
             lock (messageLock)
+            {
                 if (messages.TryGetValue(message.ChannelId, out var msgBuff))
                     msgBuff.Remove(message);
+            }
         }
 
-        public void Replace(ReadOnlyCollection<GuildEmoji> newCollection)
+        public void Replace(IEnumerable<Role> newCollection)
+        {
+            lock (roleLock)
+            {
+                roles = new Dictionary<ulong, Role>();
+
+                foreach (var role in newCollection)
+                    roles.Add(role.Id, role);
+            }
+        }
+
+        public void Replace(IEnumerable<GuildEmoji> newCollection)
         {
             lock (emojiLock)
             {
                 emojis = new Dictionary<ulong, GuildEmoji>();
 
                 foreach (var emoji in newCollection)
-                {
-                    emoji.WithClient(Client);
-                    AddOrUpdate(emoji, x => x = emoji);
-                }
+                    emojis.Add(emoji.Id, emoji);
             }
         }
 
-        public IReadOnlyCollection<GuildEmoji> GetEmojis()
+        public IEnumerable<GuildEmoji> GetEmojis()
         {
-            IEnumerable<GuildEmoji> yieldEmojis()
+            lock (emojiLock)
             {
-                lock (emojiLock)
-                    foreach (var emoji in emojis)
-                        yield return emoji.Value;
+                foreach (var emoji in emojis)
+                    yield return emoji.Value;
             }
-
-            return yieldEmojis() as IReadOnlyCollection<GuildEmoji>;
         }
-        
-        public IReadOnlyCollection<Role> GetRoles()
+
+        public IEnumerable<Role> GetRoles()
         {
-            IEnumerable<Role> yieldRoles()
+            lock (roleLock)
             {
-                lock (roleLock)
-                    foreach (var role in roles)
-                        yield return role.Value;
+                foreach (var role in roles)
+                    yield return role.Value;
             }
-
-            return yieldRoles() as IReadOnlyCollection<Role>;
         }
 
-        public IReadOnlyCollection<GuildChannel> GetChannels()
+        public IEnumerable<CachedGuildChannel> GetChannels()
         {
-            IEnumerable<GuildChannel> yieldChannels()
+            lock (channelLock)
             {
-                lock (channelLock)
-                    foreach (var channel in channels)
-                    {
-                        channel.Value.Cache = this;
-                        yield return channel.Value;
-                    }
+                foreach (var channel in channels)
+                    yield return channel.Value;
             }
-
-            return yieldChannels() as IReadOnlyCollection<GuildChannel>;
         }
 
-        public IReadOnlyCollection<Message> GetMessages(ulong channelId)
+        public IEnumerable<CachedMessage> GetMessages(ulong channelId)
         {
             lock (messageLock)
+            {
                 return messages.TryGetValue(channelId, out var messageCache)
-                    ? messageCache.ToList() as IReadOnlyCollection<Message>
-                    : new ReadOnlyCollection<Message>(new List<Message>());
+                    ? messageCache.ToList()
+                    : new List<CachedMessage>();
+            }
         }
 
-        public IReadOnlyCollection<GuildMember> GetMembers()
+        public IEnumerable<CachedMember> GetMembers()
         {
-            IEnumerable<GuildMember> yieldMembers()
+            lock (memberLock)
             {
-                lock (memberLock)
-                    foreach (var member in members)
-                    {
-                        member.Value.Guild = this.Guild;
-                        member.Value.WithClient(this.Client);
-                        yield return member.Value;
-                    }
+                foreach (var member in members)
+                    yield return member.Value;
             }
-
-            return yieldMembers() as IReadOnlyCollection<GuildMember>;
         }
 
-        public IReadOnlyCollection<Presence> GetPresences()
+        public IEnumerable<Presence> GetPresences()
         {
-            IEnumerable<Presence> yieldPresences()
+            lock (presenceLock)
             {
-                lock (presenceLock)
-                    foreach (var presence in presences)
-                        yield return presence.Value;
+                foreach (var presence in presences)
+                    yield return presence.Value;
             }
-            
-            return yieldPresences() as IReadOnlyCollection<Presence>;
         }
 
         public Presence GetPresence(ulong userId)
         {
             lock (presenceLock)
+            {
                 return presences.TryGetValue(userId, out var presence) ? presence : default;
+            }
         }
 
         public Role GetRole(ulong roleId)
         {
             lock (roleLock)
+            {
                 return roles.TryGetValue(roleId, out var role) ? role : default;
+            }
         }
 
-        public GuildMember GetMember(ulong userId)
+        public CachedMember GetMember(ulong userId)
         {
             lock (memberLock)
+            {
                 return members.TryGetValue(userId, out var member) ? member : default;
+            }
         }
 
-        public GuildChannel GetChannel(ulong channelId)
+        public CachedGuildChannel GetChannel(ulong channelId)
         {
             lock (channelLock)
+            {
                 return channels.TryGetValue(channelId, out var channel) ? channel : default;
+            }
         }
 
         #endregion

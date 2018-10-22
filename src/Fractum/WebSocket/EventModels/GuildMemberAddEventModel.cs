@@ -7,22 +7,22 @@ namespace Fractum.WebSocket.EventModels
     public class GuildMemberAddEventModel : EventModelBase
     {
         [JsonProperty("guild_id")]
-        internal ulong? GuildId { get; private set; }
+        public ulong? GuildId { get; private set; }
 
         [JsonProperty("roles")]
-        internal ulong[] RoleIds { get; set; }
+        public ulong[] RoleIds { get; private set; }
 
         [JsonProperty("nick")]
-        public string Nickname { get; internal set; }
+        public string Nickname { get; private set; }
 
         [JsonProperty("mute")]
-        public bool IsMuted { get; internal set; }
+        public bool IsMuted { get; private set; }
 
         [JsonProperty("joined_at")]
         public DateTimeOffset JoinedAt { get; private set; }
 
         [JsonProperty("deaf")]
-        public bool IsDeafened { get; internal set; }
+        public bool IsDeafened { get; private set; }
 
         [JsonProperty("user")]
         public User User { get; private set; }

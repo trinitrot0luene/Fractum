@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
@@ -10,8 +9,6 @@ using Fractum.Entities;
 using Fractum.Entities.Extensions;
 using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Core
 {
@@ -54,7 +51,7 @@ namespace Fractum.WebSocket.Core
 
                 case OpCode.Hello:
                     // Regardless of what happens we want to start heartbeating on HELLO.
-                    var heartbeatInterval = payload.Data.Cast<HelloEventModel>().HeartbeatInterval;
+                    var heartbeatInterval = ((HelloEventModel) payload.Data).HeartbeatInterval;
                     HeartbeatTimer = new Timer(_ => Task.Run(() => HeartbeatAsync()), null, heartbeatInterval,
                         heartbeatInterval);
                     // If we aren't resuming, re-identify.
@@ -83,7 +80,7 @@ namespace Fractum.WebSocket.Core
                 #region Invalid Session
 
                 case OpCode.InvalidSession:
-                    var isValid = payload.Data.Cast<InvalidSessionEventModel>().Resumable;
+                    var isValid = ((InvalidSessionEventModel) payload.Data).Resumable;
                     // d: false, invalidate session and re-identify.
                     if (!isValid)
                     {
@@ -148,7 +145,6 @@ namespace Fractum.WebSocket.Core
             {
                 // Make 3 attempts to connect (and resume) then try to refetch the gateway url. After the first 3 attempts we will only attempt to identify.
                 if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 3 == 0)
-                {
                     try
                     {
                         // Fetch connection info from the gateway with new Url: 
@@ -166,7 +162,6 @@ namespace Fractum.WebSocket.Core
                         Client.InvokeLog(new LogMessage(nameof(ConnectionStage),
                             "Failed to update session with new gateway url", LogSeverity.Warning));
                     }
-                }
 
                 var computedBackoff =
                     (int) Math.Pow(backoff, backoffPower) *
@@ -174,7 +169,8 @@ namespace Fractum.WebSocket.Core
 
                 await Task.Delay(computedBackoff <= 900000 ? computedBackoff : 900000);
 
-                Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnection attempt {Session.ReconnectionAttempts}",
+                Client.InvokeLog(new LogMessage(nameof(ConnectionStage),
+                    $"Reconnection attempt {Session.ReconnectionAttempts}",
                     LogSeverity.Warning));
 
                 await Socket.ConnectAsync(); // Try to reconnect

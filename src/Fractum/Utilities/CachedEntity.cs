@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum.Contracts;
 using Fractum.WebSocket.Core;
 
 namespace Fractum.Utilities
@@ -10,7 +10,7 @@ namespace Fractum.Utilities
     ///     from the API.
     /// </summary>
     /// <typeparam name="TEntity">The entity wrapped by the cache.</typeparam>
-    public class CachedEntity<TEntity> where TEntity : DiscordEntity
+    public class CachedEntity<TEntity> where TEntity : IDiscordEntity
     {
         /// <summary>
         ///     The entity, if it exists in the <see cref="FractumCache" />.
@@ -39,7 +39,7 @@ namespace Fractum.Utilities
         /// </summary>
         /// <returns></returns>
         public Task<TEntity> GetAsync()
-            => _entity == default ? GetFunc.Invoke() : Task.FromResult(_entity);
+            => _entity == null ? GetFunc.Invoke() : Task.FromResult(_entity);
 
         /// <summary>
         ///     Get the value of the cached item.

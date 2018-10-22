@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,13 +10,13 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventData = args.Cast<BanAddEventModel>();
+            var eventData = (BanAddEventModel) args;
 
             var guild = cache[eventData.GuildId];
-            var member = guild.GetMembers().First(x => x.Id == eventData.User.Id);
+            var member = guild.GetMember(eventData.User.Id);
 
             client.InvokeLog(new LogMessage(nameof(BanAddHook),
-                $"{eventData.User.ToString()} was banned in {guild.Guild.Name}", LogSeverity.Info));
+                $"{eventData.User} was banned in {guild.Guild.Name}", LogSeverity.Info));
 
             client.InvokeMemberBanned(member);
 

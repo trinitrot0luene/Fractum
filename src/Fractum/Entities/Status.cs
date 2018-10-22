@@ -1,4 +1,4 @@
-﻿namespace Fractum.Entities.WebSocket
+﻿namespace Fractum.Entities
 {
     public enum Status
     {

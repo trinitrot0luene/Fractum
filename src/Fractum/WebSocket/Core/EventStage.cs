@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fractum.Contracts;
-using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Core
 {
@@ -22,27 +20,28 @@ namespace Fractum.WebSocket.Core
         }
 
         /// <summary>
-        ///     Gets the <see cref="FractumCache"/> which stores guild state.
+        ///     Gets the <see cref="FractumCache" /> which stores guild state.
         /// </summary>
         public FractumCache Cache { get; }
 
         /// <summary>
-        ///     Gets the <see cref="ISession"/> which caches session data for the gateway connection.
+        ///     Gets the <see cref="ISession" /> which caches session data for the gateway connection.
         /// </summary>
         public ISession Session { get; }
 
         /// <summary>
-        ///     Gets the <see cref="SocketWrapper"/> maintaining the gateway connection.
+        ///     Gets the <see cref="SocketWrapper" /> maintaining the gateway connection.
         /// </summary>
         public SocketWrapper Socket { get; }
 
         /// <summary>
-        ///     Gets the <see cref="FractumSocketClient"/> for the <see cref="EventStage"/> to raise events and populate entities.
+        ///     Gets the <see cref="FractumSocketClient" /> for the <see cref="EventStage" /> to raise events and populate
+        ///     entities.
         /// </summary>
         public FractumSocketClient Client { get; }
 
         /// <summary>
-        ///     Asynchronously enter the <see cref="EventStage"/> and execute it.
+        ///     Asynchronously enter the <see cref="EventStage" /> and execute it.
         /// </summary>
         /// <param name="data">The data to operate on.</param>
         /// <returns></returns>
@@ -54,7 +53,7 @@ namespace Fractum.WebSocket.Core
         }
 
         /// <summary>
-        ///     Register an <see cref="IEventHook{TArgs}"/> to be executed on a specific gateway dispatch.
+        ///     Register an <see cref="IEventHook{TArgs}" /> to be executed on a specific gateway dispatch.
         /// </summary>
         /// <param name="eventName">The target dispatch name.</param>
         /// <param name="hook">The hook to be executed.</param>

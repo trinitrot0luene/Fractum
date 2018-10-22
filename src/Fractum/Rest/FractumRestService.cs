@@ -37,7 +37,9 @@ namespace Fractum.Rest
             if (_buckets.TryGetValue(request.BucketId, out var bucket) && bucket.Remaining <= 0 &&
                 bucket.ExpiresAt > DateTimeOffset.UtcNow + bucket.Offset)
             {
-                InvokeLog(new LogMessage(nameof(FractumRestClient), $"Triggered pre-emptive ratelimit with delay {bucket.RequiredDelay.TotalMilliseconds}ms", LogSeverity.Warning));
+                InvokeLog(new LogMessage(nameof(FractumRestClient),
+                    $"Triggered pre-emptive ratelimit with delay {bucket.RequiredDelay.TotalMilliseconds}ms",
+                    LogSeverity.Warning));
                 await Task.Delay(bucket.RequiredDelay);
             }
 
@@ -45,12 +47,13 @@ namespace Fractum.Rest
             HttpResponseMessage response;
             try
             {
-                InvokeLog(new LogMessage(nameof(FractumRestClient), request.BucketId.ToString(), LogSeverity.Verbose));
+                InvokeLog(new LogMessage(nameof(FractumRestClient), request.BucketId, LogSeverity.Verbose));
                 response = await _http.SendAsync(request.BuildRequest());
             }
             catch (HttpRequestException httpex)
             {
-                InvokeLog(new LogMessage(nameof(FractumRestClient), "An exception was thrown by the HttpClient", LogSeverity.Error, httpex));
+                InvokeLog(new LogMessage(nameof(FractumRestClient), "An exception was thrown by the HttpClient",
+                    LogSeverity.Error, httpex));
                 return default;
             }
 

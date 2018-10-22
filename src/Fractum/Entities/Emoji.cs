@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -7,8 +6,8 @@ namespace Fractum.Entities
 {
     public class Emoji
     {
-        private static Regex _guildEmoteRegex = new Regex(":(\\w+):\\d+", RegexOptions.Compiled);
-        private static Regex _nameRegex = new Regex("(\\w+)", RegexOptions.Compiled);
+        private static readonly Regex _guildEmoteRegex = new Regex(":(\\w+):\\d+", RegexOptions.Compiled);
+        private static readonly Regex _nameRegex = new Regex("(\\w+)", RegexOptions.Compiled);
 
         private Emoji()
         {
@@ -21,7 +20,7 @@ namespace Fractum.Entities
         public string Name { get; private set; }
 
         /// <summary>
-        /// Parse an <see cref="Emoji"></see> from either a raw unicode string or the :name:id Discord markdown format.
+        ///     Parse an <see cref="Emoji"></see> from either a raw unicode string or the :name:id Discord markdown format.
         /// </summary>
         /// <param name="input">The string to parse an <see cref="Emoji"></see> from.</param>
         /// <returns></returns>

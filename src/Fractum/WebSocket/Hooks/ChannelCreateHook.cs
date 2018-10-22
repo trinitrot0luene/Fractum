@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.Utilities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,26 +11,21 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var eventModel = args.Cast<ChannelCreateEventModel>();
+            var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
 
-            GuildChannel createdChannel = null;
-            switch ((ChannelType) args.Value<int>("type"))
+            CachedGuildChannel createdChannel = null;
+            switch (eventModel.Type)
             {
                 case ChannelType.GuildCategory:
-                    createdChannel = args.ToObject<Category>();
+                    createdChannel = new CachedCategory(cache, eventModel);
                     break;
                 case ChannelType.GuildText:
-                    createdChannel = args.ToObject<TextChannel>();
+                    createdChannel = new CachedTextChannel(cache, eventModel);
                     break;
                 case ChannelType.GuildVoice:
-                    createdChannel = args.ToObject<VoiceChannel>();
+                    createdChannel = new CachedVoiceChannel(cache, eventModel);
                     break;
             }
-
-            createdChannel.WithClient(client);
-
-            if (cache.HasGuild(createdChannel.GuildId))
-                cache[createdChannel.GuildId].AddOrUpdate(createdChannel, old => old = createdChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));

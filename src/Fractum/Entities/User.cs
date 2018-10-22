@@ -12,10 +12,20 @@ namespace Fractum.Entities
         }
 
         [JsonProperty("avatar")]
-        private string AvatarRaw { get; set; }
+        internal string AvatarRaw { get; set; }
 
         [JsonProperty("member", NullValueHandling = NullValueHandling.Ignore)]
         internal PartialMember Member { get; private set; }
+
+        public object Clone() => new User
+        {
+            Id = Id,
+            AvatarRaw = AvatarRaw,
+            Member = Member,
+            Username = Username,
+            Discrim = Discrim,
+            IsBot = IsBot
+        };
 
         [JsonProperty("username")]
         public string Username { get; internal set; }
@@ -27,10 +37,7 @@ namespace Fractum.Entities
         public bool IsBot { get; private set; }
 
         [JsonIgnore]
-        public string Mention
-        {
-            get => string.Format(Consts.USER_MENTION, Id);
-        }
+        public string Mention => string.Format(Consts.USER_MENTION, Id);
 
         public string GetAvatarUrl()
         {
@@ -44,18 +51,5 @@ namespace Fractum.Entities
 
         public override string ToString()
             => $"{Id}";
-
-        public object Clone()
-        {
-            return new User
-            {
-                Id = this.Id,
-                AvatarRaw = this.AvatarRaw,
-                Member = this.Member,
-                Username = this.Username,
-                Discrim = this.Discrim,
-                IsBot = this.IsBot
-            };
-        }
     }
 }

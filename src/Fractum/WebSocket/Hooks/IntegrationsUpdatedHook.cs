@@ -2,7 +2,6 @@
 using Fractum.Contracts;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -10,9 +9,9 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var id = args.Cast<IntegrationsUpdatedEventModel>();
+            var eventModel = (IntegrationsUpdatedEventModel) args;
 
-            client.InvokeIntegrationsUpdated(cache[id]?.Guild);
+            client.InvokeIntegrationsUpdated(cache[eventModel.GuildId]?.Guild);
 
             return Task.CompletedTask;
         }

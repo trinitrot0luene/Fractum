@@ -1,25 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels.Entities;
 
 namespace Fractum.Entities
 {
-    public sealed class GuildEmoji : DiscordEntity
+    public sealed class GuildEmoji : PopulatedEntity
     {
-        [JsonProperty("name")]
-        public string Name { get; internal set; }
+        internal GuildEmoji(FractumCache cache, GuildEmojiModel model) : base(cache)
+        {
+            Id = model.Id;
+            CreatorId = model.Creator?.Id;
+            Name = model.Name;
+            RoleIds = model.RoleIds;
+            RequiresColons = model.RequiresColons;
+            IsManaged = model.IsManaged;
+            IsAnimated = model.IsAnimated;
+        }
 
-        [JsonProperty("roles")]
-        public ulong[] RoleIds { get; internal set; }
+        private ulong? CreatorId { get; }
 
-        [JsonProperty("user")]
-        public User Creator { get; internal set; }
+        public User Creator => Cache.GetUserOrDefault(CreatorId ?? 0);
 
-        [JsonProperty("require_colons")]
-        public bool RequiresColons { get; internal set; }
+        public string Name { get; }
 
-        [JsonProperty("managed")]
-        public bool IsManaged { get; internal set; }
+        public ulong[] RoleIds { get; }
 
-        [JsonProperty("animated")]
-        public bool IsAnimated { get; internal set; }
+        public bool RequiresColons { get; }
+
+        public bool IsManaged { get; }
+
+        public bool IsAnimated { get; }
     }
 }

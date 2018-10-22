@@ -3,25 +3,28 @@ using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildCreateHook : IEventHook<EventModelBase>
     {
-        public async Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public async Task RunAsync(EventModelBase args, FractumCache cache, ISession session,
+            FractumSocketClient client)
         {
-            var guild = args.Cast<GuildCreateEventModel>();
+            var eventModel = (GuildCreateEventModel) args;
 
-            guild.ApplyToCache(cache);
+            var gc = new SyncedGuildCache(cache, eventModel);
 
-            if (client.RestClient.Config.AlwaysDownloadMembers && guild.MemberCount > client.RestClient.Config.LargeThreshold)
-                await client.RequestMembersAsync(guild.Id);
+            cache.AddOrUpdate(gc, old => old = gc);
+
+            if (client.RestClient.Config.AlwaysDownloadMembers &&
+                gc.MemberCount > client.RestClient.Config.LargeThreshold)
+                await client.RequestMembersAsync(gc.Id);
 
             client.InvokeLog(
-                new LogMessage(nameof(GuildCreateHook), $"Guild Available: {guild.Name}", LogSeverity.Info));
+                new LogMessage(nameof(GuildCreateHook), $"Guild Available: {gc.Name}", LogSeverity.Info));
 
-            client.InvokeGuildCreated(cache[guild.Id].Guild);
+            client.InvokeGuildCreated(cache[gc.Id].Guild);
         }
     }
 }

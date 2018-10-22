@@ -7,7 +7,6 @@ using Fractum.Contracts;
 using Fractum.Entities.Extensions;
 using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.Core
 {
@@ -20,10 +19,10 @@ namespace Fractum.WebSocket.Core
     {
         private const ushort _zlibSuffix = 0xFFFF;
         private readonly MemoryStream CompressedStream;
+
+        private readonly Encoding _utf8 = Encoding.UTF8;
         private MemoryStream DecompressedStream;
         private DeflateStream DecompressionStream;
-
-        private Encoding _utf8 = Encoding.UTF8;
 
         public WebSocketMessageConverter()
         {
@@ -77,13 +76,14 @@ namespace Fractum.WebSocket.Core
                 case OpCode.InvalidSession:
                 {
                     var resumable = decompressedString.Deserialize<bool>();
-                    var invalidSessionModel = new InvalidSessionEventModel { Resumable = resumable };
-                    return new Payload<InvalidSessionEventModel>()
+                    var invalidSessionModel = new InvalidSessionEventModel {Resumable = resumable};
+                    return new Payload<InvalidSessionEventModel>
                     {
                         OpCode = payload.OpCode,
                         Data = invalidSessionModel
                     };
                 }
+
                 #region Dispatches
 
                 case OpCode.Dispatch:
@@ -94,13 +94,13 @@ namespace Fractum.WebSocket.Core
                         case "BAN_REMOVE":
                             return decompressedString.Deserialize<Payload<BanRemoveEventModel>>();
                         case "CHANNEL_CREATE":
-                            return decompressedString.Deserialize<Payload<ChannelCreateEventModel>>();
+                            return decompressedString.Deserialize<Payload<ChannelCreateUpdateOrDeleteEventModel>>();
                         case "CHANNEL_DELETE":
-                            return decompressedString.Deserialize<Payload<ChannelDeleteEventModel>>();
+                            return decompressedString.Deserialize<Payload<ChannelCreateUpdateOrDeleteEventModel>>();
                         case "CHANNEL_PINS_UPDATE":
                             return decompressedString.Deserialize<Payload<ChannelPinsUpdateEventModel>>();
                         case "CHANNEL_UPDATE":
-                            return decompressedString.Deserialize<Payload<ChannelPinsUpdateEventModel>>();
+                            return decompressedString.Deserialize<Payload<ChannelCreateUpdateOrDeleteEventModel>>();
                         case "EMOJIS_UPDATE":
                             return decompressedString.Deserialize<Payload<EmojisUpdateEventModel>>();
                         case "GUILD_CREATE":
@@ -124,34 +124,36 @@ namespace Fractum.WebSocket.Core
                         case "MESSAGE_UPDATE":
                             return decompressedString.Deserialize<Payload<MessageUpdateEventModel>>();
                         case "PRESENCE_UPDATE":
-                            return decompressedString.Deserialize<Payload<PresenceUpdateEventModel>>();
-                        case "REACTION_ADD":
+                            return decompressedString.Deserialize<Payload<GuildMemberUpdateEventModel>>();
+                        case "MESSAGE_REACTION_ADD":
                             return decompressedString.Deserialize<Payload<ReactionAddEventModel>>();
-                        case "REACTION_REMOVE":
+                        case "MESSAGE_REACTION_REMOVE":
                             return decompressedString.Deserialize<Payload<ReactionRemoveEventModel>>();
-                        case "REACTIONS_CLEAR":
+                        case "MESSAGE_REACTION_REMOVE_ALL":
                             return decompressedString.Deserialize<Payload<ReactionsClearEventModel>>();
-                        case "ROLE_CREATE":
+                        case "GUILD_ROLE_CREATE":
                             return decompressedString.Deserialize<Payload<RoleCreateEventModel>>();
-                        case "ROLE_DELETE":
+                        case "GUILD_ROLE_DELETE":
                             return decompressedString.Deserialize<Payload<RoleDeleteEventModel>>();
-                        case "ROLE_UPDATE":
+                        case "GUILD_ROLE_UPDATE":
                             return decompressedString.Deserialize<Payload<RoleUpdateEventModel>>();
                         case "USER_UPDATE":
                             return decompressedString.Deserialize<Payload<UserUpdateEventModel>>();
+                        case "READY":
+                            return decompressedString.Deserialize<Payload<ReadyEventModel>>();
                         default:
-                            throw new GatewayException("Unknown event type");
+                            return decompressedString.Deserialize<Payload<EmptyEventModel>>();
                     }
 
                 #endregion
 
                 default:
-                    return new Payload<EmptyEventModel>()
+                    return new Payload<EmptyEventModel>
                     {
                         OpCode = payload.OpCode,
                         Data = new EmptyEventModel()
                     };
-            } 
+            }
         }
     }
 }

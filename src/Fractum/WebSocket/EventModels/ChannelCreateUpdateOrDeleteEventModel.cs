@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Fractum.Entities;
 using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class ChannelCreateEventModel : EventModelBase
+    internal sealed class ChannelCreateUpdateOrDeleteEventModel : EventModelBase
     {
         [JsonProperty("id")]
         public ulong Id { get; private set; }
@@ -48,6 +47,6 @@ namespace Fractum.WebSocket.EventModels
         public ulong? LastMessageId { get; internal set; }
 
         [JsonProperty("permission_overwrites")]
-        public List<PermissionsOverwrite> Overwrites { get; private set; }
+        public ReadOnlyCollection<PermissionsOverwrite> Overwrites { get; private set; }
     }
 }

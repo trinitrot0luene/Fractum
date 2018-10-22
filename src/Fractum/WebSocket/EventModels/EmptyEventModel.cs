@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fractum.WebSocket.EventModels
+﻿namespace Fractum.WebSocket.EventModels
 {
     public class EmptyEventModel : EventModelBase
     {
+        private readonly int? val;
     }
 }

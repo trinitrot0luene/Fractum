@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -11,13 +11,17 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var member = args.Cast<GuildMemberAddEventModel>();
+            var eventModel = (GuildMemberAddEventModel) args;
 
-            var user = args.Value<User>("user");
+            cache.AddUser(eventModel.User);
 
-            cache.AddUser(user);
+            var member = new CachedMember(cache, eventModel, eventModel.GuildId);
 
-            cache[member.GuildId.Value]?.AddOrUpdate(member, old => old = member);
+            if (eventModel.GuildId.HasValue)
+                cache[eventModel.GuildId.Value].AddOrUpdate(member, old => old = member);
+
+            client.InvokeLog(new LogMessage(nameof(GuildMemberAddHook),
+                $"{member} joined {member.Guild?.Name}", LogSeverity.Info));
 
             client.InvokeMemberJoined(member);
 

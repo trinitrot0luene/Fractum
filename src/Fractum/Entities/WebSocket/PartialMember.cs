@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.Entities.WebSocket
 {
-    internal sealed class PartialMember
+    public sealed class PartialMember
     {
         [JsonProperty("roles")]
         public ulong[] RoleIds { get; private set; }

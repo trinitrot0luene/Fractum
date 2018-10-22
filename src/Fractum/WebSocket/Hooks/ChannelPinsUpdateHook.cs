@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
@@ -12,14 +11,23 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var channel = cache.Guilds
-                .SelectMany(caches => caches.GetChannels())
-                .FirstOrDefault(c => c.Id == args.Value<ulong>("channel_id"));
+            var eventModel = (ChannelPinsUpdateEventModel) args;
+
+            CachedTextChannel channel = null;
+
+            foreach (var guild in cache.Guilds)
+            {
+                channel = guild.GetChannel(eventModel.ChannelId) as CachedTextChannel;
+                if (channel != null)
+                    break;
+            }
+
+            // TODO: DM Channels.
 
             client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {channel.Name}",
                 LogSeverity.Debug));
 
-            client.InvokeMessagePinned(channel as TextChannel);
+            client.InvokeMessagePinned(channel);
 
             return Task.CompletedTask;
         }
