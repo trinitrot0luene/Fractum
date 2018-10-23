@@ -19,14 +19,14 @@ build_script:
 
 after_build:
 - ps: >-
-    if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And (-not (Test-Path env:APPVEYOR_PULL_REQUEST_NUMBER)))
+    if ($Env:APPVEYOR_REPO_TAG -eq "true")
+    {
+       dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
+    }
+    elseif ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And (-not (Test-Path env:APPVEYOR_PULL_REQUEST_NUMBER)))
     {
         $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
         dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
-    }
-    elseif ($Env:APPVEYOR_REPO_TAG -eq "true")
-    {
-       dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
     }
     else
     {
