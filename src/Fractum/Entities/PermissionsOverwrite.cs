@@ -23,6 +23,8 @@ namespace Fractum.Entities
         [JsonIgnore]
         public OverwriteType Type => TypeRaw.ToLower() == "role" ? OverwriteType.Role :
             TypeRaw.ToLower() == "member" ? OverwriteType.Member : OverwriteType.Member;
+
+        public override string ToString() => $"{Type}({Id}) : Allow: {Allow}, Deny: {Deny}";
     }
 
     public enum OverwriteType

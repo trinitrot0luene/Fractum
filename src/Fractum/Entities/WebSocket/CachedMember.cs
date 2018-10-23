@@ -72,6 +72,21 @@ namespace Fractum.Entities.WebSocket
 
         public Activity Game => Presence?.Game;
 
+        public Permissions Permissions
+        {
+            get
+            {
+                var perms = Permissions.None;
+                foreach (var role in Roles)
+                    perms |= role.Permissions;
+
+                if (perms.HasFlag(Permissions.Administrator) || Id == Guild.OwnerId)
+                    return Permissions.All;
+
+                return perms;
+            }
+        }
+
         public IEnumerable<Role> Roles
         {
             get

@@ -119,7 +119,7 @@ namespace Fractum.Entities.WebSocket
             if (everyone_overwrite != null)
             {
                 permissions &= ~everyone_overwrite.Deny;
-                permissions |= ~everyone_overwrite.Allow;
+                permissions |= everyone_overwrite.Allow;
             }
 
             var allow = Permissions.None;
@@ -145,7 +145,7 @@ namespace Fractum.Entities.WebSocket
             return permissions;
         }
 
-        internal Permissions ComputePermissions(CachedMember member)
+        public Permissions ComputePermissions(CachedMember member)
             => ComputeOverwritePermissions(ComputeBasePermissions(member), member);
 
         #endregion
