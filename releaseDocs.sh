@@ -31,6 +31,10 @@ cp -r $SOURCE_DIR/docfx_project/_site/* .
 
 echo "Push updated documentation to github"
 
+git config --global core.safecrlf false
+
 git add . -A
 git commit -m "Updated docs for $APPVEYOR_REPO_TAG_NAME"
 git push origin gh-pages
+
+exit 0
