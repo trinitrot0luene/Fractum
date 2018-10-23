@@ -1,0 +1,692 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CachedMember
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CachedMember
+   ">
+    <meta name="generator" content="docfx 2.40.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Fractum.Entities.WebSocket.CachedMember">
+  
+  
+  <h1 id="Fractum_Entities_WebSocket_CachedMember" data-uid="Fractum.Entities.WebSocket.CachedMember" class="text-break">Class CachedMember
+  </h1>
+  <div class="markdown level0 summary"><p>Cached data of a member of a <a class="xref" href="Fractum.Entities.WebSocket.CachedGuild.html">CachedGuild</a>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="Fractum.Entities.DiscordEntity.html">DiscordEntity</a></div>
+    <div class="level2"><a class="xref" href="Fractum.Entities.PopulatedEntity.html">PopulatedEntity</a></div>
+    <div class="level3"><span class="xref">CachedMember</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IEquatable</span>&lt;<a class="xref" href="Fractum.Entities.DiscordEntity.html">DiscordEntity</a>&gt;</div>
+    <div><a class="xref" href="Fractum.Contracts.IUser.html">IUser</a></div>
+    <div><a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_Id">DiscordEntity.Id</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_Equals_Fractum_Entities_DiscordEntity_">DiscordEntity.Equals(DiscordEntity)</a>
+    </div>
+    <div>
+      <a class="xref" href="Fractum.Entities.DiscordEntity.html#Fractum_Entities_DiscordEntity_GetHashCode">DiscordEntity.GetHashCode()</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Fractum.Entities.WebSocket.html">Fractum.Entities.WebSocket</a></h6>
+  <h6><strong>Assembly</strong>: Fractum.dll</h6>
+  <h5 id="Fractum_Entities_WebSocket_CachedMember_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class CachedMember : PopulatedEntity, IEquatable&lt;DiscordEntity&gt;, IUser, IDiscordEntity</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_CreatedAt.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.CreatedAt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L57">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_CreatedAt_" data-uid="Fractum.Entities.WebSocket.CachedMember.CreatedAt*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_CreatedAt" data-uid="Fractum.Entities.WebSocket.CachedMember.CreatedAt">CreatedAt</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTimeOffset CreatedAt { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.DateTimeOffset</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Discrim.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Discrim%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L34">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Discrim_" data-uid="Fractum.Entities.WebSocket.CachedMember.Discrim*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Discrim" data-uid="Fractum.Entities.WebSocket.CachedMember.Discrim">Discrim</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Discrim { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_DiscrimValue.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.DiscrimValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L61">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_DiscrimValue_" data-uid="Fractum.Entities.WebSocket.CachedMember.DiscrimValue*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_DiscrimValue" data-uid="Fractum.Entities.WebSocket.CachedMember.DiscrimValue">DiscrimValue</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public short DiscrimValue { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int16</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Game.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Game%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L73">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Game_" data-uid="Fractum.Entities.WebSocket.CachedMember.Game*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Game" data-uid="Fractum.Entities.WebSocket.CachedMember.Game">Game</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Activity Game { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Fractum.Entities.Activity.html">Activity</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Guild.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Guild%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L67">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Guild_" data-uid="Fractum.Entities.WebSocket.CachedMember.Guild*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Guild" data-uid="Fractum.Entities.WebSocket.CachedMember.Guild">Guild</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CachedGuild Guild { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Fractum.Entities.WebSocket.CachedGuild.html">CachedGuild</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_IsBot.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.IsBot%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L63">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_IsBot_" data-uid="Fractum.Entities.WebSocket.CachedMember.IsBot*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_IsBot" data-uid="Fractum.Entities.WebSocket.CachedMember.IsBot">IsBot</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsBot { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_IsDeafened.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.IsDeafened%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L114">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_IsDeafened_" data-uid="Fractum.Entities.WebSocket.CachedMember.IsDeafened*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_IsDeafened" data-uid="Fractum.Entities.WebSocket.CachedMember.IsDeafened">IsDeafened</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsDeafened { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_IsMuted.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.IsMuted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L110">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_IsMuted_" data-uid="Fractum.Entities.WebSocket.CachedMember.IsMuted*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_IsMuted" data-uid="Fractum.Entities.WebSocket.CachedMember.IsMuted">IsMuted</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsMuted { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_JoinedAt.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.JoinedAt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L112">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_JoinedAt_" data-uid="Fractum.Entities.WebSocket.CachedMember.JoinedAt*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_JoinedAt" data-uid="Fractum.Entities.WebSocket.CachedMember.JoinedAt">JoinedAt</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTimeOffset JoinedAt { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.DateTimeOffset</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Mention.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Mention%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L32">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Mention_" data-uid="Fractum.Entities.WebSocket.CachedMember.Mention*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Mention" data-uid="Fractum.Entities.WebSocket.CachedMember.Mention">Mention</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Mention { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Nickname.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Nickname%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L108">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Nickname_" data-uid="Fractum.Entities.WebSocket.CachedMember.Nickname*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Nickname" data-uid="Fractum.Entities.WebSocket.CachedMember.Nickname">Nickname</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Nickname { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Permissions.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Permissions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L75">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Permissions_" data-uid="Fractum.Entities.WebSocket.CachedMember.Permissions*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Permissions" data-uid="Fractum.Entities.WebSocket.CachedMember.Permissions">Permissions</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Permissions Permissions { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Fractum.Entities.Permissions.html">Permissions</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Roles.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Roles%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L90">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Roles_" data-uid="Fractum.Entities.WebSocket.CachedMember.Roles*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Roles" data-uid="Fractum.Entities.WebSocket.CachedMember.Roles">Roles</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;Role&gt; Roles { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="Fractum.Entities.Role.html">Role</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Status.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Status%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L71">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Status_" data-uid="Fractum.Entities.WebSocket.CachedMember.Status*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Status" data-uid="Fractum.Entities.WebSocket.CachedMember.Status">Status</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Status Status { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Fractum.Entities.Status.html">Status</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_Username.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.Username%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L59">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_Username_" data-uid="Fractum.Entities.WebSocket.CachedMember.Username*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_Username" data-uid="Fractum.Entities.WebSocket.CachedMember.Username">Username</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Username { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_GetAvatarUrl.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.GetAvatarUrl%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L65">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_GetAvatarUrl_" data-uid="Fractum.Entities.WebSocket.CachedMember.GetAvatarUrl*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_GetAvatarUrl" data-uid="Fractum.Entities.WebSocket.CachedMember.GetAvatarUrl">GetAvatarUrl()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string GetAvatarUrl()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember_ToString.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L50">View Source</a>
+  </span>
+  <a id="Fractum_Entities_WebSocket_CachedMember_ToString_" data-uid="Fractum.Entities.WebSocket.CachedMember.ToString*"></a>
+  <h4 id="Fractum_Entities_WebSocket_CachedMember_ToString" data-uid="Fractum.Entities.WebSocket.CachedMember.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.ToString()</span></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IEquatable&lt;T&gt;</span>
+  </div>
+  <div>
+      <a class="xref" href="Fractum.Contracts.IUser.html">IUser</a>
+  </div>
+  <div>
+      <a class="xref" href="Fractum.Contracts.IDiscordEntity.html">IDiscordEntity</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/trinitrot0luene/Fractum/new/master/apiSpec/new?filename=Fractum_Entities_WebSocket_CachedMember.md&amp;value=---%0Auid%3A%20Fractum.Entities.WebSocket.CachedMember%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/trinitrot0luene/Fractum/blob/master/src/Fractum/Entities/WebSocket/CachedMember.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
