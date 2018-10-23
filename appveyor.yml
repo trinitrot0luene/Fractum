@@ -1,10 +1,6 @@
 version: 'build-{build}'
 
 image: Visual Studio 2017 Preview
-
-branches:
-  only:
-  - master
   
 environment:
     github_access_token:
@@ -32,19 +28,16 @@ after_build:
 - ps: >-
     if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And (-not (Test-Path env:APPVEYOR_PULL_REQUEST_NUMBER)))
     {
-        if ($Env:APPVEYOR_REPO_TAG -eq "false")
-        {
-           $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
-           dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
-        }
-        else
-        {
-            dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
-        }
+        $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
+        dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
+    }
+    elseif ($Env:APPVEYOR_REPO_TAG -eq "true")
+    {
+       dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
     }
     else
     {
-        echo "Not building on a commit to master. Not packing library."
+        echo "Not building on a commit to master or on a tag, skipping pack
     }
 nuget:
   disable_publish_on_pr: true
