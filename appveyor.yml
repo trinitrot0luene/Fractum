@@ -21,7 +21,7 @@ build_script:
         Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
         git config --global user.email %github_email%
         git config --global user.name "trinitrot0luene"
-        bash releaseDocs.sh & exit 0
+        bash releaseDocs.sh
     }
 
 after_build:

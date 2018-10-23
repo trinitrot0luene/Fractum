@@ -23,6 +23,8 @@ echo "Create or clear version folder $APPVEYOR_REPO_TAG_NAME in gh-pages branch"
 mkdir -p $TEMP_REPO_DIR/$APPVEYOR_REPO_TAG_NAME
 cd $TEMP_REPO_DIR/$APPVEYOR_REPO_TAG_NAME
 
+git rm -f ../*
+
 echo "Copy generated docs for version $APPVEYOR_REPO_TAG_NAME to gh-pages"
 
 cp -r $SOURCE_DIR/docfx_project/_site/* .
