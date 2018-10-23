@@ -54,11 +54,17 @@ namespace Fractum.Rest
             switch (channelType)
             {
                 case ChannelType.GuildText:
-                    return JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    var textChannel = JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    textChannel.Client = this;
+                    return textChannel;
                 case ChannelType.GuildVoice:
-                    return JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    var voiceChannel = JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    voiceChannel.Client = this;
+                    return voiceChannel;
                 case ChannelType.GuildCategory:
-                    return JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    var category =  JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    category.Client = this;
+                    return category;
                 default:
                     return default;
             }
@@ -77,11 +83,17 @@ namespace Fractum.Rest
             switch (channelType)
             {
                 case ChannelType.GuildText:
-                    return JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    var textChannel = JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    textChannel.Client = this;
+                    return textChannel;
                 case ChannelType.GuildVoice:
-                    return JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    var voiceChannel = JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    voiceChannel.Client = this;
+                    return voiceChannel;
                 case ChannelType.GuildCategory:
-                    return JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    var category = JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    category.Client = this;
+                    return category;
                 default:
                     return default;
             }
@@ -124,7 +136,7 @@ namespace Fractum.Rest
             var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var message = responseContent.Deserialize<RestMessage>();
-
+            message.Client = this;
             return message;
         }
 
@@ -147,8 +159,10 @@ namespace Fractum.Rest
                 var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId))
                     .ConfigureAwait(false);
                 var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                messages.AddRange(responseContent.Deserialize<RestMessage[]>());
+                var msgs = responseContent.Deserialize<RestMessage[]>();
+                foreach (var msg in msgs)
+                    msg.Client = this;
+                messages.AddRange(msgs);
 
                 messageId = messages[messages.Count - 1].Id;
             } while (target > 0);
@@ -167,7 +181,7 @@ namespace Fractum.Rest
             var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var message = responseContent.Deserialize<RestMessage>();
-
+            message.Client = this;
             return message;
         }
 
@@ -181,7 +195,9 @@ namespace Fractum.Rest
                 channelId, props.Serialize()));
             var responseContent = await responseMessage.Content.ReadAsStringAsync();
 
-            return responseContent.Deserialize<RestMessage>();
+            var message =  responseContent.Deserialize<RestMessage>();
+            message.Client = this;
+            return message;
         }
 
         public Task DeleteMessageAsync(ulong messageId, ulong channelId)

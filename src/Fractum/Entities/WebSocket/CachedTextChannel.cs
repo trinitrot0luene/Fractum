@@ -14,7 +14,7 @@ namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedTextChannel : CachedGuildChannel, IMessageChannel
     {
-        private VotedAsyncAction<IMessageChannel> _typingAction;
+        private VotedAsyncAction<ITextChannel> _typingAction;
 
         internal CachedTextChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache, model, guildId)
@@ -82,14 +82,14 @@ namespace Fractum.Entities.WebSocket
             return await Client.RestClient.EditChannelAsync(Id, props) as RestTextChannel;
         }
 
-        public DisposableScope<VotedAsyncAction<IMessageChannel>> BeginTyping()
+        public DisposableScope<VotedAsyncAction<ITextChannel>> BeginTyping()
         {
             if (_typingAction == null)
                 _typingAction =
-                    new VotedAsyncAction<IMessageChannel>(this, channel => channel.TriggerTypingAsync(), 9500);
+                    new VotedAsyncAction<ITextChannel>(this, channel => channel.TriggerTypingAsync(), 9500);
             else
                 _typingAction.Vote();
-            return new DisposableScope<VotedAsyncAction<IMessageChannel>>(_typingAction, x => x.Leave());
+            return new DisposableScope<VotedAsyncAction<ITextChannel>>(_typingAction, x => x.Leave());
         }
 
         #endregion

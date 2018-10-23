@@ -1,5 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Fractum.Contracts;
+using Fractum.Entities.Properties;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest
@@ -24,5 +27,21 @@ namespace Fractum.Entities.Rest
 
         [JsonProperty("permission_overwrites")]
         public ReadOnlyCollection<PermissionsOverwrite> Overwrites { get; private set; }
+
+        public Task DeleteAsync()
+            => Client.DeleteChannelAsync(Id);
+
+        public virtual async Task<RestGuildChannel> EditAsync(Action<GuildChannelProperties> editAction)
+        {
+            var props = new GuildChannelProperties
+            {
+                Name = Name,
+                PermissionsOverwrites = Overwrites,
+                Position = Position
+            };
+            editAction(props);
+
+            return await Client.EditChannelAsync(Id, props);
+        }
     }
 }

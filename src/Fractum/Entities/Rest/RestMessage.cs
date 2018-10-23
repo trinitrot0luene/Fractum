@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Fractum.Contracts;
+using Fractum.Entities.Properties;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest
 {
-    public class RestMessage : DiscordEntity, IMessage
+    public class RestMessage : RestEntity, IMessage
     {
         [JsonProperty("mentions")]
         public ReadOnlyCollection<User> MentionedUsers { get; private set; }
@@ -59,5 +61,25 @@ namespace Fractum.Entities.Rest
 
         [JsonProperty("guild_id")]
         public ulong? GuildId { get; private set; }
+
+        public Task CreateReactionAsync(Emoji emoji)
+            => Client.CreateReactionAsync(this.Id, this.ChannelId, emoji);
+
+        public Task DeleteReactionAsync(Emoji emoji, IUser user = null)
+            => Client.DeleteReactionAsync(this.Id, this.ChannelId, emoji, user != null ? user.Id : default);
+
+        public Task ClearReactionsAsync()
+            => Client.ClearReactionsAsync(this.Id, this.ChannelId);
+
+        public Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25)
+            => Client.GetReactionsAsync(this.Id, this.ChannelId, emoji, limit);
+
+        public Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction)
+        {
+            var props = new MessageEditProperties();
+            updateAction(props);
+
+            return Client.EditMessageAsync(this.Id, this.ChannelId, props);
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace Fractum.Entities.WebSocket
 {
     public class CachedDMChannel : CachedChannel, IMessageChannel
     {
-        private VotedAsyncAction<IMessageChannel> _typingAction;
+        private VotedAsyncAction<ITextChannel> _typingAction;
 
         internal CachedDMChannel(FractumCache cache) : base(cache)
         {
@@ -44,14 +44,14 @@ namespace Fractum.Entities.WebSocket
         public Task<IEnumerable<RestMessage>> GetMessagesAsync(int limit = 100)
             => Client.RestClient.GetMessagesAsync(this.Id, LastMessageId.Value, limit);
 
-        public DisposableScope<VotedAsyncAction<IMessageChannel>> BeginTyping()
+        public DisposableScope<VotedAsyncAction<ITextChannel>> BeginTyping()
         {
             if (_typingAction == null)
                 _typingAction =
-                    new VotedAsyncAction<IMessageChannel>(this, channel => channel.TriggerTypingAsync(), 9500);
+                    new VotedAsyncAction<ITextChannel>(this, channel => channel.TriggerTypingAsync(), 9500);
             else
                 _typingAction.Vote();
-            return new DisposableScope<VotedAsyncAction<IMessageChannel>>(_typingAction, x => x.Leave());
+            return new DisposableScope<VotedAsyncAction<ITextChannel>>(_typingAction, x => x.Leave());
         }
 
         public Task<RestMessage> CreateMessageAsync(EmbedBuilder embedBuilder)

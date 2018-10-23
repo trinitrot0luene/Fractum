@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.Entities.Properties;
+using Fractum.Entities.Rest;
 
 namespace Fractum.Contracts
 {
@@ -35,5 +38,15 @@ namespace Fractum.Contracts
         ulong ChannelId { get; }
 
         ulong? GuildId { get; }
+
+        Task CreateReactionAsync(Emoji emoji);
+
+        Task DeleteReactionAsync(Emoji emoji, IUser user = null);
+
+        Task ClearReactionsAsync();
+
+        Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25);
+
+        Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction);
     }
 }

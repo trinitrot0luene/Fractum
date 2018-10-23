@@ -8,19 +8,8 @@ using Fractum.Utilities;
 
 namespace Fractum.Contracts
 {
-    public interface IMessageChannel : IDiscordEntity
+    public interface IMessageChannel : ITextChannel
     {
         IEnumerable<CachedMessage> Messages { get; }
-
-        Task<RestMessage> CreateMessageAsync(string content = "", bool isTTS = false, EmbedBuilder embedBuilder = null,
-            params (string fileName, Stream fileStream)[] attachments);
-
-        Task TriggerTypingAsync();
-
-        Task<IMessage> GetMessageAsync(ulong messageId);
-
-        Task<IEnumerable<RestMessage>> GetMessagesAsync(int limit = 100);
-
-        DisposableScope<VotedAsyncAction<IMessageChannel>> BeginTyping();
     }
 }
