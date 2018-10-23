@@ -1,27 +1,29 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class UserUpdateHook : IEventHook<JToken>
+    internal sealed class UserUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var user = args.ToObject<User>();
+            var eventArgs = (UserUpdateEventModel) args;
 
-            var members = cache.Guilds.SelectMany(x => x.GetMembers()).Where(x => x.Id == user.Id);
+            var user = cache.GetUserOrDefault(eventArgs.Id);
+            var clone = user?.Clone();
 
-            var clonedUser = members.FirstOrDefault()?.User.Clone() as User;
+            if (user != null)
+            {
+                user.DiscrimValue = eventArgs.Discrim;
+                user.Username = eventArgs.Username;
+                user.AvatarRaw = eventArgs.AvatarRaw;
+            }
 
-            foreach (var member in members)
-                member.User = user;
-
-            client.InvokeUserUpdated(new CachedEntity<User>(clonedUser), user);
+            client.InvokeUserUpdated(new CachedEntity<User>(clone as User), user);
 
             return Task.CompletedTask;
         }

@@ -1,99 +1,36 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket.EventModels.Entities;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class GuildCreateEventModel : BaseEventModel
+    public class GuildCreateEventModel : EventModelBase
     {
-        internal GuildCreateEventModel()
-        {
-            Channels = new List<GuildChannel>();
-            Presences = new List<Presence>();
-            Members = new List<GuildMember>();
-            Roles = new List<Role>();
-        }
-
-        [JsonProperty("channels")]
-        private JArray RawChannels
-        {
-            set
-            {
-                value.ToList().ForEach(token =>
-                {
-                    GuildChannel newChannel = null;
-                    switch (token.Value<int>("type"))
-                    {
-                        case (int) ChannelType.GuildText:
-                            newChannel = token.ToObject<TextChannel>();
-                            break;
-                        case (int) ChannelType.GuildVoice:
-                            newChannel = token.ToObject<VoiceChannel>();
-                            break;
-                        case (int) ChannelType.GuildCategory:
-                            newChannel = token.ToObject<Category>();
-                            break;
-                    }
-
-                    Channels.Add(newChannel);
-                });
-            }
-        }
-
-        [JsonProperty("presences")]
-        private ReadOnlyCollection<Presence> RawPresences
-        {
-            set
-            {
-                foreach (var val in value)
-                    Presences.Add(val);
-            }
-        }
-
-        [JsonProperty("members")]
-        private ReadOnlyCollection<GuildMember> RawMembers
-        {
-            set
-            {
-                foreach (var val in value)
-                    Members.Add(val);
-            }
-        }
-
-        [JsonProperty("roles")]
-        private ReadOnlyCollection<Role> RawRoles
-        {
-            set
-            {
-                foreach (var val in value)
-                    Roles.Add(val);
-            }
-        }
-
-        public override void ApplyToCache(FractumCache cache)
-        {
-            var gc = new GuildCache(cache.Client, this);
-            cache[gc.Id] = gc;
-        }
-
         #region Cacheable Entities
 
-        public List<GuildChannel> Channels;
-        public List<Presence> Presences;
-        public List<GuildMember> Members;
-        public List<Role> Roles;
+        [JsonProperty("channels")]
+        public List<ChannelCreateUpdateOrDeleteEventModel> Channels { get; private set; }
+
+        [JsonProperty("presences")]
+        public List<PresenceModel> Presences { get; private set; }
+
+        [JsonProperty("members")]
+        public List<GuildMemberAddEventModel> Members { get; private set; }
+
+        [JsonProperty("roles")]
+        public List<Role> Roles { get; private set; }
 
         [JsonProperty("emojis")]
-        public List<GuildEmoji> Emojis { get; private set; }
+        public List<GuildEmojiModel> Emojis { get; private set; }
 
         #endregion
 
         #region Properties
+
+        [JsonProperty("id")]
+        public ulong Id { get; private set; }
 
         [JsonProperty("name")]
         public string Name { get; private set; }

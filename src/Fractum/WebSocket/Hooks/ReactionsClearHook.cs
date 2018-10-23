@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
-using Fractum.Entities;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ReactionsClearHook : IEventHook<JToken>
+    internal sealed class ReactionsClearHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            client.InvokeReactionsCleared(args.Value<ulong>("message_id"), args.Value<ulong>("channel_id"), args.Value<ulong?>("guild_id"));
+            var eventModel = (ReactionsClearEventModel) args;
+
+            client.InvokeReactionsCleared(eventModel.MessageId, eventModel.ChannelId, eventModel.GuildId);
 
             return Task.CompletedTask;
         }

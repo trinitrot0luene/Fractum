@@ -18,22 +18,33 @@ install:
 build_script:
 - ps: dotnet restore .\src\Fractum.sln | Out-Host
 - ps: dotnet build .\src\Fractum.sln -c "Release" --no-restore | Out-Host
-- git config --global credential.helper store
-- ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
-- git config --global user.email %github_email%
-- git config --global user.name "trinitrot0luene"
-- bash releaseDocs.sh
+- ps: >-
+    if ($Env:APPVEYOR_REPO_TAG -eq "true")
+    {
+        git config --global credential.helper store
+        ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+        git config --global user.email %github_email%
+        git config --global user.name "trinitrot0luene"
+        bash releaseDocs.sh
+    }
 
 after_build:
 - ps: >-
-    if ($Env:APPVEYOR_REPO_TAG -eq "false")
+    if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And $Env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
     {
-       $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
-       dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
+        if ($Env:APPVEYOR_REPO_TAG -eq "false")
+        {
+           $BuildNumber = ([int] $Env:APPVEYOR_BUILD_NUMBER).ToString("00000")
+           dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build --version-suffix="beta-$BuildNumber" | Out-Host
+        }
+        else
+        {
+            dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
+        }
     }
     else
     {
-        dotnet pack .\src\Fractum -c Release -o .\..\..\artifacts --no-restore --no-build | Out-Host
+        echo "Not building on a commit to master. Not packing library."
     }
 nuget:
   disable_publish_on_pr: true
@@ -49,7 +60,7 @@ artifacts:
   
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/trinitrotoluene/api/v2/package
+  server: https://www.myget.org/F/fractum/api/v2/package
   api_key:
     secure: zgT3KsZ/VPjHNJk6gJZKF79FiAumxmByouqaucf+tAcUAks0sSCCo5pHzVG9Xb0J
   skip_symbols: true

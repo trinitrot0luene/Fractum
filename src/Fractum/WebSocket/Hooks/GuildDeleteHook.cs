@@ -3,15 +3,14 @@ using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
-using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class GuildDeleteHook : IEventHook<JToken>
+    internal sealed class GuildDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var model = args.ToObject<GuildCreateEventModel>();
+            var model = (GuildDeleteEventModel) args;
 
             var guild = cache[model.Id];
 
@@ -21,7 +20,7 @@ namespace Fractum.WebSocket.Hooks
                 LogSeverity.Info));
 
             client.InvokeGuildUnavailable(guild.Guild);
-            
+
             return Task.CompletedTask;
         }
     }

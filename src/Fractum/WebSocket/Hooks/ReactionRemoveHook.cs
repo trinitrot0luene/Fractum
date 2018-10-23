@@ -1,18 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
-using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ReactionRemoveHook : IEventHook<JToken>
+    internal sealed class ReactionRemoveHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            var reaction = args.ToObject<Reaction>();
+            var eventModel = (ReactionRemoveEventModel) args;
 
-            client.InvokeReactionRemoved(reaction);
+            client.InvokeReactionRemoved(new CachedReaction(eventModel));
 
             return Task.CompletedTask;
         }

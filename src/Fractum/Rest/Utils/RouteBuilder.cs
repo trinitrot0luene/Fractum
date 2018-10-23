@@ -9,7 +9,6 @@ namespace Fractum.Rest.Utils
         public RouteBuilder()
         {
             RouteObjects = new List<(RouteSection section, object[] parameters)>();
-
         }
 
         private List<(RouteSection section, object[] parameters)> RouteObjects { get; }
@@ -44,7 +43,9 @@ namespace Fractum.Rest.Utils
         {
             (RouteSection section, object)? majorParam = RouteObjects.FirstOrDefault(r => r.Item1.IsMajor);
             return string.Concat(majorParam?.section.BaseRoute,
-                string.Join("", RouteObjects.Skip(1).Select(r => string.Format(r.section.BaseRoute, r.parameters.Length > 0 ? r.parameters : new[] { string.Empty }))));
+                string.Join("",
+                    RouteObjects.Skip(1).Select(r => string.Format(r.section.BaseRoute,
+                        r.parameters.Length > 0 ? r.parameters : new[] {string.Empty}))));
         }
 
         /// <summary>
@@ -54,7 +55,9 @@ namespace Fractum.Rest.Utils
         public Uri Build()
         {
             var urlString = string.Concat(Consts.API_BASE_URL,
-                string.Join("", RouteObjects.Select(r => string.Format(r.section.BaseRoute, r.parameters.Length > 0 ? r.parameters : new[] {string.Empty }))));
+                string.Join("",
+                    RouteObjects.Select(r => string.Format(r.section.BaseRoute,
+                        r.parameters.Length > 0 ? r.parameters : new[] {string.Empty}))));
             if (urlString.EndsWith("/"))
                 urlString = urlString.Substring(0, urlString.Length - 1);
 

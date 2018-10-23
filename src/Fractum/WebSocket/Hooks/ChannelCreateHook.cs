@@ -1,34 +1,31 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.Utilities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ChannelCreateHook : IEventHook<JToken>
+    internal sealed class ChannelCreateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            GuildChannel createdChannel = null;
-            switch ((ChannelType) args.Value<int>("type"))
+            var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
+
+            CachedGuildChannel createdChannel = null;
+            switch (eventModel.Type)
             {
                 case ChannelType.GuildCategory:
-                    createdChannel = args.ToObject<Category>();
+                    createdChannel = new CachedCategory(cache, eventModel);
                     break;
                 case ChannelType.GuildText:
-                    createdChannel = args.ToObject<TextChannel>();
+                    createdChannel = new CachedTextChannel(cache, eventModel);
                     break;
                 case ChannelType.GuildVoice:
-                    createdChannel = args.ToObject<VoiceChannel>();
+                    createdChannel = new CachedVoiceChannel(cache, eventModel);
                     break;
             }
-
-            createdChannel.WithClient(client);
-
-            if (cache.HasGuild(createdChannel.GuildId))
-                cache[createdChannel.GuildId].AddOrUpdate(createdChannel, old => old = createdChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));

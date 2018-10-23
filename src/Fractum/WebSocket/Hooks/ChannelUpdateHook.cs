@@ -1,39 +1,39 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ChannelUpdateHook : IEventHook<JToken>
+    internal sealed class ChannelUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            GuildChannel updatedChannel = null;
-            switch ((ChannelType) args.Value<int>("type"))
+            var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
+
+            var oldChannel = cache[eventModel.GuildId].GetChannel(eventModel.Id);
+
+            CachedGuildChannel updatedChannel = null;
+            switch (eventModel.Type)
             {
                 case ChannelType.GuildCategory:
-                    updatedChannel = args.ToObject<Category>();
+                    updatedChannel = new CachedCategory(cache, eventModel);
                     break;
                 case ChannelType.GuildText:
-                    updatedChannel = args.ToObject<TextChannel>();
+                    updatedChannel = new CachedTextChannel(cache, eventModel);
                     break;
                 case ChannelType.GuildVoice:
-                    updatedChannel = args.ToObject<VoiceChannel>();
+                    updatedChannel = new CachedVoiceChannel(cache, eventModel);
                     break;
             }
-
-            var oldChannel = cache[updatedChannel.GuildId].GetChannels().FirstOrDefault(x => x.Id == updatedChannel.Id);
-
-            cache[updatedChannel.GuildId].AddOrUpdate(updatedChannel, old => old = updatedChannel);
 
             client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {updatedChannel.Name} was updated", LogSeverity.Verbose));
 
-            client.InvokeChannelUpdated(new CachedEntity<GuildChannel>(oldChannel), updatedChannel);
+            client.InvokeChannelUpdated(new CachedEntity<CachedGuildChannel>(oldChannel), updatedChannel);
 
             return Task.CompletedTask;
         }

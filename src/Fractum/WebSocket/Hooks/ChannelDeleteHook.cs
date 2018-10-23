@@ -1,27 +1,30 @@
 ﻿using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.Utilities;
 using Fractum.WebSocket.Core;
-using Newtonsoft.Json.Linq;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
-    internal sealed class ChannelDeleteHook : IEventHook<JToken>
+    internal sealed class ChannelDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(JToken args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
-            GuildChannel deletedChannel = null;
-            switch ((ChannelType) args.Value<int>("type"))
+            var eventArgs = (ChannelCreateUpdateOrDeleteEventModel) args;
+
+            CachedGuildChannel deletedChannel = null;
+            switch (eventArgs.Type)
             {
                 case ChannelType.GuildCategory:
-                    deletedChannel = args.ToObject<Category>();
+                    deletedChannel = new CachedCategory(cache, eventArgs);
                     break;
                 case ChannelType.GuildText:
-                    deletedChannel = args.ToObject<TextChannel>();
+                    deletedChannel = new CachedTextChannel(cache, eventArgs);
                     break;
                 case ChannelType.GuildVoice:
-                    deletedChannel = args.ToObject<VoiceChannel>();
+                    deletedChannel = new CachedVoiceChannel(cache, eventArgs);
                     break;
             }
 
@@ -31,7 +34,7 @@ namespace Fractum.WebSocket.Hooks
             client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {deletedChannel.Name} was deleted",
                 LogSeverity.Verbose));
 
-            client.InvokeChannelDeleted(new CachedEntity<GuildChannel>(deletedChannel));
+            client.InvokeChannelDeleted(new CachedEntity<CachedGuildChannel>(deletedChannel));
 
             return Task.CompletedTask;
         }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Fractum.Entities
 {
-    public abstract class DiscordEntity : FractumEntity, IEquatable<DiscordEntity>, IDiscordEntity
+    public abstract class DiscordEntity : IEquatable<DiscordEntity>, IDiscordEntity
     {
         internal DiscordEntity()
         {

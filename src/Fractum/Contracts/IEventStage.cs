@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Contracts
 {
@@ -7,8 +8,8 @@ namespace Fractum.Contracts
     /// </summary>
     public interface IEventStage<TData> : IPipelineStage<TData>
     {
-        Dictionary<string, IEventHook<TData>> Hooks { get; }
+        Dictionary<string, IEventHook<EventModelBase>> Hooks { get; }
 
-        IEventStage<TData> RegisterHook(string eventName, IEventHook<TData> hook);
+        IEventStage<TData> RegisterHook(string eventName, IEventHook<EventModelBase> hook);
     }
 }

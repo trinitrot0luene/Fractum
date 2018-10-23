@@ -4,9 +4,9 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.Entities.Extensions;
-using Fractum.Entities.WebSocket;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Core
 {
@@ -123,7 +123,7 @@ namespace Fractum.WebSocket.Core
         {
             var buffer = new byte[32768];
             var bufferSegment = new ArraySegment<byte>(buffer);
-            
+
             byte[] resultBuffer = null;
             WebSocketReceiveResult result = null;
 
@@ -131,25 +131,38 @@ namespace Fractum.WebSocket.Core
 
             while (!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
             {
-                using (var ms = new MemoryStream())
+                try
                 {
-                    do
+                    using (var ms = new MemoryStream())
                     {
-                        result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
-                        if (result.MessageType == WebSocketMessageType.Close)
+                        do
                         {
-                            // TODO: Will this ever do anything?
-                        }
-                        else
-                        {
-                            ms.Write(buffer, 0, result.Count);
-                        }
-                    } while (!result.EndOfMessage);
+                            result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
+                            if (result.MessageType == WebSocketMessageType.Close)
+                            {
+                                // TODO: Will this ever do anything?
+                            }
+                            else
+                            {
+                                ms.Write(buffer, 0, result.Count);
+                            }
+                        } while (!result.EndOfMessage);
 
-                    resultBuffer = ms.ToArray();
+                        resultBuffer = ms.ToArray();
+                    }
+                }
+                catch (WebSocketException)
+                {
+                    InvokeCloseCodeIssued(WebSocketCloseStatus.Empty);
+
+                    _socket.Dispose();
+                    _socket = new ClientWebSocket();
+                    _converter = new WebSocketMessageConverter();
+
+                    break;
                 }
 
-                Payload responsePayload = default;
+                IPayload<EventModelBase> responsePayload = default;
                 if (result.MessageType == WebSocketMessageType.Binary)
                     responsePayload = await _converter.DecompressAsync(resultBuffer);
 
@@ -201,9 +214,9 @@ namespace Fractum.WebSocket.Core
         /// <summary>
         ///     Raised when the wrapper receives a payload from the gateway.
         /// </summary>
-        internal event Func<Payload, Task> PayloadReceived;
+        internal event Func<IPayload<EventModelBase>, Task> PayloadReceived;
 
-        private void InvokeReceived(Payload payload)
+        private void InvokeReceived(IPayload<EventModelBase> payload)
             => PayloadReceived?.Invoke(payload);
 
         #endregion

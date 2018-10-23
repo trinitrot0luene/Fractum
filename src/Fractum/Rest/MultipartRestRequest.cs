@@ -9,7 +9,10 @@ namespace Fractum.Rest
     internal sealed class MultipartRestRequest : RestRequest
     {
         private readonly MultipartFormDataContent _content = new MultipartFormDataContent("------------------");
-        public MultipartRestRequest(RouteBuilder rb, HttpMethod method, Dictionary<string, string> multipartValues, Dictionary<string, (string fileName, Stream fileStream)> attachments, ulong majorParam = 0) : base(rb, method, majorParam)
+
+        public MultipartRestRequest(RouteBuilder rb, HttpMethod method, Dictionary<string, string> multipartValues,
+            Dictionary<string, (string fileName, Stream fileStream)> attachments, ulong majorParam = 0) : base(rb,
+            method, majorParam)
         {
             foreach (var kvp in multipartValues)
             {
@@ -17,6 +20,7 @@ namespace Fractum.Rest
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 _content.Add(content, kvp.Key);
             }
+
             foreach (var kvp in attachments)
                 _content.Add(new StreamContent(kvp.Value.fileStream), kvp.Key, kvp.Value.fileName);
         }

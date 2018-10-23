@@ -1,11 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using Fractum.Entities;
-using Fractum.WebSocket.Core;
 using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels
 {
-    internal sealed class ReadyEventModel : BaseEventModel
+    internal class ReadyEventModel : EventModelBase
     {
         [JsonProperty("v")]
         public int ProtoVersion { get; private set; }
@@ -20,12 +19,6 @@ namespace Fractum.WebSocket.EventModels
         public string SessionId { get; private set; }
 
         [JsonProperty("_trace")]
-        public ulong[] Trace { get; private set; }
-
-        public override void ApplyToCache(FractumCache cache)
-        {
-            foreach (var guild in guilds)
-                cache[guild.Id] = new GuildCache(cache.Client, guild);
-        }
+        public string[] Trace { get; private set; }
     }
 }

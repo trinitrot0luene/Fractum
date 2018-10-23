@@ -5,22 +5,21 @@ using System.Threading.Tasks;
 namespace Fractum.Utilities
 {
     /// <summary>
-    /// Initiates an asynchronous periodic action on a target entity, which runs until there are no callers remaining.
+    ///     Initiates an asynchronous periodic action on a target entity, which runs until there are no callers remaining.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public class VotedAsyncAction<TEntity>
     {
+        private readonly Func<TEntity, Task> _asyncAction;
+
+        private readonly TEntity _entity;
+
+        private readonly int _periodMilliseconds;
         private readonly object _voteLock = new object();
 
         private Timer _actionTimer;
 
         private int _actionVotes = 1;
-
-        private readonly int _periodMilliseconds;
-
-        private readonly Func<TEntity, Task> _asyncAction;
-
-        private readonly TEntity _entity;
 
         public VotedAsyncAction(TEntity entity, Func<TEntity, Task> asyncAction, int periodMilliseconds)
         {
@@ -28,8 +27,8 @@ namespace Fractum.Utilities
             _asyncAction = asyncAction;
             _entity = entity;
 
-            _actionTimer = new Timer((_) => asyncAction(entity), null, 0, periodMilliseconds);
-        } 
+            _actionTimer = new Timer(_ => asyncAction(entity), null, 0, periodMilliseconds);
+        }
 
         public void Vote()
         {
@@ -38,21 +37,25 @@ namespace Fractum.Utilities
                 if (_actionTimer == null)
                 {
                     _actionVotes = 1;
-                    _actionTimer = new Timer((_) => _asyncAction(_entity), null, 0, _periodMilliseconds);
+                    _actionTimer = new Timer(_ => _asyncAction(_entity), null, 0, _periodMilliseconds);
                 }
                 else
+                {
                     Interlocked.Increment(ref _actionVotes);
+                }
             }
         }
 
         public void Leave()
         {
             lock (_voteLock)
+            {
                 if (Interlocked.Decrement(ref _actionVotes) <= 0)
                 {
                     _actionTimer.Dispose();
                     _actionTimer = null;
                 }
+            }
         }
     }
 }

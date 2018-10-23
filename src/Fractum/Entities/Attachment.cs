@@ -14,7 +14,7 @@ namespace Fractum.Entities
         public string Url { get; private set; }
 
         [JsonProperty("proxy_url")]
-        public string ProxyUrl { get; private set;  }
+        public string ProxyUrl { get; private set; }
 
         [JsonProperty("height")]
         public int? Height { get; private set; }

@@ -5,7 +5,7 @@ Guides and tutorials can be found in the [docs](https://trinitrot0luene.github.i
 
 For nightly builds, add the MyGet repository as a NuGet package source and check the `Include Prerelease` option (in Visual Studio)
 ```
-https://www.myget.org/F/trinitrotoluene/api/v3/index.json
+https://www.myget.org/F/fractum/api/v3/index.json
 ```
 
 ## About
