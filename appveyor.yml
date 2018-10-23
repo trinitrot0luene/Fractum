@@ -37,7 +37,7 @@ after_build:
     }
     else
     {
-        echo "Not building on a commit to master or on a tag, skipping pack
+        echo "Not building on a commit to master or on a tag, skipping pack"
     }
 nuget:
   disable_publish_on_pr: true
