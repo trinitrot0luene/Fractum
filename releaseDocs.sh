@@ -16,7 +16,7 @@ mkdir $TEMP_REPO_DIR
 
 echo "Clone gh-pages branch"
 
-git clone https://github.com/trinitrot0luene/Fractum.git --branch gh-pages $TEMP_REPO_DIR
+git clone https://github.com/trinitrot0luene/Fractum.git -q --branch gh-pages $TEMP_REPO_DIR
 
 echo "Create or clear version folder $APPVEYOR_REPO_TAG_NAME in gh-pages branch"
 
