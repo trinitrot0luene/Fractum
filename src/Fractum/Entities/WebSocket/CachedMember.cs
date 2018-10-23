@@ -24,11 +24,14 @@ namespace Fractum.Entities.WebSocket
             IsDeafened = model.IsDeafened;
             IsMuted = model.IsMuted;
             Nickname = model.Nickname;
+            JoinedAt = model.JoinedAt;
 
             cache.AddUser(model.User);
         }
 
         public string Mention => string.Format(Consts.USER_MENTION, Id);
+
+        public string Discrim => DiscrimValue.ToString("0000");
 
         internal void Update(GuildMemberUpdateEventModel model)
         {
@@ -37,7 +40,7 @@ namespace Fractum.Entities.WebSocket
             IsMuted = model.PartialMember?.IsMuted ?? IsMuted;
             Nickname = Nickname ?? Nickname;
             User.Username = model.User.Username ?? User.Username;
-            User.Discrim = model.User.Discrim != short.MinValue ? User.Discrim : User.Discrim;
+            User.DiscrimValue = model.User.DiscrimValue != short.MinValue ? User.DiscrimValue : User.DiscrimValue;
 
             var newPresence = new CachedPresence(Id, model.Activity, model.NewStatus ?? Presence.Status);
 
@@ -45,7 +48,7 @@ namespace Fractum.Entities.WebSocket
         }
 
         public override string ToString() =>
-            $"{(Nickname == null ? string.Empty : $"{Nickname} ")}({Username}#{Discrim:0000})";
+            $"{(Nickname == null ? string.Empty : $"{Nickname} ")}({Username}#{DiscrimValue:0000})";
 
         #region Populated Properties
 
@@ -55,7 +58,7 @@ namespace Fractum.Entities.WebSocket
 
         public string Username => User.Username;
 
-        public short Discrim => User.Discrim;
+        public short DiscrimValue => User.DiscrimValue;
 
         public bool IsBot => User.IsBot;
 
@@ -63,7 +66,11 @@ namespace Fractum.Entities.WebSocket
 
         public CachedGuild Guild => Cache[GuildId].Guild;
 
-        public CachedPresence Presence => Cache.GetPresenceOrDefault(Id);
+        private CachedPresence Presence => Cache.GetPresenceOrDefault(Id);
+
+        public Status Status => Presence?.Status ?? Status.Offline;
+
+        public Activity Game => Presence?.Game;
 
         public IEnumerable<Role> Roles
         {

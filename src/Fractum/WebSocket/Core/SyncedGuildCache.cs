@@ -164,16 +164,14 @@ namespace Fractum.WebSocket.Core
             }
         }
 
-        public void AddOrUpdate(CachedMember member, Func<CachedMember, CachedMember> replaceAction)
+        public void Add(CachedMember member)
         {
             lock (memberLock)
             {
                 if (members.ContainsKey(member.Id))
-                    members[member.Id] = replaceAction(members[member.Id]);
+                    members[member.Id] = member;
                 else
                     members.Add(member.Id, member);
-
-                var updatedMember = members[member.Id];
             }
         }
 

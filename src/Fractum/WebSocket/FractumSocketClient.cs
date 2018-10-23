@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
@@ -47,6 +48,8 @@ namespace Fractum.WebSocket
         internal ConcurrentDictionary<ulong, CachedDMChannel> PrivateChannels { get; }
 
         public int Latency { get; internal set; }
+
+        public IEnumerable<CachedGuild> Guilds => Cache.Guilds.Select(g => g.Guild);
 
         /// <summary>
         ///     Use the default <see cref="PayloadPipeline" /> to process gateway messages.

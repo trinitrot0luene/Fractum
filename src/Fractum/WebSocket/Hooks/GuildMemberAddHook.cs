@@ -18,7 +18,7 @@ namespace Fractum.WebSocket.Hooks
             var member = new CachedMember(cache, eventModel, eventModel.GuildId);
 
             if (eventModel.GuildId.HasValue)
-                cache[eventModel.GuildId.Value].AddOrUpdate(member, old => old = member);
+                cache[eventModel.GuildId.Value].Add(member);
 
             client.InvokeLog(new LogMessage(nameof(GuildMemberAddHook),
                 $"{member} joined {member.Guild?.Name}", LogSeverity.Info));

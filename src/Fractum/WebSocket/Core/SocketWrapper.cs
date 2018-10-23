@@ -131,22 +131,35 @@ namespace Fractum.WebSocket.Core
 
             while (!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
             {
-                using (var ms = new MemoryStream())
+                try
                 {
-                    do
+                    using (var ms = new MemoryStream())
                     {
-                        result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
-                        if (result.MessageType == WebSocketMessageType.Close)
+                        do
                         {
-                            // TODO: Will this ever do anything?
-                        }
-                        else
-                        {
-                            ms.Write(buffer, 0, result.Count);
-                        }
-                    } while (!result.EndOfMessage);
+                            result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
+                            if (result.MessageType == WebSocketMessageType.Close)
+                            {
+                                // TODO: Will this ever do anything?
+                            }
+                            else
+                            {
+                                ms.Write(buffer, 0, result.Count);
+                            }
+                        } while (!result.EndOfMessage);
 
-                    resultBuffer = ms.ToArray();
+                        resultBuffer = ms.ToArray();
+                    }
+                }
+                catch (WebSocketException)
+                {
+                    InvokeCloseCodeIssued(WebSocketCloseStatus.Empty);
+
+                    _socket.Dispose();
+                    _socket = new ClientWebSocket();
+                    _converter = new WebSocketMessageConverter();
+
+                    break;
                 }
 
                 IPayload<EventModelBase> responsePayload = default;
@@ -155,8 +168,7 @@ namespace Fractum.WebSocket.Core
 
                 try
                 {
-                    InvokeReceived(
-                        responsePayload); // TODO: Decide between fire and forgetting or waiting for handlers.
+                    InvokeReceived(responsePayload); // TODO: Decide between fire and forgetting or waiting for handlers.
                 }
                 catch (Exception ex)
                 {

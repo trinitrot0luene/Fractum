@@ -18,5 +18,8 @@ namespace Fractum.Entities
 
         [JsonProperty("state", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string State { get; set; }
+
+        public override string ToString() 
+            => $"{(Type == ActivityType.Listening ? "Listening to" : Type == ActivityType.Playing ? "Playing" : Type == ActivityType.Streaming ? "Streaming" : Type.ToString())}{(Name != null ? $" {Name}": string.Empty)}{(State != null ? $", {State}" : string.Empty)}{(Details != null ? $", {Details}" : string.Empty)}";
     }
 }

@@ -18,7 +18,7 @@ namespace Fractum.WebSocket.Hooks
 
             if (user != null)
             {
-                user.Discrim = eventArgs.Discrim;
+                user.DiscrimValue = eventArgs.Discrim;
                 user.Username = eventArgs.Username;
                 user.AvatarRaw = eventArgs.AvatarRaw;
             }

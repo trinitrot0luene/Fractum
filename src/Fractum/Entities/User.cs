@@ -23,7 +23,7 @@ namespace Fractum.Entities
             AvatarRaw = AvatarRaw,
             Member = Member,
             Username = Username,
-            Discrim = Discrim,
+            DiscrimValue = DiscrimValue,
             IsBot = IsBot
         };
 
@@ -31,7 +31,7 @@ namespace Fractum.Entities
         public string Username { get; internal set; }
 
         [JsonProperty("discriminator")]
-        public short Discrim { get; internal set; }
+        public short DiscrimValue { get; internal set; }
 
         [JsonProperty("bot")]
         public bool IsBot { get; private set; }
@@ -42,7 +42,7 @@ namespace Fractum.Entities
         public string GetAvatarUrl()
         {
             if (AvatarRaw is null)
-                return string.Concat(Consts.CDN, string.Format(Consts.CDN_DEFAULT_AVATAR, Discrim % 5));
+                return string.Concat(Consts.CDN, string.Format(Consts.CDN_DEFAULT_AVATAR, DiscrimValue % 5));
             if (AvatarRaw.StartsWith("a_"))
                 return string.Concat(Consts.CDN,
                     string.Format(Consts.CDN_USER_AVATAR, Id, AvatarRaw.Substring(2), "gif"));

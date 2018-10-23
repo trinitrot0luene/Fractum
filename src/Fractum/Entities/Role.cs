@@ -35,5 +35,7 @@ namespace Fractum.Entities
 
         [JsonIgnore]
         public Color Color => Color.FromArgb(ColorRaw);
+
+        public override string ToString() => $"{Name} : {Id}";
     }
 }

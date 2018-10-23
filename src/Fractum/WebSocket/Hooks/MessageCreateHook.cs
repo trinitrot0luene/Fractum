@@ -22,7 +22,7 @@ namespace Fractum.WebSocket.Hooks
                 guild.AddOrCreate(message);
 
                 client.InvokeLog(new LogMessage(nameof(MessageCreateHook),
-                    $"Received message from {(message.Author as CachedMember)?.Nickname ?? message.Author.Username + "#" + message.Author.Discrim.ToString("0000")}.",
+                    $"Received message from {(message.Author as CachedMember)?.Nickname ?? message.Author.Username + "#" + message.Author.DiscrimValue.ToString("0000")}.",
                     LogSeverity.Verbose));
 
                 client.InvokeMessageCreated(message);

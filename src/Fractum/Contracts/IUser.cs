@@ -4,7 +4,7 @@
     {
         string Username { get; }
 
-        short Discrim { get; }
+        short DiscrimValue { get; }
 
         bool IsBot { get; }
 

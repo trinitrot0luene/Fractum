@@ -19,7 +19,7 @@ namespace Fractum.WebSocket.Hooks
                 foreach (var rawMember in eventModel.Members)
                 {
                     var member = new CachedMember(cache, rawMember, gc.Id);
-                    gc.AddOrUpdate(member, old => old = member);
+                    gc.Add(member);
                 }
             }
 
