@@ -30,7 +30,7 @@ build_script:
 
 after_build:
 - ps: >-
-    if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And $Env:APPVEYOR_PULL_REQUEST_NUMBER -eq "")
+    if ($Env:APPVEYOR_REPO_BRANCH -eq "master" -And (-not (Test-Path $Env:APPVEYOR_PULL_REQUEST_NUMBER)))
     {
         if ($Env:APPVEYOR_REPO_TAG -eq "false")
         {
