@@ -36,5 +36,3 @@ git config --global core.safecrlf false
 git add . -A
 git commit -m "Updated docs for $APPVEYOR_REPO_TAG_NAME"
 git push origin gh-pages
-
-exit 0

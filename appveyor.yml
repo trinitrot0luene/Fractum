@@ -15,15 +15,7 @@ build_script:
 - ps: dotnet restore .\src\Fractum.sln | Out-Host
 - ps: dotnet build .\src\Fractum.sln -c "Release" --no-restore | Out-Host
 - ps: >-
-    if ($Env:APPVEYOR_REPO_TAG -eq "true")
-    {
-        git config --global credential.helper store
-        Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
-        git config --global user.email %github_email%
-        git config --global user.name "trinitrot0luene"
-        git config --global core.safecrlf false
-        bash releaseDocs.sh
-    }
+    ./wrapDocsDeploy.ps1
 
 after_build:
 - ps: >-
