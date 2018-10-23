@@ -1,6 +1,9 @@
-﻿namespace Fractum.WebSocket.EventModels
+﻿using System;
+
+namespace Fractum.WebSocket.EventModels
 {
     public abstract class EventModelBase
     {
+        public DateTimeOffset ProcessingStartedAt;
     }
 }

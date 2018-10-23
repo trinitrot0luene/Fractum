@@ -220,7 +220,7 @@ namespace Fractum.WebSocket
 
             Task<IMessage> getFunc()
             {
-                return RestClient.GetMessageAsync(msgChannel, messageId);
+                return RestClient.GetMessageAsync(msgChannel.Id, messageId);
             }
 
             return new CachedEntity<IMessage>(message, getFunc);

@@ -29,7 +29,7 @@ namespace Fractum.Entities.WebSocket
 
         public Task<RestMessage> CreateMessageAsync(string content, bool isTTS = false,
             EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
-            => Client.RestClient.CreateMessageAsync(this, content, isTTS, embedBuilder, attachments);
+            => Client.RestClient.CreateMessageAsync(this.Id, content, isTTS, embedBuilder, attachments);
 
         public Task TriggerTypingAsync()
             => Client.RestClient.TriggerTypingAsync(Id);
@@ -42,7 +42,7 @@ namespace Fractum.Entities.WebSocket
         }
 
         public Task<IEnumerable<RestMessage>> GetMessagesAsync(int limit = 100)
-            => Client.RestClient.GetMessagesAsync(this, LastMessageId.Value, limit);
+            => Client.RestClient.GetMessagesAsync(this.Id, LastMessageId.Value, limit);
 
         public DisposableScope<VotedAsyncAction<IMessageChannel>> BeginTyping()
         {
@@ -55,6 +55,6 @@ namespace Fractum.Entities.WebSocket
         }
 
         public Task<RestMessage> CreateMessageAsync(EmbedBuilder embedBuilder)
-            => Client.RestClient.CreateMessageAsync(this, null, embedBuilder: embedBuilder);
+            => Client.RestClient.CreateMessageAsync(this.Id, null, embedBuilder: embedBuilder);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
@@ -11,6 +12,7 @@ namespace Fractum.WebSocket.Hooks
     {
         public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
         {
+            var sw = Stopwatch.StartNew();
             var eventModel = (GuildMembersChunkEventModel) args;
 
             if (cache.HasGuild(eventModel.GuildId))
@@ -26,6 +28,9 @@ namespace Fractum.WebSocket.Hooks
             client.InvokeLog(new LogMessage(nameof(GuildMembersChunkHook),
                 $"Received a {eventModel.Members.Count} member chunk for guild {cache[eventModel.GuildId]?.Name}",
                 LogSeverity.Debug));
+
+            client.InvokeLog(new LogMessage(nameof(PayloadPipeline),
+                $"Chunk processed in {sw.ElapsedTicks * 1000000 / Stopwatch.Frequency}µs", LogSeverity.Debug));
 
             return Task.CompletedTask;
         }

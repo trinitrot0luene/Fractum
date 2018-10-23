@@ -130,27 +130,27 @@ namespace Fractum.Entities.WebSocket
         #region REST
 
         public Task CreateReactionAsync(Emoji emoji)
-            => Client.RestClient.CreateReactionAsync(this, emoji);
+            => Client.RestClient.CreateReactionAsync(this.Id, this.ChannelId, emoji);
 
         public Task DeleteReactionAsync(Emoji emoji, IUser user = null)
-            => Client.RestClient.DeleteReactionAsync(this, emoji, user != null ? user.Id : default);
+            => Client.RestClient.DeleteReactionAsync(this.Id, this.ChannelId, emoji, user != null ? user.Id : default);
 
         public Task ClearReactionsAsync()
-            => Client.RestClient.ClearReactionsAsync(this);
+            => Client.RestClient.ClearReactionsAsync(this.Id, this.ChannelId);
 
         public Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25)
-            => Client.RestClient.GetReactionsAsync(this, emoji, limit);
+            => Client.RestClient.GetReactionsAsync(this.Id, this.ChannelId, emoji, limit);
 
         public Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction)
         {
             var props = new MessageEditProperties();
             updateAction(props);
 
-            return Client.RestClient.EditMessageAsync(this, props);
+            return Client.RestClient.EditMessageAsync(this.Id, this.ChannelId, props);
         }
 
         public Task DeleteAsync()
-            => Client.RestClient.DeleteMessageAsync(this);
+            => Client.RestClient.DeleteMessageAsync(this.Id, this.ChannelId);
 
         #endregion
     }
