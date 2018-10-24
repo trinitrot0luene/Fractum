@@ -1,23 +1,19 @@
 ![AppVeyor](https://img.shields.io/appveyor/ci/trinitrot0luene/Fractum.svg) ![NuGet](https://img.shields.io/nuget/v/Fractum.svg) ![MyGet Pre Release](https://img.shields.io/myget/fractum/vpre/Fractum.svg)
 
 ## Links
-Guides and tutorials can be found in the [docs](https://trinitrot0luene.github.io/Fractum/articles/intro.html), as well as the [api reference](https://trinitrot0luene.github.io/Fractum/api/index.html).
+For a complete API reference, as well as guides and tutorials, check out the latest [documentation](https://trinitrot0luene.github.io/Fractum/).
 
-For nightly builds, add the MyGet repository as a NuGet package source and check the `Include Prerelease` option (in Visual Studio)
+For pre-release builds, add the MyGet repository as a NuGet package source and check the `Include Prerelease` option (in Visual Studio).
+
 ```
 https://www.myget.org/F/fractum/api/v3/index.json
 ```
+>Pre-release builds contain untested changes and may behave unexpectedly.
 
-## About
+## Usage
 
-My first ever serious development project was a Discord bot, making use of the fantastic [Discord.Net](https://github.com/RogueException/Discord.Net) API wrapper. Now that I've had a great time with both other projects and getting to know bot development a better than I ever thought I would, I've decided to come full-circle and write my own wrapper.
+Fractum uses a system of Pipelines and PipelineStages to process events coming over the socket. As a developer you can either choose to use the fully complete stages provided out of the box, write your entirely own stages, or mix and match the two. Data is exposed through `EventModels`, allowing you to customise both connection and event handling behaviour, and do additional processing later in the pipeline.
 
-## Why use Fractum?
-
-Although in many ways less advanced than other wrappers for the API, Fractum allows you right at the internals, with its Pipeline system giving you the option to interface with raw data coming over the socket, as well as customise caching and connection behaviour to your needs. This is of course optional, with a complete pipeline provided out of the box, so this is just an extra feature for those of you interested in extra customisation. 
-
-Fractum is in early stages of development, and I'll do my best to deal with any bugs that arise, as fast as possible. The goal of Fractum is to be both a framework that is simple to "plug-and-play" while at the same time supplying components to those who want to get closer to the "bare metal", so to speak. If either of these- or any point inbetween- sounds appealing to you, feel free to give Fractum a go once I've completed the initial portions of the library.
-
-Fractum is a passion project, but I do also hope to help those out that encounter issues with it, so if you do feel free to shoot me an email: tnt(at)codeforge.pw or contact me on Discord: trinitrotoluene#0001.
+Fractum is currently still under heavy development, however if you're already using it and encounter any problems, just open an issue, shoot me an email: tnt(at)codeforge.pw or contact me on Discord: trinitrotoluene#0001 and tell me about it!
 
 [![](https://discordapp.com/api/guilds/490247210265739274/embed.png?style=banner1&v=1)](https://discord.gg/PCTnd6u)
