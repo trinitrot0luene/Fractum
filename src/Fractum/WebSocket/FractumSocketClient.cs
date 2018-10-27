@@ -415,8 +415,6 @@ namespace Fractum.WebSocket
                 }
             }.Serialize();
 
-            Console.WriteLine(identify);
-
             Session.Duration = DateTimeOffset.UtcNow;
 
             InvokeLog(new LogMessage(nameof(ConnectionStage), "Identifying", LogSeverity.Verbose));

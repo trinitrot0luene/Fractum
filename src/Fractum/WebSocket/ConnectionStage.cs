@@ -73,7 +73,9 @@ namespace Fractum.WebSocket
                     {
                         context.Session.Invalidated = true;
 
-                        return Task.CompletedTask;
+
+
+                        return Task.Delay(1000).ContinueWith(x => context.Client.IdentifyAsync());
                     }
                     else
                     {

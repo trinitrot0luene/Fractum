@@ -7,6 +7,7 @@ using Fractum.Entities;
 using Fractum.Entities.WebSocket;
 using Fractum.Extensions;
 using Fractum.WebSocket.EventModels;
+using Newtonsoft.Json.Linq;
 
 namespace Fractum.WebSocket
 {
@@ -75,7 +76,8 @@ namespace Fractum.WebSocket
                     return decompressedString.Deserialize<Payload<HelloEventModel>>();
                 case OpCode.InvalidSession:
                 {
-                    var resumable = decompressedString.Deserialize<bool>();
+                    var resumable = JToken.Parse(decompressedString).Value<bool>("d");
+
                     var invalidSessionModel = new InvalidSessionEventModel {Resumable = resumable};
                     return new Payload<InvalidSessionEventModel>
                     {
