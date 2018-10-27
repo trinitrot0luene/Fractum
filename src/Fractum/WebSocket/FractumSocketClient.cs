@@ -38,7 +38,11 @@ namespace Fractum.WebSocket
 
         public Func<LogMessage, Task> LogFunc;
 
-        public IEnumerable<CachedGuild> Guilds => Cache.Guilds.Select(x => x.Guild);
+        public IKeyedEnumerable<ulong, CachedGuild> Guilds => new KeyedGuildWrapper(Cache);
+
+        public IKeyedEnumerable<ulong, CachedGuildChannel> Channels => new KeyedChannelWrapper(Cache);
+
+        public IKeyedEnumerable<ulong, User> Users => new KeyedUserWrapper(Cache);
 
         public int Latency { get; internal set; }
 

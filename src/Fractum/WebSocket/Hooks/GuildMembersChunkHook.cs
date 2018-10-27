@@ -19,6 +19,7 @@ namespace Fractum.WebSocket.Hooks
                 {
                     var member = new CachedMember(cache, rawMember, guild.Id);
                     guild.AddOrReplace(member);
+                    cache.AddOrReplace(rawMember.User);
                 }
 
                 cache.Client.InvokeLog(new LogMessage(nameof(GuildMembersChunkHook),

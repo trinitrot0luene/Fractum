@@ -10,6 +10,8 @@ namespace Fractum.WebSocket
 
         IEnumerable<ISyncedGuild> Guilds { get; }
 
+        IEnumerable<User> Users { get; }
+
         bool TryGetGuild(ulong id, out T guild, SearchType searchType = SearchType.Guild);
 
         bool TryGetUser(ulong userId, out User user);

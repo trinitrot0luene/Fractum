@@ -34,7 +34,17 @@ namespace Fractum.WebSocket
             }
         }
 
-        public bool TryGetGuild(ulong id, out ISyncedGuild guild, SearchType searchType)
+        public IEnumerable<User> Users
+        {
+            get
+            {
+                lock (userLock)
+                    foreach (var user in users)
+                        yield return user.Value;
+            }
+        }
+
+        public bool TryGetGuild(ulong id, out ISyncedGuild guild, SearchType searchType = SearchType.Guild)
         {
             lock (guildLock)
             {
