@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
@@ -161,17 +162,20 @@ namespace Fractum.WebSocket
                     break;
                 }
 
-                IPayload<EventModelBase> responsePayload = default;
+                (Payload rawPayload, IPayload<EventModelBase> matchedPayload) responsePayload = default;
                 if (result.MessageType == WebSocketMessageType.Binary)
                     responsePayload = await _converter.DecompressAsync(resultBuffer);
 
                 try
                 {
-                    InvokeReceived(responsePayload); // TODO: Decide between fire and forgetting or waiting for handlers.
+                    if (responsePayload.matchedPayload == null)
+                        InvokeLog(new LogMessage(nameof(SocketWrapper), $"Unknown t: {responsePayload.rawPayload.Type}", LogSeverity.Debug));
+                    else
+                        InvokeReceived(responsePayload.matchedPayload); // TODO: Decide between fire and forgetting or waiting for handlers.
                 }
                 catch (Exception ex)
                 {
-                    InvokeLog(new LogMessage(nameof(FractumSocketClient),
+                    InvokeLog(new LogMessage(nameof(SocketWrapper),
                         "An exception was raised by a PayloadReceived handler.",
                         LogSeverity.Warning, ex));
                 }

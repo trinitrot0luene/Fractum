@@ -38,7 +38,7 @@ namespace Fractum.WebSocket
             DecompressionStream = new DeflateStream(CompressedStream, CompressionMode.Decompress);
         }
 
-        public async Task<IPayload<EventModelBase>> DecompressAsync(byte[] buffer)
+        public async Task<(Payload, IPayload<EventModelBase>)> DecompressAsync(byte[] buffer)
         {
             if (buffer[0] == 0x78)
                 await CompressedStream.WriteAsync(buffer, 2, buffer.Length - 2);
@@ -65,7 +65,7 @@ namespace Fractum.WebSocket
             CompressedStream.Position = 0;
             CompressedStream.SetLength(0);
 
-            return SelectPayload(payload, decompressedString);
+            return (payload, SelectPayload(payload, decompressedString));
         }
 
         private IPayload<EventModelBase> SelectPayload(Payload payload, string decompressedString)
@@ -146,7 +146,7 @@ namespace Fractum.WebSocket
                         case "READY":
                             return decompressedString.Deserialize<Payload<ReadyEventModel>>();
                         default:
-                            return decompressedString.Deserialize<Payload<EmptyEventModel>>();
+                            return null;
                     }
 
                 #endregion

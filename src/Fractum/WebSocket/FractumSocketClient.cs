@@ -62,6 +62,38 @@ namespace Fractum.WebSocket
             };
         }
 
+        public void UseDefaultLogging(LogSeverity minSeverity = LogSeverity.Info, bool hidePresenceUpdates = false)
+        {
+            Log += (msg) =>
+            {
+                if (msg.Severity < minSeverity || (hidePresenceUpdates && msg.Source == "PresenceUpdateHook"))
+                    return Task.CompletedTask;
+
+                ConsoleColor color = ConsoleColor.DarkGray;
+
+                switch(msg.Severity)
+                {
+                    case LogSeverity.Error:
+                        color = ConsoleColor.Red;
+                        break;
+                    case LogSeverity.Warning:
+                        color = ConsoleColor.DarkYellow;
+                        break;
+                    case LogSeverity.Info:
+                        color = ConsoleColor.Green;
+                        break;
+                    case LogSeverity.Verbose:
+                        color = ConsoleColor.Blue;
+                        break;
+                }
+                Console.ForegroundColor = color;
+
+                Console.WriteLine(msg);
+
+                return Task.CompletedTask;
+            };
+        }
+
         /// <summary>
         ///     Use the default <see cref="PayloadPipeline" /> to process gateway messages.
         /// </summary>
@@ -273,6 +305,8 @@ namespace Fractum.WebSocket
             Socket = new SocketWrapper(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
 
             Socket.ConnectionClosed += ReconnectAsync;
+
+            Socket.Log += Log;
 
             Socket.PayloadReceived += async payload =>
             {
