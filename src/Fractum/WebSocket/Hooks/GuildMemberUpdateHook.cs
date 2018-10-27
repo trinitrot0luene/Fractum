@@ -1,22 +1,22 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.WebSocket.Core;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMemberUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var presenceUpdate = (GuildMemberUpdateEventModel) args;
 
-            var member = cache[presenceUpdate.GuildId ?? 0]?.GetMember(presenceUpdate.User.Id);
-
-            member?.Update(presenceUpdate);
-
-            client.InvokeLog(new LogMessage(nameof(GuildMemberUpdateHook), "Presence Update", LogSeverity.Debug));
+            if (cache.TryGetGuild(presenceUpdate.GuildId ?? 0, out var guild) &&
+                guild.TryGet(presenceUpdate.User.Id, out CachedMember member))
+            {
+                member.Update(presenceUpdate);
+                cache.Client.InvokeLog(new LogMessage(nameof(GuildMemberUpdateHook), "Presence Update", LogSeverity.Debug));
+            }
 
             return Task.CompletedTask;
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Fractum.Entities.Extensions;
+using Fractum.Extensions;
 
 namespace Fractum.Entities
 {

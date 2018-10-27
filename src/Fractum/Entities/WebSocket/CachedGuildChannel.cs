@@ -2,17 +2,15 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.Entities.Properties;
 using Fractum.Entities.Rest;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities.WebSocket
 {
     public abstract class CachedGuildChannel : CachedChannel, IGuildChannel
     {
-        internal CachedGuildChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedGuildChannel(ISocketCache<ISyncedGuild> cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache)
         {
             Id = model.Id;
@@ -27,8 +25,8 @@ namespace Fractum.Entities.WebSocket
 
             Type = model.Type;
 
-            if (Cache.HasGuild(GuildId))
-                Cache[GuildId].AddOrUpdate(this, old => old = this);
+            if (cache.TryGetGuild(Id, out var guild, SearchType.Channel))
+                guild.AddOrReplace(this);
         }
 
         internal void Update(ChannelCreateUpdateOrDeleteEventModel model)
@@ -46,11 +44,12 @@ namespace Fractum.Entities.WebSocket
 
         #region Populated Properties
 
-        public CachedGuild Guild => Cache[GuildId]?.Guild;
+        public CachedGuild Guild => Cache.TryGetGuild(GuildId, out var guild) ? guild.Guild : default;
 
         public ulong GuildId { get; private set; }
 
-        public CachedCategory Category => Cache[GuildId]?.GetChannel(ParentId ?? 0) as CachedCategory;
+        public CachedCategory Category => Cache.TryGetGuild(GuildId, out var guild)
+            ? guild.TryGet(ParentId ?? 0, out CachedGuildChannel channel) ? channel as CachedCategory : default : default;
 
         public ulong? ParentId { get; private set; }
 

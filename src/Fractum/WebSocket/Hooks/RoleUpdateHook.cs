@@ -1,19 +1,21 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.WebSocket.Core;
+using Fractum.Entities;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class RoleUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventArgs = (RoleUpdateEventModel) args;
 
-            cache[eventArgs.GuildId].AddOrUpdate(eventArgs.Role, old => old = eventArgs.Role);
+            if (cache.TryGetGuild(eventArgs.GuildId, out var guild))
+            {
+                guild.AddOrReplace(eventArgs.Role);
 
-            client.InvokeRoleUpdated(cache[eventArgs.GuildId].Guild, eventArgs.Role);
+                cache.Client.InvokeRoleUpdated(guild.Guild, eventArgs.Role);
+            }
 
             return Task.CompletedTask;
         }

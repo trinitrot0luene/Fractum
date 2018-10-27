@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fractum.Entities.Properties;
 using Fractum.Entities.Rest;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedVoiceChannel : CachedGuildChannel
     {
-        internal CachedVoiceChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedVoiceChannel(ISocketCache<ISyncedGuild> cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache, model, guildId)
         {
             UserLimit = model.UserLimit;

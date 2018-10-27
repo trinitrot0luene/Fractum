@@ -1,22 +1,23 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.WebSocket.Core;
+using Fractum.Entities;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class RoleDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventArgs = (RoleDeleteEventModel) args;
 
-            var role = cache[eventArgs.GuildId].GetRoles().First(x => x.Id == eventArgs.RoleId);
+            if (cache.TryGetGuild(eventArgs.GuildId, out var guild))
+            {
+                if (guild.TryGet(eventArgs.RoleId, out Role role))
+                    guild.RemoveRole(role.Id);
 
-            cache[eventArgs.GuildId].Remove(role);
-
-            client.InvokeRoleDeleted(cache[eventArgs.GuildId].Guild, role);
+                cache.Client.InvokeRoleDeleted(guild.Guild, role);
+            }
 
             return Task.CompletedTask;
         }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fractum.Contracts;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities.WebSocket
@@ -12,7 +11,7 @@ namespace Fractum.Entities.WebSocket
     /// </summary>
     public sealed class CachedMember : PopulatedEntity, IUser
     {
-        internal CachedMember(FractumCache cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
+        internal CachedMember(ISocketCache<ISyncedGuild> cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
             base(cache)
         {
             GuildId = parentGuildId ?? model.GuildId ??
@@ -25,8 +24,6 @@ namespace Fractum.Entities.WebSocket
             IsMuted = model.IsMuted;
             Nickname = model.Nickname;
             JoinedAt = model.JoinedAt;
-
-            cache.AddUser(model.User);
         }
 
         public string Mention => string.Format(Consts.USER_MENTION, Id);
@@ -44,7 +41,7 @@ namespace Fractum.Entities.WebSocket
 
             var newPresence = new CachedPresence(Id, model.Activity, model.NewStatus ?? Presence.Status);
 
-            Cache.AddPresence(newPresence);
+            Cache.AddOrReplace(newPresence);
         }
 
         public override string ToString() =>
@@ -52,7 +49,7 @@ namespace Fractum.Entities.WebSocket
 
         #region Populated Properties
 
-        internal User User => Cache.GetUserOrDefault(Id);
+        internal User User => Cache.TryGetUser(Id, out var user) ? user : default;
 
         public new DateTimeOffset CreatedAt => User.CreatedAt;
 
@@ -64,9 +61,9 @@ namespace Fractum.Entities.WebSocket
 
         public string GetAvatarUrl() => User.GetAvatarUrl();
 
-        public CachedGuild Guild => Cache[GuildId].Guild;
+        public CachedGuild Guild => Cache.TryGetGuild(GuildId, out var guild) ? guild.Guild : default;
 
-        private CachedPresence Presence => Cache.GetPresenceOrDefault(Id);
+        private CachedPresence Presence => Cache.TryGetPresence(Id, out var presence) ? presence : default;
 
         public Status Status => Presence?.Status ?? Status.Offline;
 
@@ -91,7 +88,7 @@ namespace Fractum.Entities.WebSocket
         {
             get
             {
-                foreach (var role in Cache[GuildId].GetRoles())
+                foreach (var role in Guild.Roles)
                     if (RoleIds.Any(rid => rid == role.Id))
                         yield return role;
             }

@@ -1,11 +1,11 @@
-﻿using Fractum.WebSocket.Core;
-using Fractum.WebSocket.EventModels.Entities;
+﻿using Fractum.WebSocket;
+using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities
 {
     public sealed class GuildEmoji : PopulatedEntity
     {
-        internal GuildEmoji(FractumCache cache, GuildEmojiModel model) : base(cache)
+        internal GuildEmoji(ISocketCache<ISyncedGuild> cache, GuildEmojiModel model) : base(cache)
         {
             Id = model.Id;
             CreatorId = model.Creator?.Id;
@@ -18,7 +18,7 @@ namespace Fractum.Entities
 
         private ulong? CreatorId { get; }
 
-        public User Creator => Cache.GetUserOrDefault(CreatorId ?? 0);
+        public User Creator => Cache.TryGetUser(CreatorId ?? 0, out var user) ? user : default;
 
         public string Name { get; }
 

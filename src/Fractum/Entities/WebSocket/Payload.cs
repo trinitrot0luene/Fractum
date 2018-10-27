@@ -1,4 +1,4 @@
-﻿using Fractum.Contracts;
+﻿using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
 

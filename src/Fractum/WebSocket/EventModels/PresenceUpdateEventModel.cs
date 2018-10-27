@@ -31,7 +31,7 @@ namespace Fractum.WebSocket.EventModels
         private string StatusRaw { get; set; }
 
         [JsonIgnore]
-        public Status? NewStatus
+        public Status NewStatus
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Fractum.WebSocket.EventModels
                     case "offline":
                         return Status.Offline;
                     default:
-                        return null;
+                        return Status.Offline;
                 }
             }
         }

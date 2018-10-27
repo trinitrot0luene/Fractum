@@ -1,18 +1,17 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
+using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ReactionAddHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventModel = (ReactionAddEventModel) args;
 
-            client.InvokeReactionAdded(new CachedReaction(eventModel));
+            cache.Client.InvokeReactionAdded(new CachedReaction(eventModel));
 
             return Task.CompletedTask;
         }

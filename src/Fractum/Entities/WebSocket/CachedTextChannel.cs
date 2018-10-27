@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.Entities.Properties;
 using Fractum.Entities.Rest;
-using Fractum.Utilities;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities.WebSocket
@@ -16,7 +13,7 @@ namespace Fractum.Entities.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedTextChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedTextChannel(ISocketCache<ISyncedGuild> cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache, model, guildId)
         {
             Topic = model.Topic;
@@ -33,7 +30,8 @@ namespace Fractum.Entities.WebSocket
 
         public ulong? LastMessageId { get; private set; }
 
-        public IEnumerable<CachedMessage> Messages => Cache[GuildId].GetMessages(Id);
+        public IEnumerable<CachedMessage> Messages => Cache.TryGetGuild(GuildId, out var guild)
+            ? guild.TryGet(Id, out CircularBuffer<CachedMessage> messageBuffer) ? messageBuffer : default : default;
 
         internal new void Update(ChannelCreateUpdateOrDeleteEventModel model)
         {

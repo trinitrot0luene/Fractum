@@ -1,10 +1,10 @@
-﻿using Fractum.WebSocket.Core;
+﻿using Fractum.WebSocket;
 
-namespace Fractum.Entities
+namespace Fractum.Entities.WebSocket
 {
     public abstract class CachedChannel : PopulatedEntity
     {
-        protected internal CachedChannel(FractumCache cache) : base(cache)
+        protected internal CachedChannel(ISocketCache<ISyncedGuild> cache) : base(cache)
         {
         }
 

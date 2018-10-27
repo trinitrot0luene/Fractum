@@ -22,6 +22,6 @@ namespace Fractum.Entities
 
         public override string ToString()
             =>
-                $"{Severity.ToString().PadRight(7)} | {DateTimeOffset.UtcNow:dd/MM HH:mm:ss} | {Source.PadRight(21)} | {Message} {(Exception is null ? string.Empty : "|")} {Exception?.Message}";
+                $"{Severity.ToString().PadRight(7)} | {DateTimeOffset.UtcNow:dd/MM HH:mm:ss} | {Source.PadRight(21)} {Message} {(Exception is null ? string.Empty : "|")} {Exception?.Message}";
     }
 }
