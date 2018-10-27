@@ -12,6 +12,7 @@ namespace Fractum.Entities.WebSocket
         {
             UserId = model.UserId;
             ChannelId = model.ChannelId;
+            MessageId = model.MessageId;
             GuildId = model.GuildId;
             Emoji = model.Emoji;
         }
@@ -20,20 +21,19 @@ namespace Fractum.Entities.WebSocket
         {
             UserId = model.UserId;
             ChannelId = model.ChannelId;
+            MessageId = model.MessageId;
             GuildId = model.GuildId;
             Emoji = model.Emoji;
         }
 
-        [JsonProperty("user_id")]
-        public ulong UserId { get; private set; }
+        public ulong UserId { get; }
 
-        [JsonProperty("channel_id")]
-        public ulong ChannelId { get; private set; }
+        public ulong ChannelId { get; }
 
-        [JsonProperty("guild_id")]
-        public ulong? GuildId { get; private set; }
+        public ulong MessageId { get; }
 
-        [JsonProperty("emoji")]
-        public Emoji Emoji { get; private set; }
+        public ulong? GuildId { get; }
+
+        public Emoji Emoji { get; }
     }
 }

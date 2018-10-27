@@ -1,15 +1,13 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelCreateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
 
@@ -27,10 +25,10 @@ namespace Fractum.WebSocket.Hooks
                     break;
             }
 
-            client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
+            cache.Client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                 $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));
 
-            client.InvokeChannelCreated(createdChannel);
+            cache.Client.InvokeChannelCreated(createdChannel);
 
             return Task.CompletedTask;
         }

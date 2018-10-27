@@ -2,10 +2,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
-using Fractum.Contracts;
 using Fractum.Entities.Rest;
-using Fractum.Utilities;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.WebSocket
@@ -14,7 +12,7 @@ namespace Fractum.Entities.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedDMChannel(FractumCache cache) : base(cache)
+        internal CachedDMChannel(ISocketCache<ISyncedGuild> cache) : base(cache)
         {
         }
 

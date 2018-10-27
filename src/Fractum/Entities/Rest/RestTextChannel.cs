@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.Entities.Properties;
-using Fractum.Utilities;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest

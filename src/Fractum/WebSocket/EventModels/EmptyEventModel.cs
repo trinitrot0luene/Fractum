@@ -2,6 +2,5 @@
 {
     public class EmptyEventModel : EventModelBase
     {
-        private readonly int? val;
     }
 }

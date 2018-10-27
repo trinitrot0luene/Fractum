@@ -1,20 +1,20 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ReadyHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventModel = (ReadyEventModel) args;
 
-            client.InvokeLog(new LogMessage(nameof(ReadyHook), "Ready", LogSeverity.Info));
+            session.SessionId = eventModel.SessionId;
 
-            client.InvokeReady();
+            cache.Client.InvokeLog(new LogMessage(nameof(ReadyHook), "Ready", LogSeverity.Info));
+
+            cache.Client.InvokeReady();
 
             return Task.CompletedTask;
         }

@@ -1,33 +1,33 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
+using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.Utilities;
-using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class MessageUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var newMessage = (MessageUpdateEventModel) args;
 
-            var oldMessage = cache.Guilds.FirstOrDefault(x => x.GetChannel(newMessage.ChannelId) != null)
-                ?.GetMessages(newMessage.ChannelId)
-                .FirstOrDefault(m => m.Id == newMessage.Id);
+            if (cache.TryGetGuild(newMessage.ChannelId, out var guild, SearchType.Channel)
+                && guild.TryGet(newMessage.ChannelId, out CircularBuffer<CachedMessage> messages))
+            {
+                var oldMessage = messages.FirstOrDefault(x => x.Id == newMessage.Id);
 
-            if (oldMessage is null)
-                return Task.CompletedTask;
+                if (oldMessage is null)
+                    return Task.CompletedTask;
 
-            var clonedMessage = oldMessage.Clone() as CachedMessage;
+                var clonedMessage = oldMessage.Clone() as CachedMessage;
 
-            oldMessage.Update(newMessage);
+                oldMessage.Update(newMessage);
 
-            client.InvokeMessageUpdated(
+                cache.Client.InvokeMessageUpdated(
                 new CachedEntity<IMessage>(clonedMessage,
-                    client.GetMessage(oldMessage.Channel, oldMessage.Id).GetAsync), oldMessage);
+                    cache.Client.GetMessage(oldMessage.Channel, oldMessage.Id).GetAsync), oldMessage);
+            }
 
             return Task.CompletedTask;
         }

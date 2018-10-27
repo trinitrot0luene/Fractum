@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.Entities.Properties;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest

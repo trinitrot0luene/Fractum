@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.Entities.Properties;
 using Fractum.Entities.Rest;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedMessage : PopulatedEntity, IMessage, ICloneable
     {
-        internal CachedMessage(FractumCache cache, MessageCreateEventModel model) : base(cache)
+        internal CachedMessage(ISocketCache<ISyncedGuild> cache, MessageCreateEventModel model) : base(cache)
         {
             Id = model.Id;
 
@@ -30,10 +28,10 @@ namespace Fractum.Entities.WebSocket
             ChannelId = model.ChannelId;
             GuildId = model.GuildId;
 
-            cache.AddUser(model.AuthorUser);
+            cache.AddOrReplace(model.AuthorUser);
         }
 
-        private CachedMessage(FractumCache cache) : base(cache)
+        private CachedMessage(ISocketCache<ISyncedGuild> cache) : base(cache)
         {
         }
 
@@ -72,24 +70,45 @@ namespace Fractum.Entities.WebSocket
 
         #region Populated Properties
 
-        public IUser Author => Cache[this].GetMember(AuthorId) as IUser ?? Cache.GetUserOrDefault(AuthorId);
+        public IUser Author
+        {
+            get
+            {
+                if (Cache.TryGetGuild(ChannelId, out var guild, SearchType.Channel))
+                {
+                    if (guild.TryGet(AuthorId, out CachedMember member))
+                        return member as IUser;
+                }
+
+                return Cache.TryGetUser(AuthorId, out var user) ? user : default;
+            }
+        }
 
         public IEnumerable<Role> MentionedRoles
         {
             get
             {
-                var guild = Cache[this];
-                if (guild != null)
+                if (Cache.TryGetGuild(ChannelId, out var guild, SearchType.Channel))
+                {
                     foreach (var rid in MentionedRoleIds)
                     {
-                        var role = guild.GetRole(rid);
-                        if (role != null)
+                        if (guild.TryGet(rid, out Role role))
                             yield return role;
                     }
+                }
             }
         }
 
-        public IMessageChannel Channel => Cache[this].GetChannel(ChannelId) as IMessageChannel;
+        public IMessageChannel Channel
+        {
+            get
+            {
+                if (Cache.TryGetGuild(ChannelId, out var guild, SearchType.Channel)
+                    && guild.TryGet(ChannelId, out CachedGuildChannel channel))
+                    return channel as IMessageChannel;
+                return default;
+            }
+        }
 
         #endregion
 

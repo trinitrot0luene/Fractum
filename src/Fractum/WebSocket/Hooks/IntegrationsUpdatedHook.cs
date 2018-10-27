@@ -1,17 +1,17 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
-using Fractum.WebSocket.Core;
+using Fractum.Entities;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class IntegrationsUpdatedHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventModel = (IntegrationsUpdatedEventModel) args;
 
-            client.InvokeIntegrationsUpdated(cache[eventModel.GuildId]?.Guild);
+            if (cache.TryGetGuild(eventModel.GuildId, out var guild))
+                cache.Client.InvokeIntegrationsUpdated(guild.Guild);
 
             return Task.CompletedTask;
         }

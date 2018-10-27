@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Fractum.WebSocket.Core;
+using Fractum.WebSocket;
 
 namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedGuild : PopulatedEntity
     {
-        internal CachedGuild(FractumCache cache, ulong id) : base(cache)
+        internal CachedGuild(ISocketCache<ISyncedGuild> cache, ulong id) : base(cache)
         {
             Id = id;
         }
 
-        private SyncedGuildCache GuildCache => Cache[Id];
+        private ISyncedGuild GuildCache => Cache.TryGetGuild(Id, out var guild) ? guild : default;
 
         public ulong OwnerId => GuildCache.OwnerId;
 
@@ -43,15 +43,15 @@ namespace Fractum.Entities.WebSocket
 
         internal string SplashHash => GuildCache.SplashHash;
 
-        public IEnumerable<GuildEmoji> Emojis => GuildCache.GetEmojis();
+        public IEnumerable<GuildEmoji> Emojis => GuildCache.Emojis;
 
-        public IEnumerable<Role> Roles => GuildCache.GetRoles();
+        public IEnumerable<Role> Roles => GuildCache.Roles;
 
-        public IEnumerable<CachedMember> Members => GuildCache.GetMembers();
+        public IEnumerable<CachedMember> Members => GuildCache.Members;
 
-        public CachedMember Owner => GuildCache.GetMember(OwnerId);
+        public CachedMember Owner => GuildCache.TryGet(OwnerId, out CachedMember member) ? member : default;
 
-        public IEnumerable<CachedGuildChannel> Channels => GuildCache.GetChannels();
+        public IEnumerable<CachedGuildChannel> Channels => GuildCache.Channels;
 
         public IEnumerable<CachedTextChannel> TextChannels => Channels
             .Where(c => c.Type == ChannelType.GuildText)

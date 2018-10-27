@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fractum.Entities.Properties;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest

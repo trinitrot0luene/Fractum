@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.WebSocket.EventModels.Entities;
 using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels

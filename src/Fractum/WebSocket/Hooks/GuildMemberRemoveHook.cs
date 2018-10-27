@@ -1,27 +1,27 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Contracts;
 using Fractum.Entities;
-using Fractum.WebSocket.Core;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMemberRemoveHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventArgs = (GuildMemberRemoveEventModel) args;
 
-            var member = cache[eventArgs.GuildId]?.GetMember(eventArgs.User.Id);
-
-            if (member != null)
-                cache[eventArgs.GuildId]?.Remove(member);
-
-            client.InvokeLog(new LogMessage(nameof(GuildMemberRemoveHook),
+            if (cache.TryGetGuild(eventArgs.GuildId, out var guild) &&
+                guild.TryGet(eventArgs.User.Id, out CachedMember member))
+            {
+                cache.Client.InvokeLog(new LogMessage(nameof(GuildMemberRemoveHook),
                 $"{member?.ToString() ?? eventArgs.User.ToString()} left {member?.Guild?.Name ?? "Unknown Guild"}",
                 LogSeverity.Info));
 
-            client.InvokeMemberLeft(member as IUser ?? eventArgs.User);
+                cache.Client.InvokeMemberLeft(member as IUser ?? eventArgs.User);
+
+                guild.RemoveMember(member.Id);
+            }
 
             return Task.CompletedTask;
         }

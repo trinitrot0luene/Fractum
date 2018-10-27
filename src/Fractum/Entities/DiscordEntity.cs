@@ -1,5 +1,4 @@
 ﻿using System;
-using Fractum.Contracts;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities

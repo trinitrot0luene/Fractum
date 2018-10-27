@@ -1,30 +1,26 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Contracts;
+using Fractum.Entities;
 using Fractum.Entities.WebSocket;
-using Fractum.Utilities;
-using Fractum.WebSocket.Core;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class MessageDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session, FractumSocketClient client)
+        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
         {
             var eventModel = (MessageDeleteEventModel) args;
 
-            if (eventModel.GuildId.HasValue && cache.HasGuild(eventModel.GuildId.Value))
+            if (cache.TryGetGuild(eventModel.ChannelId, out var guild, SearchType.Channel)
+            && guild.TryGet(eventModel.ChannelId, out CircularBuffer<CachedMessage> messages))
             {
-                var guild = cache[eventModel.GuildId.Value];
-
-                var message = guild.GetMessages(eventModel.ChannelId)
-                    .FirstOrDefault(m => m.Id == eventModel.Id);
+                var message = messages.FirstOrDefault(x => x.Id == eventModel.Id);
 
                 if (message != null)
                 {
-                    client.InvokeMessageDeleted(new CachedEntity<CachedMessage>(message));
-                    guild.Remove(message);
+                    cache.Client.InvokeMessageDeleted(new CachedEntity<CachedMessage>(message));
+                    messages.Remove(message);
                 }
             }
 
