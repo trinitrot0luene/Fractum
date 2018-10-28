@@ -116,8 +116,7 @@ namespace Fractum.Rest
             var multipartFields = new Dictionary<string, string>();
             var multipartFiles = new Dictionary<string, (string, Stream)>();
 
-            if (isTTS)
-                multipartFields.Add("tts", isTTS.ToString().ToLower());
+            multipartFields.Add("tts", isTTS.ToString().ToLower());
             if (content != null)
                 multipartFields.Add("content", content);
             if (embedBuilder != null)
