@@ -18,7 +18,7 @@ namespace Fractum.WebSocket.Hooks
             if (eventModel.GuildId.HasValue)
             {
                 cache.Client.InvokeLog(new LogMessage(nameof(GuildMemberAddHook),
-                $"{member} joined {member.Guild?.Name}", LogSeverity.Info));
+                $"{member} joined {member.Guild?.Name}", LogSeverity.Verbose));
 
                 cache.Client.InvokeMemberJoined(member);
             }

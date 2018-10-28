@@ -21,7 +21,7 @@ namespace Fractum.WebSocket.Hooks
                 guildCache.Update(eventModel);
 
                 cache.Client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {eventModel.Name} was updated",
-                    LogSeverity.Verbose));
+                    LogSeverity.Debug));
 
                 cache.Client.InvokeGuildUpdated(guildCache.Guild);
             }
