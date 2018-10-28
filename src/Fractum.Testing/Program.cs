@@ -14,6 +14,8 @@ namespace Fractum.Testing
 
         private CommandService _commands;
 
+        public static DateTimeOffset StartedAt;
+
         static Task Main(string[] args)
             => new Program().RunAsync();
 
@@ -37,13 +39,20 @@ namespace Fractum.Testing
                 .AddConnectionStage()
                 .AddEventStage();
 
-            _client.UseDefaultLogging(LogSeverity.Debug, true);
+            _client.UseDefaultLogging(LogSeverity.Info, true);
 
             _client.MessageCreated += HandleMessageCreated;
+
+            _client.Ready += async () =>
+            {
+                await _client.UpdatePresenceAsync("Uptime benchmarking", ActivityType.Playing, Status.Idle);
+            };
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
             await _client.GetConnectionInfoAsync();
+
+            StartedAt = DateTimeOffset.UtcNow;
 
             await _client.StartAsync();
 
