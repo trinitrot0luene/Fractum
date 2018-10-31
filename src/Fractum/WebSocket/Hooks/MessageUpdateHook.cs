@@ -8,7 +8,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class MessageUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var newMessage = (MessageUpdateEventModel) args;
 
@@ -24,9 +24,7 @@ namespace Fractum.WebSocket.Hooks
 
                 oldMessage.Update(newMessage);
 
-                cache.Client.InvokeMessageUpdated(
-                new CachedEntity<IMessage>(clonedMessage,
-                    cache.Client.GetMessage(oldMessage.Channel, oldMessage.Id).GetAsync), oldMessage);
+                cache.Client.InvokeMessageUpdated(clonedMessage, oldMessage);
             }
 
             return Task.CompletedTask;

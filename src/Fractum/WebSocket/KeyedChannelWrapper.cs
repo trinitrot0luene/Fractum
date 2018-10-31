@@ -5,11 +5,11 @@ using Fractum.Entities.WebSocket;
 
 namespace Fractum.WebSocket
 {
-    public class KeyedChannelWrapper : IKeyedEnumerable<ulong, CachedGuildChannel>
+    public sealed class KeyedChannelWrapper : IKeyedEnumerable<ulong, CachedGuildChannel>
     {
-        private readonly ISocketCache<ISyncedGuild> _cache;
+        private readonly FractumCache _cache;
 
-        public KeyedChannelWrapper(ISocketCache<ISyncedGuild> cache)
+        internal KeyedChannelWrapper(FractumCache cache)
             => _cache = cache;
 
         public CachedGuildChannel this[ulong key]
@@ -22,7 +22,7 @@ namespace Fractum.WebSocket
                         return channel;
                 }
 
-                throw new KeyNotFoundException();
+                throw new KeyNotFoundException("The channel could not be found in cache.");
             }
         }
 

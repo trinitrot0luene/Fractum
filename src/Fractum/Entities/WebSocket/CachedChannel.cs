@@ -4,7 +4,7 @@ namespace Fractum.Entities.WebSocket
 {
     public abstract class CachedChannel : PopulatedEntity
     {
-        protected internal CachedChannel(ISocketCache<ISyncedGuild> cache) : base(cache)
+        protected internal CachedChannel(FractumCache cache) : base(cache)
         {
         }
 

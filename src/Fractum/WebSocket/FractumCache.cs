@@ -6,31 +6,43 @@ using Fractum.Entities.WebSocket;
 
 namespace Fractum.WebSocket
 {
-    public sealed class FractumCache : ISocketCache<ISyncedGuild>
+    public sealed class FractumCache
     {
         private readonly object guildLock = new object();
         private readonly object userLock = new object();
         private readonly object presenceLock = new object();
+        private readonly object dmChannelLock = new object();
 
         public FractumSocketClient Client { get; }
 
-        private Dictionary<ulong, ISyncedGuild> guilds = new Dictionary<ulong, ISyncedGuild>();
+        private Dictionary<ulong, SyncedGuildCache> guilds = new Dictionary<ulong, SyncedGuildCache>();
+        private Dictionary<ulong, CachedDMChannel> dmChannels = new Dictionary<ulong, CachedDMChannel>();
 
         private Dictionary<ulong, CachedPresence> presences = new Dictionary<ulong, CachedPresence>();
         private Dictionary<ulong, User> users = new Dictionary<ulong, User>();
 
-        public FractumCache(FractumSocketClient client)
+        internal FractumCache(FractumSocketClient client)
         {
             Client = client;
         }
 
-        public IEnumerable<ISyncedGuild> Guilds
+        public IEnumerable<SyncedGuildCache> Guilds
         {
             get
             {
                 lock (guildLock)
                     foreach (var guild in guilds)
                         yield return guild.Value;
+            }
+        }
+
+        public IEnumerable<CachedDMChannel> DmChannels
+        {
+            get
+            {
+                lock (dmChannelLock)
+                    foreach (var dmChannel in dmChannels)
+                        yield return dmChannel.Value;
             }
         }
 
@@ -44,7 +56,7 @@ namespace Fractum.WebSocket
             }
         }
 
-        public bool TryGetGuild(ulong id, out ISyncedGuild guild, SearchType searchType = SearchType.Guild)
+        public bool TryGetGuild(ulong id, out SyncedGuildCache guild, SearchType searchType = SearchType.Guild)
         {
             lock (guildLock)
             {
@@ -68,6 +80,12 @@ namespace Fractum.WebSocket
             return false;
         }
 
+        public bool TryGetDmChannel(ulong userId, out CachedDMChannel channel)
+        {
+            lock (dmChannelLock)
+                return dmChannels.TryGetValue(userId, out channel);
+        }
+
         public bool TryGetUser(ulong userId, out User user)
         {
             lock (userLock)
@@ -86,6 +104,12 @@ namespace Fractum.WebSocket
                 return guilds.ContainsKey(guildId);
         }
 
+        public bool HasDmChannel(ulong channelId)
+        {
+            lock (dmChannelLock)
+                return dmChannels.ContainsKey(channelId);
+        }
+
         public bool HasUser(ulong userId)
         {
             lock (userLock)
@@ -98,10 +122,16 @@ namespace Fractum.WebSocket
                 return presences.ContainsKey(userId);
         }
 
-        public void AddOrReplace(ISyncedGuild guild)
+        public void AddOrReplace(SyncedGuildCache guild)
         {
             lock (guildLock)
                 guilds[guild.Id] = guild;
+        }
+
+        public void AddOrReplace(CachedDMChannel channel)
+        {
+            lock (dmChannelLock)
+                dmChannels[channel.Id] = channel;
         }
 
         public void AddOrReplace(User user)
@@ -122,6 +152,12 @@ namespace Fractum.WebSocket
                 return guilds.Remove(guildId);
         }
 
+        public bool RemoveDmChannel(ulong channelId)
+        {
+            lock (dmChannelLock)
+                return dmChannels.Remove(channelId);
+        }
+
         public bool RemoveUser(ulong userId)
         {
             lock (userLock)
@@ -137,7 +173,9 @@ namespace Fractum.WebSocket
         public void Reset()
         {
             lock (guildLock)
-                guilds = new Dictionary<ulong, ISyncedGuild>();
+                guilds = new Dictionary<ulong, SyncedGuildCache>();
+            lock (dmChannelLock)
+                dmChannels = new Dictionary<ulong, CachedDMChannel>();
             lock (userLock)
                 users = new Dictionary<ulong, User>();
             lock (presenceLock)

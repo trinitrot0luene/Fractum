@@ -6,23 +6,21 @@ namespace Fractum.WebSocket
 {
     public sealed class KeyedGuildWrapper : IKeyedEnumerable<ulong, CachedGuild>
     {
-        private readonly ISocketCache<ISyncedGuild> _cache;
+        private readonly FractumCache _cache;
 
-        public KeyedGuildWrapper(ISocketCache<ISyncedGuild> cache)
+        internal KeyedGuildWrapper(FractumCache cache)
             => _cache = cache;
 
-        public CachedGuild this[ulong key] => _cache.TryGetGuild(key, out var guild) ? guild.Guild : throw new KeyNotFoundException();
+        public CachedGuild this[ulong key] => _cache.TryGetGuild(key, out var guild) ? guild.Guild : throw new KeyNotFoundException("The guild could not be found in cache.");
 
         public bool TryGetValue(ulong key, out CachedGuild value)
         {
-            if (_cache.TryGetGuild(key, out var guild))
+            if (_cache.TryGetGuild(key, out var cachedGuild))
             {
-                value = guild.Guild;
+                value = cachedGuild.Guild;
                 return true;
             }
-
             value = default;
-
             return false;
         }
 

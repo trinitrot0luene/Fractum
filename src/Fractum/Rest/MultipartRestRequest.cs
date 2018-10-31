@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using Fractum.Rest.Utils;
 
 namespace Fractum.Rest
@@ -16,8 +17,8 @@ namespace Fractum.Rest
         {
             foreach (var kvp in multipartValues)
             {
-                var content = new StringContent(kvp.Value);
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var content = new StringContent(kvp.Value, Encoding.UTF8);
+
                 _content.Add(content, kvp.Key);
             }
 

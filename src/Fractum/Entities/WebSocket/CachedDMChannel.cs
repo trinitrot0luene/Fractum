@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Fractum.Entities.Rest;
 using Fractum.WebSocket;
+using Fractum.WebSocket.EventModels;
 using Newtonsoft.Json;
 
 namespace Fractum.Entities.WebSocket
@@ -12,8 +14,12 @@ namespace Fractum.Entities.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedDMChannel(ISocketCache<ISyncedGuild> cache) : base(cache)
+        internal CachedDMChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel eventModel) : base(cache)
         {
+            Id = eventModel.Id;
+            Type = eventModel.Type;
+            LastMessageId = eventModel.LastMessageId;
+            Recipients = eventModel.Recipients;
         }
 
         [JsonProperty("last_message_id")]
@@ -32,11 +38,12 @@ namespace Fractum.Entities.WebSocket
         public Task TriggerTypingAsync()
             => Client.RestClient.TriggerTypingAsync(Id);
 
-        public async Task<IMessage> GetMessageAsync(ulong messageId)
+        public Task<IMessage> GetMessageAsync(ulong messageId)
         {
-            var message = await Client.GetMessage(this, messageId).GetAsync();
-
-            return message;
+            if (Messages.FirstOrDefault(m => m.Id == messageId) is IMessage msg)
+                return Task.FromResult(msg);
+            else
+                return Client.RestClient.GetMessageAsync(this.Id, messageId);
         }
 
         public Task<IEnumerable<RestMessage>> GetMessagesAsync(int limit = 100)

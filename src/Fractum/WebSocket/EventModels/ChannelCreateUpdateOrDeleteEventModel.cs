@@ -48,5 +48,8 @@ namespace Fractum.WebSocket.EventModels
 
         [JsonProperty("permission_overwrites")]
         public ReadOnlyCollection<PermissionsOverwrite> Overwrites { get; private set; }
+
+        [JsonProperty("recipients")]
+        public ReadOnlyCollection<User> Recipients { get; private set; }
     }
 }

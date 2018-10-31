@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Qmmands" Version="1.0.3-nightly-00057" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fractum\Fractum.csproj" />
+  </ItemGroup>
+
+</Project>

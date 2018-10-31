@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMemberAddHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var eventModel = (GuildMemberAddEventModel) args;
 
@@ -18,7 +18,7 @@ namespace Fractum.WebSocket.Hooks
             if (eventModel.GuildId.HasValue)
             {
                 cache.Client.InvokeLog(new LogMessage(nameof(GuildMemberAddHook),
-                $"{member} joined {member.Guild?.Name}", LogSeverity.Info));
+                $"{member} joined {member.Guild?.Name}", LogSeverity.Verbose));
 
                 cache.Client.InvokeMemberJoined(member);
             }

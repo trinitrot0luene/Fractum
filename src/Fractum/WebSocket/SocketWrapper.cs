@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
 {
-    public sealed class SocketWrapper
+    internal sealed class SocketWrapper
     {
         private const int _bufferSize = 4096;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -42,6 +43,11 @@ namespace Fractum.WebSocket
         public void UpdateUrl(Uri url)
             => _url = url;
 
+        public void DisconnectAsync(object webSocketClose)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Connect to the gateway and initiate the handshake.
         /// </summary>
@@ -70,7 +76,7 @@ namespace Fractum.WebSocket
             }), _cts.Token);
         }
 
-        public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "")
+        public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "", bool invokeCloseCodeIssued = true)
         {
             if (_socket.State == WebSocketState.Open)
                 await _socket.CloseAsync(status, reason, _cts.Token);
@@ -79,7 +85,8 @@ namespace Fractum.WebSocket
             _socket = new ClientWebSocket();
             _converter = new WebSocketMessageConverter();
 
-            InvokeCloseCodeIssued(status);
+            if (invokeCloseCodeIssued)
+                InvokeCloseCodeIssued(status);
         }
 
         /// <summary>
@@ -138,9 +145,7 @@ namespace Fractum.WebSocket
                         {
                             result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
                             if (result.MessageType == WebSocketMessageType.Close)
-                            {
-                                // TODO: Will this ever do anything?
-                            }
+                                break;
                             else
                             {
                                 ms.Write(buffer, 0, result.Count);
@@ -150,9 +155,9 @@ namespace Fractum.WebSocket
                         resultBuffer = ms.ToArray();
                     }
                 }
-                catch (WebSocketException)
+                catch (WebSocketException wsexception)
                 {
-                    InvokeCloseCodeIssued(WebSocketCloseStatus.Empty);
+                    InvokeCloseCodeIssued(WebSocketCloseStatus.Empty, wsexception.Message);
 
                     _socket.Dispose();
                     _socket = new ClientWebSocket();
@@ -161,23 +166,34 @@ namespace Fractum.WebSocket
                     break;
                 }
 
-                IPayload<EventModelBase> responsePayload = default;
-                if (result.MessageType == WebSocketMessageType.Binary)
-                    responsePayload = await _converter.DecompressAsync(resultBuffer);
+                if (result.MessageType != WebSocketMessageType.Close)
+                {
+                    (Payload rawPayload, IPayload<EventModelBase> matchedPayload) responsePayload = default;
+                    if (result.MessageType == WebSocketMessageType.Binary)
+                        responsePayload = await _converter.DecompressAsync(resultBuffer);
 
-                try
-                {
-                    InvokeReceived(responsePayload); // TODO: Decide between fire and forgetting or waiting for handlers.
-                }
-                catch (Exception ex)
-                {
-                    InvokeLog(new LogMessage(nameof(FractumSocketClient),
-                        "An exception was raised by a PayloadReceived handler.",
-                        LogSeverity.Warning, ex));
+                    try
+                    {
+                        if (responsePayload.matchedPayload == null)
+                            InvokeLog(new LogMessage(nameof(SocketWrapper), $"Unknown t: {responsePayload.rawPayload.Type}", LogSeverity.Debug));
+                        else
+                        {
+                            if (responsePayload.matchedPayload.Data != null)
+                                responsePayload.matchedPayload.Data.ProcessingStartedAt = DateTimeOffset.UtcNow;
+
+                            InvokeReceived(responsePayload.matchedPayload); // TODO: Decide between fire and forgetting or waiting for handlers.
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        InvokeLog(new LogMessage(nameof(SocketWrapper),
+                            "An exception was raised by a PayloadReceived handler.",
+                            LogSeverity.Warning, ex));
+                    }
                 }
             }
 
-            InvokeCloseCodeIssued(_socket.CloseStatus.Value);
+            InvokeCloseCodeIssued(_socket.CloseStatus ?? WebSocketCloseStatus.Empty, result.CloseStatusDescription);
 
             _socket.Dispose();
             _socket = new ClientWebSocket();
@@ -205,10 +221,10 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when the listen loop is broken by a server disconnect.
         /// </summary>
-        internal event Func<WebSocketCloseStatus, Task> ConnectionClosed;
+        internal event Func<WebSocketCloseStatus, string, Task> ConnectionClosed;
 
-        private void InvokeCloseCodeIssued(WebSocketCloseStatus status)
-            => ConnectionClosed?.Invoke(status);
+        private void InvokeCloseCodeIssued(WebSocketCloseStatus status, string message = null)
+            => ConnectionClosed?.Invoke(status, message);
 
         /// <summary>
         ///     Raised when the wrapper receives a payload from the gateway.

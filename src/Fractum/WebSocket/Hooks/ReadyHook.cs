@@ -6,7 +6,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ReadyHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var eventModel = (ReadyEventModel) args;
 

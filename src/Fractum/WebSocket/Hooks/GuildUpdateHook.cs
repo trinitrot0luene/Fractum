@@ -6,7 +6,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var eventModel = (GuildUpdateEventModel) args;
 
@@ -21,7 +21,7 @@ namespace Fractum.WebSocket.Hooks
                 guildCache.Update(eventModel);
 
                 cache.Client.InvokeLog(new LogMessage(nameof(GuildUpdateHook), $"Guild: {eventModel.Name} was updated",
-                    LogSeverity.Verbose));
+                    LogSeverity.Debug));
 
                 cache.Client.InvokeGuildUpdated(guildCache.Guild);
             }

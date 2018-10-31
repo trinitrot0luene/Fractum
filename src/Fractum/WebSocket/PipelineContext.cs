@@ -18,9 +18,14 @@ namespace Fractum.WebSocket
         }
 
         /// <summary>
+        ///     Gets the <see cref="SocketWrapper" /> maintaining the gateway connection.
+        /// </summary>
+        internal SocketWrapper Socket { get; }
+
+        /// <summary>
         ///     Gets the <see cref="ISocketCache{T}" /> which stores guild state.
         /// </summary>
-        public ISocketCache<ISyncedGuild> Cache { get; }
+        public FractumCache Cache { get; }
 
         /// <summary>
         ///     Gets the <see cref="FractumSocketClient"/> containing gateway state and caching information.
@@ -31,11 +36,6 @@ namespace Fractum.WebSocket
         ///     Gets the <see cref="ISession" /> which caches session data for the gateway connection.
         /// </summary>
         public ISession Session { get; }
-
-        /// <summary>
-        ///     Gets the <see cref="SocketWrapper" /> maintaining the gateway connection.
-        /// </summary>
-        public SocketWrapper Socket { get; }
 
         /// <summary>
         ///     Gets the <see cref="IServiceProvider"/> containing services previously supplied to the <see cref="FractumSocketClient"/>.

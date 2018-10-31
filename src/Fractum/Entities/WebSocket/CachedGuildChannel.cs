@@ -10,7 +10,7 @@ namespace Fractum.Entities.WebSocket
 {
     public abstract class CachedGuildChannel : CachedChannel, IGuildChannel
     {
-        internal CachedGuildChannel(ISocketCache<ISyncedGuild> cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedGuildChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache)
         {
             Id = model.Id;

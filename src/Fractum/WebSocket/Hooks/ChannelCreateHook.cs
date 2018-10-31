@@ -7,11 +7,11 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelCreateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
 
-            CachedGuildChannel createdChannel = null;
+            CachedChannel createdChannel = null;
             switch (eventModel.Type)
             {
                 case ChannelType.GuildCategory:
@@ -23,12 +23,35 @@ namespace Fractum.WebSocket.Hooks
                 case ChannelType.GuildVoice:
                     createdChannel = new CachedVoiceChannel(cache, eventModel);
                     break;
+                case ChannelType.DM:
+                    createdChannel = new CachedDMChannel(cache, eventModel);
+                    break;
             }
 
-            cache.Client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
-                $"Channel {createdChannel.Name} was created", LogSeverity.Verbose));
+            if (eventModel.Type != ChannelType.DM)
+            {
+                var guildChannel = createdChannel as CachedGuildChannel;
 
-            cache.Client.InvokeChannelCreated(createdChannel);
+                if (cache.TryGetGuild(guildChannel.GuildId, out var guild))
+                {
+                    guild.AddOrReplace(guildChannel);
+
+                    cache.Client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
+                        $"Channel {guildChannel.Name} was created", LogSeverity.Verbose));
+                }
+
+                cache.Client.InvokeChannelCreated(guildChannel);
+            }
+            else
+            {
+                var dmChannel = createdChannel as CachedDMChannel;
+
+                cache.AddOrReplace(dmChannel);
+
+                cache.Client.InvokeLog(new LogMessage(nameof(ChannelCreateHook), "Private channel was created", LogSeverity.Debug));
+
+                cache.Client.InvokeChannelCreated(dmChannel);
+            }
 
             return Task.CompletedTask;
         }

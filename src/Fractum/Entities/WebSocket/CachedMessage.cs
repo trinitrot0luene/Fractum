@@ -9,7 +9,7 @@ namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedMessage : PopulatedEntity, IMessage, ICloneable
     {
-        internal CachedMessage(ISocketCache<ISyncedGuild> cache, MessageCreateEventModel model) : base(cache)
+        internal CachedMessage(FractumCache cache, MessageCreateEventModel model) : base(cache)
         {
             Id = model.Id;
 
@@ -31,7 +31,7 @@ namespace Fractum.Entities.WebSocket
             cache.AddOrReplace(model.AuthorUser);
         }
 
-        private CachedMessage(ISocketCache<ISyncedGuild> cache) : base(cache)
+        private CachedMessage(FractumCache cache) : base(cache)
         {
         }
 
@@ -106,7 +106,7 @@ namespace Fractum.Entities.WebSocket
                 if (Cache.TryGetGuild(ChannelId, out var guild, SearchType.Channel)
                     && guild.TryGet(ChannelId, out CachedGuildChannel channel))
                     return channel as IMessageChannel;
-                return default;
+                else return Cache.TryGetDmChannel(ChannelId, out var dmChannel) ? dmChannel : default;
             }
         }
 
