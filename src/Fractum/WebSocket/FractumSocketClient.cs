@@ -46,7 +46,7 @@ namespace Fractum.WebSocket
 
         public IKeyedEnumerable<ulong, CachedGuildChannel> Channels => new KeyedChannelWrapper(Cache);
 
-        public IKeyedEnumerable<ulong, CachedDMChannel> PrivateChannels => new KeyedDMChannelWrapper(Cache);
+        public IKeyedEnumerable<ulong, CachedDMChannel> DMChannels => new KeyedDMChannelWrapper(Cache);
 
         public IKeyedEnumerable<ulong, User> Users => new KeyedUserWrapper(Cache);
 

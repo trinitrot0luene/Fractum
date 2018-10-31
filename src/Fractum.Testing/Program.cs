@@ -23,7 +23,7 @@ namespace Fractum.Testing
         {
             _client = new FractumSocketClient(new FractumConfig()
             {
-                Token = Environment.GetEnvironmentVariable("fractum_debug_token"),
+                Token = Environment.GetEnvironmentVariable("fractum_token"),
                 LargeThreshold = 250,
                 MessageCacheLength = 100,
                 AlwaysDownloadMembers = false
@@ -39,13 +39,13 @@ namespace Fractum.Testing
                 .AddConnectionStage()
                 .AddEventStage();
 
-            _client.UseDefaultLogging(LogSeverity.Debug, true);
+            _client.UseDefaultLogging(LogSeverity.Info, true);
 
             _client.MessageCreated += HandleMessageCreated;
 
             _client.Ready += async () =>
             {
-                await _client.UpdatePresenceAsync("Uptime benchmarking", ActivityType.Playing, Status.Idle);
+                await _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
             };
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -64,7 +64,7 @@ namespace Fractum.Testing
             if (!message.IsUserMessage || message.Author.IsBot)
                 return;
 
-            if (CommandUtilities.HasPrefix(message.Content, '|', false, out var commandString))
+            if (CommandUtilities.HasPrefix(message.Content, '>', false, out var commandString))
             {
                 var result = await _commands.ExecuteAsync(commandString, new CommandContext(_client, message));
             }

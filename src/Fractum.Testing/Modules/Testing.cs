@@ -20,21 +20,13 @@ namespace Fractum.Testing.Modules
 
             return Context.RespondAsync("", false, new EmbedBuilder()
                 .WithTitle("Pong!")
-                .WithDescription($"Up for {upSpan.ToHumanString()}").WithColor(Color.ForestGreen));
+                .WithDescription($"Up for {upSpan.ToHumanString()}").WithColor(Color.Green));
         }
 
         [Command("heapalloc")]
         public Task HeapAllocAsync()
         {
             return Context.RespondAsync($"{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)}mb");
-        }
-
-        [Command("dm me")]
-        public async Task DmMeAsync([Remainder] string message)
-        {
-            var channel = await Context.Member.GetOrCreateDMChannelAsync();
-
-            await channel.CreateMessageAsync(message);
         }
     }
 
@@ -61,7 +53,7 @@ namespace Fractum.Testing.Modules
             else
                 result = string.Join(", ", dayParts, 0, numberOfParts - 1) + " and " + dayParts[numberOfParts - 1];
 
-            return char.ToUpper(result[0]) + result.Substring(1, result.Length - 1);
+            return result;
         }
     }
 }
