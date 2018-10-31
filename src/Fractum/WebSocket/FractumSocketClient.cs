@@ -18,15 +18,17 @@ namespace Fractum.WebSocket
 {
     public sealed class FractumSocketClient
     {
+        #region Hidden Properties & Fields
+
         private IPipeline<IPayload<EventModelBase>> _pipeline;
+
+        private SemaphoreSlim _reconnectionSemaphore;
 
         internal Timer HeartbeatTimer { get; set; }
 
-        internal ISocketCache<ISyncedGuild> Cache;
+        internal FractumCache Cache;
 
         internal DateTimeOffset LastSentHeartbeat;
-
-        internal FractumRestClient RestClient;
 
         internal ISession Session;
 
@@ -34,23 +36,30 @@ namespace Fractum.WebSocket
 
         internal ServiceCollection PipelineServices;
 
-        internal ConcurrentDictionary<ulong, CachedDMChannel> PrivateChannels { get; }
+        #endregion
 
-        public Func<LogMessage, Task> LogFunc;
+        #region Public Properties & Fields
+
+        public FractumRestClient RestClient { get; private set; }
 
         public IKeyedEnumerable<ulong, CachedGuild> Guilds => new KeyedGuildWrapper(Cache);
 
         public IKeyedEnumerable<ulong, CachedGuildChannel> Channels => new KeyedChannelWrapper(Cache);
 
+        public IKeyedEnumerable<ulong, CachedDMChannel> PrivateChannels => new KeyedDMChannelWrapper(Cache);
+
         public IKeyedEnumerable<ulong, User> Users => new KeyedUserWrapper(Cache);
 
         public int Latency { get; internal set; }
 
+        #endregion
+
         public FractumSocketClient(FractumConfig config)
         {
+            _reconnectionSemaphore = new SemaphoreSlim(1, 1);
+
             Cache = new FractumCache(this);
             Session = new Session();
-            PrivateChannels = new ConcurrentDictionary<ulong, CachedDMChannel>();
             RestClient = new FractumRestClient(config);
 
             PipelineServices = new ServiceCollection();
@@ -243,53 +252,6 @@ namespace Fractum.WebSocket
             return Socket.SendMessageAsync(memberRequest);
         }
 
-        /// <summary>
-        ///     Get or download a <see cref="CachedGuildChannel" /> from/to cache.
-        /// </summary>
-        /// <param name="channelId">The id of the desired channel.</param>
-        /// <returns></returns>
-        public CachedEntity<IGuildChannel> GetChannel(ulong channelId)
-        {
-            var existingChannel = Cache.Guilds
-                .Select(g => g.Guild)
-                .SelectMany(gc => gc.Channels)
-                .FirstOrDefault(cc => cc.Id == channelId);
-
-            Task<IGuildChannel> getFunc()
-            {
-                return RestClient.GetChannelAsync(channelId);
-            }
-
-            return new CachedEntity<IGuildChannel>(existingChannel, getFunc);
-        }
-
-        /// <summary>
-        ///     Get or download a <see cref="CachedMessage" /> from/to cache.
-        /// </summary>
-        /// <param name="msgChannel">The channel to download the message from if it doesn't exist in cache.</param>
-        /// <param name="messageId">The id of the desired message.</param>
-        /// <returns></returns>
-        public CachedEntity<IMessage> GetMessage(IMessageChannel msgChannel, ulong messageId)
-        {
-            var channel = GetChannel(msgChannel.Id);
-            var message = (channel.GetValue() as CachedTextChannel)?.Messages.FirstOrDefault(m => m.Id == messageId);
-
-            Task<IMessage> getFunc()
-            {
-                return RestClient.GetMessageAsync(msgChannel.Id, messageId);
-            }
-
-            return new CachedEntity<IMessage>(message, getFunc);
-        }
-
-        /// <summary>
-        ///     Get a <see cref="CachedGuild" /> from cache.
-        /// </summary>
-        /// <param name="guildId">The id of the desired guild.</param>
-        /// <returns></returns>
-        public CachedGuild GetGuild(ulong guildId)
-            => Cache.TryGetGuild(guildId, out var guild) ? guild.Guild : default;
-
         #endregion
 
         /// <summary>
@@ -330,7 +292,7 @@ namespace Fractum.WebSocket
         /// </summary>
         /// <returns></returns>
         public Task StopAsync()
-            => Socket.DisconnectAsync(WebSocketCloseStatus.NormalClosure);
+            => Socket.DisconnectAsync(WebSocketCloseStatus.NormalClosure, "", false);
 
         #region Socket Logic
 
@@ -339,7 +301,7 @@ namespace Fractum.WebSocket
         /// </summary>
         /// <param name="status">Details of the closure.</param>
         /// <returns></returns>
-        internal async Task ReconnectAsync(WebSocketCloseStatus status)
+        internal async Task ReconnectAsync(WebSocketCloseStatus status, string message = null)
         {
             Session.WaitingForACK = false; // We've been disconnected, reset checks for zombied connections.
             Session.ReconnectionAttempts = 0;
@@ -349,42 +311,43 @@ namespace Fractum.WebSocket
             var statusCode = (int)status;
 
             InvokeLog(new LogMessage(nameof(ConnectionStage),
-                $"Disconnected from the gateway with error {statusCode}:{GatewayCloseCode.GetCodeName(statusCode)}.",
+                $"Disconnected from the gateway with error {statusCode}:{GatewayCloseCode.GetCodeName(statusCode)} {message ?? ""}",
                 LogSeverity.Error));
 
             if (statusCode == 1000 || statusCode == 4001 || statusCode == 4006)
-                Session.Invalidated = true; // When the connection is re-established don't try to resume, re-identify.
+                Session.Invalidated = true;
 
-            if (Session.Reconnecting)
-                return; // We are trying to resume already and these disconnections are just failed reconnects.
             var backoffPower = 1;
             var backoff = 2;
 
-            InvokeLog(new LogMessage(nameof(ConnectionStage), "Attempting to reconnect...",
+            InvokeLog(new LogMessage(nameof(ConnectionStage), "Reconnecting...",
                 LogSeverity.Warning));
 
-            Session.Reconnecting = true; // Lock other closed event handlers and op2 Handling
+            if (_reconnectionSemaphore.CurrentCount == 0)
+                return;
+            else
+                _reconnectionSemaphore.Wait();
             do
             {
-                // Make 3 attempts to connect (and resume) then try to refetch the gateway url. After the first 3 attempts we will only attempt to identify.
-                //if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 3 == 0)
-                //    try
-                //    {
-                //        // Fetch connection info from the gateway with new Url: 
-                //        var gatewayInfo = await RestClient.GetSocketUrlAsync()
-                //            .ContinueWith(task => !task.IsFaulted ? task.Result : default);
-                //        if (gatewayInfo?.SessionStartLimit["remaining"] == 0)
-                //            throw new GatewayException("No new sessions can be started");
-                //        if (gatewayInfo != null)
-                //            Session.GatewayUrl = gatewayInfo.Url;
-                //        Socket.UpdateUrl(new Uri(Session.GatewayUrl + Consts.GATEWAY_PARAMS));
-                //    }
-                //    // If there's no network connection this will fail, don't update with new session data.
-                //    catch (Exception)
-                //    {
-                //        InvokeLog(new LogMessage(nameof(ConnectionStage),
-                //            "Failed to update session with new gateway url", LogSeverity.Warning));
-                //    }
+                // Make 3 attempts to connect (and resume) then try to refetch the gateway url.
+                if (Session.ReconnectionAttempts != 0 && Session.ReconnectionAttempts % 3 == 0)
+                    try
+                    {
+                        // Fetch connection info from the gateway with new Url: 
+                        var gatewayInfo = await RestClient.GetSocketUrlAsync()
+                            .ContinueWith(task => !task.IsFaulted ? task.Result : default);
+                        if (gatewayInfo?.SessionStartLimit["remaining"] == 0 && Session.Invalidated)
+                            throw new GatewayException("No new sessions can be started");
+                        if (gatewayInfo != null)
+                            Session.GatewayUrl = gatewayInfo.Url;
+                        Socket.UpdateUrl(new Uri(Session.GatewayUrl + Consts.GATEWAY_PARAMS));
+                    }
+                    // If there's no network connection this will fail, don't update with new session data.
+                    catch (Exception)
+                    {
+                        InvokeLog(new LogMessage(nameof(ConnectionStage),
+                            "Failed to update session with new gateway url", LogSeverity.Warning));
+                    }
 
                 var computedBackoff =
                     (int)Math.Pow(backoff, backoffPower) *
@@ -400,6 +363,8 @@ namespace Fractum.WebSocket
 
                 backoffPower++;
             } while (Socket.State != WebSocketState.Open); // Socket isn't open yet
+
+            _reconnectionSemaphore.Release();
             
             // Connection resumed successfully, the close handler can now exit.
             InvokeLog(new LogMessage(nameof(ConnectionStage), $"Reconnected, socket status: {Socket.State}", LogSeverity.Warning));
@@ -494,11 +459,10 @@ namespace Fractum.WebSocket
             if (RestClient.Config.DisableLogging)
                 return;
 
-            _ = LogFunc?.Invoke(message);
             _ = Log?.Invoke(message);
         }
 
-        internal void InvokeMessagePinned(CachedTextChannel channel)
+        internal void InvokeMessagePinned(IMessageChannel channel)
             => MessagePinned?.Invoke(channel);
 
         internal void InvokeGuildCreated(CachedGuild guild)
@@ -513,13 +477,13 @@ namespace Fractum.WebSocket
         internal void InvokeMessageCreated(CachedMessage message)
             => MessageCreated?.Invoke(message);
 
-        internal void InvokeMessageUpdated(CachedEntity<IMessage> oldMessage, CachedMessage newMessage)
+        internal void InvokeMessageUpdated(CachedMessage oldMessage, CachedMessage newMessage)
             => MessageUpdated?.Invoke(oldMessage, newMessage);
 
         internal void InvokeMessageDeleted(CachedEntity<CachedMessage> cachedMessage)
             => MessageDeleted?.Invoke(cachedMessage);
 
-        internal void InvokeChannelCreated(CachedGuildChannel channel)
+        internal void InvokeChannelCreated(CachedChannel channel)
             => ChannelCreated?.Invoke(channel);
 
         internal void InvokeChannelUpdated(CachedEntity<CachedGuildChannel> oldChannel, CachedGuildChannel channel)
@@ -573,7 +537,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a message is pinned in a text channel.
         /// </summary>
-        public event Func<CachedTextChannel, Task> MessagePinned;
+        public event Func<IMessageChannel, Task> MessagePinned;
 
         /// <summary>
         ///     Raised when a guild becomes available to the client.
@@ -603,7 +567,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a message is edited.
         /// </summary>
-        public event Func<CachedEntity<IMessage>, CachedMessage, Task> MessageUpdated;
+        public event Func<CachedMessage, CachedMessage, Task> MessageUpdated;
 
         /// <summary>
         ///     Raised when a message is deleted.
@@ -613,7 +577,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a channel is created.
         /// </summary>
-        public event Func<CachedGuildChannel, Task> ChannelCreated;
+        public event Func<CachedChannel, Task> ChannelCreated;
 
         /// <summary>
         ///     Raised when a channel is updated.

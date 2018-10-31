@@ -6,12 +6,12 @@ namespace Fractum.Entities.WebSocket
 {
     public sealed class CachedGuild : PopulatedEntity
     {
-        internal CachedGuild(ISocketCache<ISyncedGuild> cache, ulong id) : base(cache)
+        internal CachedGuild(FractumCache cache, ulong id) : base(cache)
         {
             Id = id;
         }
 
-        private ISyncedGuild GuildCache => Cache.TryGetGuild(Id, out var guild) ? guild : default;
+        private SyncedGuildCache GuildCache => Cache.TryGetGuild(Id, out var guild) ? guild : default;
 
         public ulong OwnerId => GuildCache.OwnerId;
 

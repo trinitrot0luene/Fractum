@@ -18,15 +18,15 @@ namespace Fractum.Testing
             User = message.Author;
         }
 
-        FractumSocketClient Client { get; }
+        public FractumSocketClient Client { get; }
 
-        CachedGuild Guild { get; }
+        public CachedGuild Guild { get; }
 
-        IMessageChannel Channel { get; }
+        public IMessageChannel Channel { get; }
 
-        IUser User { get; }
+        public IUser User { get; }
 
-        CachedMember Member => User as CachedMember;
+        public CachedMember Member => User as CachedMember;
 
         public Task<RestMessage> RespondAsync(string content, bool isTTS = false, EmbedBuilder embedBuilder = null, 
             params (string, Stream)[] attachments)

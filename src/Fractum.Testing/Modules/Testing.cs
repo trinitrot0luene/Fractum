@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,20 @@ namespace Fractum.Testing.Modules
             return Context.RespondAsync("", false, new EmbedBuilder()
                 .WithTitle("Pong!")
                 .WithDescription($"Up for {upSpan.ToHumanString()}").WithColor(Color.ForestGreen));
+        }
+
+        [Command("heapalloc")]
+        public Task HeapAllocAsync()
+        {
+            return Context.RespondAsync($"{Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2)}mb");
+        }
+
+        [Command("dm me")]
+        public async Task DmMeAsync([Remainder] string message)
+        {
+            var channel = await Context.Member.GetOrCreateDMChannelAsync();
+
+            await channel.CreateMessageAsync(message);
         }
     }
 

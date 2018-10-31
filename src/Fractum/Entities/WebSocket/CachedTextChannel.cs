@@ -13,7 +13,7 @@ namespace Fractum.Entities.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedTextChannel(ISocketCache<ISyncedGuild> cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedTextChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache, model, guildId)
         {
             Topic = model.Topic;
@@ -55,7 +55,12 @@ namespace Fractum.Entities.WebSocket
             => Client.RestClient.TriggerTypingAsync(Id);
 
         public Task<IMessage> GetMessageAsync(ulong messageId)
-            => Client.GetMessage(this, messageId).GetAsync();
+        {
+            if (Messages.FirstOrDefault(m => m.Id == messageId) is IMessage msg)
+                return Task.FromResult(msg);
+            else
+                return Client.RestClient.GetMessageAsync(this.Id, messageId);
+        }
 
         public Task<IEnumerable<RestMessage>> GetMessagesAsync(int limit = 100)
             => Client.RestClient.GetMessagesAsync(this.Id, LastMessageId.Value, limit);

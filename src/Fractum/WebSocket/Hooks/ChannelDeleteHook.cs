@@ -7,11 +7,11 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, ISocketCache<ISyncedGuild> cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
         {
             var eventArgs = (ChannelCreateUpdateOrDeleteEventModel) args;
 
-            CachedGuildChannel deletedChannel = null;
+            CachedChannel deletedChannel = null;
             switch (eventArgs.Type)
             {
                 case ChannelType.GuildCategory:
@@ -23,16 +23,26 @@ namespace Fractum.WebSocket.Hooks
                 case ChannelType.GuildVoice:
                     deletedChannel = new CachedVoiceChannel(cache, eventArgs);
                     break;
+                case ChannelType.DM:
+                    deletedChannel = new CachedDMChannel(cache, eventArgs);
+                    break;
             }
 
-            if (cache.TryGetGuild(deletedChannel.Guild.Id, out var guild))
+            if (deletedChannel.Type != ChannelType.DM && deletedChannel is CachedGuildChannel guildChannel &&
+                cache.TryGetGuild(guildChannel.Guild.Id, out var guild))
             {
-                guild.RemoveChannel(deletedChannel.Id);
+                guild.RemoveChannel(guildChannel.Id);
 
-                cache.Client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {deletedChannel.Name} was deleted",
+                cache.Client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {guildChannel.Name} was deleted",
                 LogSeverity.Verbose));
 
-                cache.Client.InvokeChannelDeleted(new CachedEntity<CachedGuildChannel>(deletedChannel));
+                cache.Client.InvokeChannelDeleted(new CachedEntity<CachedGuildChannel>(guildChannel));
+            }
+            else if (cache.HasDmChannel(deletedChannel.Id))
+            {
+                cache.RemoveDmChannel(deletedChannel.Id);
+
+                cache.Client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), "DM Channel was deleted", LogSeverity.Debug));
             }
 
             return Task.CompletedTask;

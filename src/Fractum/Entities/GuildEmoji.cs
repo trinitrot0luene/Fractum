@@ -5,7 +5,7 @@ namespace Fractum.Entities
 {
     public sealed class GuildEmoji : PopulatedEntity
     {
-        internal GuildEmoji(ISocketCache<ISyncedGuild> cache, GuildEmojiModel model) : base(cache)
+        internal GuildEmoji(FractumCache cache, GuildEmojiModel model) : base(cache)
         {
             Id = model.Id;
             CreatorId = model.Creator?.Id;

@@ -1,34 +1,26 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Fractum.Entities.Rest
 {
-    public class RestTextChannel : RestGuildChannel, ITextChannel
+    public sealed class RestDMChannel : RestChannel, ITextChannel
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal RestTextChannel()
+        internal RestDMChannel()
         {
         }
 
-        [JsonProperty("nsfw")]
-        public bool IsNsfw { get; private set; }
-
-        [JsonProperty("topic")]
-        public string Topic { get; private set; }
-
-        [JsonProperty("last_pin_timestamp")]
-        public DateTimeOffset? LastPinAt { get; private set; }
-
-        [JsonProperty("rate_limit_per_user")]
-        public int PerUserRatelimit { get; private set; }
-
         [JsonProperty("last_message_id")]
         public ulong? LastMessageId { get; private set; }
+
+        [JsonProperty("recipients")]
+        public User[] Users { get; private set; }
 
         public Task<RestMessage> CreateMessageAsync(string content = "", bool isTTS = false,
             EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
@@ -45,23 +37,6 @@ namespace Fractum.Entities.Rest
 
         public Task DeleteMessagesAsync(IEnumerable<IMessage> messages)
             => Client.DeleteMessagesAsync(Id, messages.Select(m => m.Id));
-
-        public async Task<RestTextChannel> EditAsync(Action<TextChannelProperties> editAction)
-        {
-            var props = new TextChannelProperties
-            {
-                IsNsfw = IsNsfw,
-                Name = Name,
-                ParentId = ParentId,
-                PermissionsOverwrites = Overwrites,
-                PerUserRatelimit = PerUserRatelimit,
-                Position = Position,
-                Topic = Topic
-            };
-            editAction(props);
-
-            return await Client.EditChannelAsync(Id, props) as RestTextChannel;
-        }
 
         public DisposableScope<VotedAsyncAction<ITextChannel>> BeginTyping()
         {

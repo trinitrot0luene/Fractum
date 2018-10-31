@@ -7,11 +7,11 @@ namespace Fractum.WebSocket
 {
     public abstract class PipelineStage : IPipelineStage<IPayload<EventModelBase>>
     {
-        public abstract ISocketCache<ISyncedGuild> Cache { get; }
+        internal abstract SocketWrapper Socket { get; }
+
+        public abstract FractumCache Cache { get; }
 
         public abstract ISession Session { get; }
-
-        public abstract SocketWrapper Socket { get; }
 
         public abstract FractumSocketClient Client { get; }
 

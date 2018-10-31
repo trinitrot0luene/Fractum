@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Fractum.Entities.Rest;
 using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
@@ -11,7 +13,7 @@ namespace Fractum.Entities.WebSocket
     /// </summary>
     public sealed class CachedMember : PopulatedEntity, IUser
     {
-        internal CachedMember(ISocketCache<ISyncedGuild> cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
+        internal CachedMember(FractumCache cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
             base(cache)
         {
             GuildId = parentGuildId ?? model.GuildId ??
@@ -113,6 +115,18 @@ namespace Fractum.Entities.WebSocket
         #endregion
 
         #region REST
+
+        public async Task<ITextChannel> GetOrCreateDMChannelAsync()
+        {
+            if (Cache.TryGetDmChannel(Id, out var dmChannel))
+                return dmChannel as ITextChannel;
+            else
+            {
+                var newDMChannel = await Cache.Client.RestClient.CreateDMChannelAsync(Id);
+
+                return newDMChannel as ITextChannel;
+            }
+        }
 
         #endregion
     }

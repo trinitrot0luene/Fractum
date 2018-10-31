@@ -7,7 +7,7 @@ using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
 {
-    public sealed class SyncedGuildCache : ISyncedGuild
+    public sealed class SyncedGuildCache
     {
         private readonly object channelLock = new object();
         private readonly object emojiLock = new object();
@@ -15,7 +15,7 @@ namespace Fractum.WebSocket
         private readonly object messageLock = new object();
         private readonly object roleLock = new object();
 
-        internal ISocketCache<ISyncedGuild> Cache;
+        internal FractumCache Cache;
         internal FractumSocketClient Client;
 
         public CachedGuild Guild { get; }
@@ -26,7 +26,7 @@ namespace Fractum.WebSocket
         private readonly Dictionary<ulong, CachedGuildChannel> channels = new Dictionary<ulong, CachedGuildChannel>();
         private readonly Dictionary<ulong, CircularBuffer<CachedMessage>> messages = new Dictionary<ulong, CircularBuffer<CachedMessage>>();
 
-        internal SyncedGuildCache(ISocketCache<ISyncedGuild> cache, GuildCreateEventModel model)
+        internal SyncedGuildCache(FractumCache cache, GuildCreateEventModel model)
         {
             Client = cache.Client;
             Cache = cache;

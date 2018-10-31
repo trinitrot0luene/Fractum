@@ -41,6 +41,35 @@ namespace Fractum.Rest
             return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, channelId));
         }
 
+        public async Task<RestDMChannel> CreateDMChannelAsync(ulong userId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), Consts.ME)
+                .WithPart(RouteSection.Create(Consts.CHANNELS), string.Empty);
+
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, 0, new { recipient_id = userId }.Serialize()));
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            var channel = responseContent.Deserialize<RestDMChannel>();
+
+            channel.Client = this;
+
+            return channel;
+        }
+
+        public async Task<User> GetUserAsync(ulong userId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), userId);
+
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return responseContent.Deserialize<User>();
+        }
+
         public async Task<IGuildChannel> GetChannelAsync(ulong channelId)
         {
             var rb = new RouteBuilder()
