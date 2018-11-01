@@ -43,10 +43,7 @@ namespace Fractum.Testing
 
             _client.MessageCreated += HandleMessageCreated;
 
-            _client.Ready += async () =>
-            {
-                await _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
-            };
+            _client.Ready += () => _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 

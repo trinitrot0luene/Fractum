@@ -43,11 +43,6 @@ namespace Fractum.WebSocket
         public void UpdateUrl(Uri url)
             => _url = url;
 
-        public void DisconnectAsync(object webSocketClose)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         ///     Connect to the gateway and initiate the handshake.
         /// </summary>
@@ -76,17 +71,22 @@ namespace Fractum.WebSocket
             }), _cts.Token);
         }
 
-        public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = "", bool invokeCloseCodeIssued = true)
+        public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = null, bool invokeCloseCodeIssued = true)
         {
-            if (_socket.State == WebSocketState.Open)
-                await _socket.CloseAsync(status, reason, _cts.Token);
+            try
+            {
+                if (_socket.State == WebSocketState.Open)
+                    await _socket.CloseAsync(status, reason, _cts.Token);
+            }
+            finally
+            {
+                _socket.Dispose();
+                _socket = new ClientWebSocket();
+                _converter = new WebSocketMessageConverter();
 
-            _socket.Dispose();
-            _socket = new ClientWebSocket();
-            _converter = new WebSocketMessageConverter();
-
-            if (invokeCloseCodeIssued)
-                InvokeCloseCodeIssued(status);
+                if (invokeCloseCodeIssued)
+                    InvokeCloseCodeIssued(status);
+            }
         }
 
         /// <summary>

@@ -32,7 +32,7 @@ namespace Fractum.WebSocket
 
         internal ISession Session;
 
-        internal SocketWrapper Socket;
+        public SocketWrapper Socket;
 
         internal ServiceCollection PipelineServices;
 
@@ -303,6 +303,11 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         internal async Task ReconnectAsync(WebSocketCloseStatus status, string message = null)
         {
+            if (_reconnectionSemaphore.CurrentCount == 0)
+                return;
+            else
+                _reconnectionSemaphore.Wait();
+
             Session.WaitingForACK = false; // We've been disconnected, reset checks for zombied connections.
             Session.ReconnectionAttempts = 0;
 
@@ -322,11 +327,6 @@ namespace Fractum.WebSocket
 
             InvokeLog(new LogMessage(nameof(ConnectionStage), "Reconnecting...",
                 LogSeverity.Warning));
-
-            if (_reconnectionSemaphore.CurrentCount == 0)
-                return;
-            else
-                _reconnectionSemaphore.Wait();
             do
             {
                 // Make 3 attempts to connect (and resume) then try to refetch the gateway url.
