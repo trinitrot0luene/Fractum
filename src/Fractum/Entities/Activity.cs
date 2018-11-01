@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public sealed class Activity
     {
+        internal Activity()
+        {
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
 

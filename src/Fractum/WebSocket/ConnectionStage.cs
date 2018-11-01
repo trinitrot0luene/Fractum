@@ -23,7 +23,7 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         public Task CompleteAsync(IPayload<EventModelBase> payload, PipelineContext context)
         {
-            if (context.Socket?.State != WebSocketState.Open) // If the socket isn't open, we don't want to run the event handler.
+            if (context.Socket?.State != WebSocketState.Open)
                 return Task.CompletedTask;
 
             context.Session.Seq = payload.Seq ?? context.Session.Seq;
@@ -35,14 +35,13 @@ namespace Fractum.WebSocket
 
                     context.Client.InvokeLog(new LogMessage(nameof(ConnectionStage), "Hello", LogSeverity.Debug));
 
-                    // Regardless of what happens we want to start heartbeating on HELLO.
                     var heartbeatInterval = ((HelloEventModel) payload.Data).HeartbeatInterval;
                     context.Client.HeartbeatTimer = new Timer(_ => Task.Run(() => context.Client.HeartbeatAsync()), null, heartbeatInterval,
                         heartbeatInterval);
-                    // If we aren't resuming, re-identify.
+                    
                     if (context.Session.Invalidated || context.Session.SessionId == null)
                     {
-                        context.Client.Session = new Session();
+                        context.Client.Session = new GatewaySession();
                         context.Client.Cache = new FractumCache(context.Client);
                         return context.Client.IdentifyAsync();
                     }
@@ -68,19 +67,14 @@ namespace Fractum.WebSocket
                     var isValid = ((InvalidSessionEventModel) payload.Data).Resumable;
 
                     context.Client.InvokeLog(new LogMessage(nameof(ConnectionStage), $"Invalid Session, Resumable: {isValid}", LogSeverity.Warning));
-                    // d: false, invalidate session and re-identify.
                     if (!isValid)
                     {
                         context.Session.Invalidated = true;
 
-
-
                         return Task.Delay(1000).ContinueWith(x => context.Client.IdentifyAsync());
                     }
                     else
-                    {
                         return context.Client.ResumeAsync();
-                    }
 
                 #endregion
 

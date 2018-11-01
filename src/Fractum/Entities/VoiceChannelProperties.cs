@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public sealed class VoiceChannelProperties : GuildChannelProperties
     {
+        internal VoiceChannelProperties()
+        {
+        }
+
         [JsonProperty("bitrate", NullValueHandling = NullValueHandling.Ignore)]
         public int? Bitrate { get; set; }
 

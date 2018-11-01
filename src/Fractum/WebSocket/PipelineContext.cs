@@ -33,9 +33,9 @@ namespace Fractum.WebSocket
         public FractumSocketClient Client { get; }
 
         /// <summary>
-        ///     Gets the <see cref="ISession" /> which caches session data for the gateway connection.
+        ///     Gets the <see cref="Session" /> which caches session data for the gateway connection.
         /// </summary>
-        public ISession Session { get; }
+        public GatewaySession Session { get; }
 
         /// <summary>
         ///     Gets the <see cref="IServiceProvider"/> containing services previously supplied to the <see cref="FractumSocketClient"/>.

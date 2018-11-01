@@ -6,6 +6,10 @@ namespace Fractum.Entities.WebSocket
 {
     public sealed class Payload<T> : Payload, IPayload<T> where T : EventModelBase
     {
+        internal Payload()
+        {
+        }
+
         [JsonProperty("d", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public T Data { get; set; }
 

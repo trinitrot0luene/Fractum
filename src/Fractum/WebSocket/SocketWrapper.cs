@@ -20,10 +20,12 @@ namespace Fractum.WebSocket
         private DateTimeOffset _ratelimitResetsAt;
         private int _remainingMessages;
         private ClientWebSocket _socket;
+        private DateTimeOffset? _startedAt;
 
         private Uri _url;
 
         internal Task ListenerTask;
+        internal TimeSpan? Uptime => _startedAt.HasValue ? DateTimeOffset.UtcNow - _startedAt : default;
 
         /// <summary>
         ///     Wrapper around the ClientWebSocket handling the socket connection.
@@ -68,6 +70,8 @@ namespace Fractum.WebSocket
                 if (task.IsCanceled)
                     InvokeLog(new LogMessage(nameof(SocketWrapper),
                         "The listener task was cancelled.", LogSeverity.Error));
+
+                _startedAt = default;
             }), _cts.Token);
         }
 
@@ -216,7 +220,10 @@ namespace Fractum.WebSocket
         public event Func<Task> OnConnected;
 
         private void InvokeConnected()
-            => OnConnected?.Invoke();
+        {
+            _startedAt = DateTimeOffset.UtcNow;
+            OnConnected?.Invoke();
+        }
 
         /// <summary>
         ///     Raised when the listen loop is broken by a server disconnect.
@@ -224,7 +231,10 @@ namespace Fractum.WebSocket
         internal event Func<WebSocketCloseStatus, string, Task> ConnectionClosed;
 
         private void InvokeCloseCodeIssued(WebSocketCloseStatus status, string message = null)
-            => ConnectionClosed?.Invoke(status, message);
+        {
+            _startedAt = null;
+            ConnectionClosed?.Invoke(status, message);
+        }
 
         /// <summary>
         ///     Raised when the wrapper receives a payload from the gateway.

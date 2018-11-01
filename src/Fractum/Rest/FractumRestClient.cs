@@ -299,7 +299,7 @@ namespace Fractum.Rest
             return responseContent.Deserialize<ReadOnlyCollection<User>>();
         }
 
-        public async Task<GatewayBotResponse> GetSocketUrlAsync()
+        public async Task<GatewayDetails> GetSocketUrlAsync()
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.GATEWAY))
@@ -308,7 +308,7 @@ namespace Fractum.Rest
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get))
                 .ConfigureAwait(false);
 
-            return JsonConvert.DeserializeObject<GatewayBotResponse>(await resp.Content.ReadAsStringAsync()
+            return JsonConvert.DeserializeObject<GatewayDetails>(await resp.Content.ReadAsStringAsync()
                 .ConfigureAwait(false));
         }
 

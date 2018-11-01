@@ -9,7 +9,7 @@ namespace Fractum.WebSocket
     ///     Credit to Quahu (https://gist.github.com/Quahu/3bdfce90f23f7e67f35751ef484d0424) for this implementation.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed class CircularBuffer<T> : IList<T>
+    internal sealed class CircularBuffer<T> : IList<T>
     {
         private readonly List<T> _buffer;
 

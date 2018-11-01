@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public sealed class EmbedThumbnail
     {
+        internal EmbedThumbnail()
+        {
+        }
+
         [JsonProperty("url")]
         public string Url { get; internal set; }
 

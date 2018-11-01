@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Fractum.Entities
+namespace Fractum.Entities.Rest
 {
-    public sealed class GatewayBotResponse
+    public sealed class GatewayDetails
     {
+        internal GatewayDetails()
+        {
+        }
+
         [JsonProperty("url")]
         public string Url { get; private set; }
 

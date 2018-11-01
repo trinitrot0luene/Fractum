@@ -12,7 +12,7 @@ namespace Fractum.WebSocket
     {
         public List<IPipelineStage<IPayload<EventModelBase>>> Stages;
 
-        public PayloadPipeline()
+        internal PayloadPipeline()
         {
             Stages = new List<IPipelineStage<IPayload<EventModelBase>>>();
         }

@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public sealed class EmbedAuthor
     {
+        internal EmbedAuthor()
+        {
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
 

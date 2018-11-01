@@ -2,7 +2,7 @@
 
 namespace Fractum.Entities
 {
-    public class EmbedFooter
+    public sealed class EmbedFooter
     {
         internal EmbedFooter()
         {

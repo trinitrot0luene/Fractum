@@ -8,7 +8,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMembersChunkHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var sw = Stopwatch.StartNew();
             var eventModel = (GuildMembersChunkEventModel) args;

@@ -24,13 +24,15 @@ namespace Fractum.WebSocket
 
         private SemaphoreSlim _reconnectionSemaphore;
 
+        private DateTimeOffset? _sessionStartedAt;
+
         internal Timer HeartbeatTimer { get; set; }
 
         internal FractumCache Cache;
 
         internal DateTimeOffset LastSentHeartbeat;
 
-        internal ISession Session;
+        internal GatewaySession Session;
 
         internal SocketWrapper Socket;
 
@@ -52,6 +54,10 @@ namespace Fractum.WebSocket
 
         public int Latency { get; internal set; }
 
+        public TimeSpan SocketUptime => Socket.Uptime ?? TimeSpan.Zero;
+
+        public TimeSpan SessionUptime => _sessionStartedAt.HasValue ? DateTimeOffset.UtcNow - _sessionStartedAt.Value : TimeSpan.Zero;
+
         #endregion
 
         public FractumSocketClient(FractumConfig config)
@@ -59,7 +65,7 @@ namespace Fractum.WebSocket
             _reconnectionSemaphore = new SemaphoreSlim(1, 1);
 
             Cache = new FractumCache(this);
-            Session = new Session();
+            Session = new GatewaySession();
             RestClient = new FractumRestClient(config);
 
             PipelineServices = new ServiceCollection();
@@ -292,7 +298,7 @@ namespace Fractum.WebSocket
         /// </summary>
         /// <returns></returns>
         public Task StopAsync()
-            => Socket.DisconnectAsync(WebSocketCloseStatus.NormalClosure, "", false);
+            => Socket.DisconnectAsync(WebSocketCloseStatus.NormalClosure, null, false);
 
         #region Socket Logic
 
@@ -418,8 +424,6 @@ namespace Fractum.WebSocket
                 }
             }.Serialize();
 
-            Session.Duration = DateTimeOffset.UtcNow;
-
             InvokeLog(new LogMessage(nameof(ConnectionStage), "Identifying", LogSeverity.Verbose));
 
             return Socket.SendMessageAsync(identify);
@@ -462,7 +466,7 @@ namespace Fractum.WebSocket
             _ = Log?.Invoke(message);
         }
 
-        internal void InvokeMessagePinned(IMessageChannel channel)
+        internal void InvokeMessagePinned(ITextChannel channel)
             => MessagePinned?.Invoke(channel);
 
         internal void InvokeGuildCreated(CachedGuild guild)
@@ -480,16 +484,16 @@ namespace Fractum.WebSocket
         internal void InvokeMessageUpdated(CachedMessage oldMessage, CachedMessage newMessage)
             => MessageUpdated?.Invoke(oldMessage, newMessage);
 
-        internal void InvokeMessageDeleted(CachedEntity<CachedMessage> cachedMessage)
+        internal void InvokeMessageDeleted(Cacheable<CachedMessage> cachedMessage)
             => MessageDeleted?.Invoke(cachedMessage);
 
         internal void InvokeChannelCreated(CachedChannel channel)
             => ChannelCreated?.Invoke(channel);
 
-        internal void InvokeChannelUpdated(CachedEntity<CachedGuildChannel> oldChannel, CachedGuildChannel channel)
+        internal void InvokeChannelUpdated(Cacheable<CachedGuildChannel> oldChannel, CachedGuildChannel channel)
             => ChannelUpdated?.Invoke(oldChannel, channel);
 
-        internal void InvokeChannelDeleted(CachedEntity<CachedGuildChannel> channel)
+        internal void InvokeChannelDeleted(Cacheable<CachedGuildChannel> channel)
             => ChannelDeleted?.Invoke(channel);
 
         internal void InvokeMemberBanned(CachedMember member)
@@ -498,8 +502,8 @@ namespace Fractum.WebSocket
         internal void InvokeMemberUnbanned(User user)
             => MemberUnbanned?.Invoke(user);
 
-        internal void InvokeEmojisUpdated(CachedGuild guild)
-            => EmojisUpdated?.Invoke(guild);
+        internal void InvokeEmojisUpdated(Cacheable<CachedGuild> guild, IEnumerable<GuildEmoji> emojis)
+            => EmojisUpdated?.Invoke(guild, emojis);
 
         internal void InvokeIntegrationsUpdated(CachedGuild guild)
             => IntegrationsUpdated?.Invoke(guild);
@@ -507,7 +511,7 @@ namespace Fractum.WebSocket
         internal void InvokeMemberJoined(CachedMember member)
             => MemberJoined?.Invoke(member);
 
-        internal void InvokeMemberLeft(IUser user)
+        internal void InvokeMemberLeft(Cacheable<CachedMember> user)
             => MemberLeft?.Invoke(user);
 
         internal void InvokeRoleCreated(CachedGuild guild, Role role)
@@ -523,21 +527,25 @@ namespace Fractum.WebSocket
             => ReactionAdded?.Invoke(reaction);
 
         internal void InvokeReactionRemoved(CachedReaction reaction)
-            => ReactionAdded?.Invoke(reaction);
+            => ReactionRemoved?.Invoke(reaction);
 
         internal void InvokeReactionsCleared(ulong messageId, ulong channelId, ulong? guildId)
             => ReactionsCleared?.Invoke(messageId, channelId, guildId);
 
-        internal void InvokeUserUpdated(CachedEntity<User> oldUser, User user)
+        internal void InvokeUserUpdated(Cacheable<User> oldUser, User user)
             => UserUpdated?.Invoke(oldUser, user);
 
         internal void InvokeReady()
-            => Ready?.Invoke();
+        {
+            _sessionStartedAt = DateTimeOffset.UtcNow;
+
+            Ready?.Invoke();
+        }
 
         /// <summary>
         ///     Raised when a message is pinned in a text channel.
         /// </summary>
-        public event Func<IMessageChannel, Task> MessagePinned;
+        public event Func<ITextChannel, Task> MessagePinned;
 
         /// <summary>
         ///     Raised when a guild becomes available to the client.
@@ -555,11 +563,6 @@ namespace Fractum.WebSocket
         public event Func<CachedGuild, Task> GuildUpdated;
 
         /// <summary>
-        ///     Raised when a guild is deleted.
-        /// </summary>
-        public event Func<CachedEntity<CachedGuild>, Task> GuildDeleted;
-
-        /// <summary>
         ///     Raised when a message is created.
         /// </summary>
         public event Func<CachedMessage, Task> MessageCreated;
@@ -572,7 +575,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a message is deleted.
         /// </summary>
-        public event Func<CachedEntity<CachedMessage>, Task> MessageDeleted;
+        public event Func<Cacheable<CachedMessage>, Task> MessageDeleted;
 
         /// <summary>
         ///     Raised when a channel is created.
@@ -582,12 +585,12 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a channel is updated.
         /// </summary>
-        public event Func<CachedEntity<CachedGuildChannel>, CachedGuildChannel, Task> ChannelUpdated;
+        public event Func<Cacheable<CachedGuildChannel>, CachedGuildChannel, Task> ChannelUpdated;
 
         /// <summary>
         ///     Raised when a channel is deleted.
         /// </summary>
-        public event Func<CachedEntity<CachedGuildChannel>, Task> ChannelDeleted;
+        public event Func<Cacheable<CachedGuildChannel>, Task> ChannelDeleted;
 
         /// <summary>
         ///     Raised when a member is banned.
@@ -602,7 +605,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when emojis in a guild are updated.
         /// </summary>
-        public event Func<CachedGuild, Task> EmojisUpdated;
+        public event Func<Cacheable<CachedGuild>, IEnumerable<GuildEmoji>, Task> EmojisUpdated;
 
         /// <summary>
         ///     Raised when a guild's integrations are updated.
@@ -617,7 +620,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a member leaves a guild.
         /// </summary>
-        public event Func<IUser, Task> MemberLeft;
+        public event Func<Cacheable<CachedMember>, Task> MemberLeft;
 
         /// <summary>
         ///     Raised when a role is created.
@@ -652,7 +655,7 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Raised when a user is updated.
         /// </summary>
-        public event Func<CachedEntity<User>, User, Task> UserUpdated;
+        public event Func<Cacheable<User>, User, Task> UserUpdated;
 
         /// <summary>
         ///     Raised when the client has successfully identified and is ready to receive and send events and commands.

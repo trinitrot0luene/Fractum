@@ -5,6 +5,10 @@ namespace Fractum.Entities
 {
     public class GuildChannelProperties
     {
+        internal GuildChannelProperties()
+        {
+        }
+
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 

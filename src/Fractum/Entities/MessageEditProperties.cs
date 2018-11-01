@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public class MessageEditProperties
     {
+        internal MessageEditProperties()
+        {
+        }
+
         [JsonProperty("content")]
         public string Content { get; set; }
 

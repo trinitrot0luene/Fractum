@@ -29,7 +29,10 @@ namespace Fractum.Entities.WebSocket
         public ReadOnlyCollection<User> Recipients { get; private set; }
 
         [JsonIgnore]
-        public IEnumerable<CachedMessage> Messages { get; internal set; }
+        public IEnumerable<CachedMessage> Messages { get; }
+
+        [JsonIgnore]
+        internal CircularBuffer<CachedMessage> MessageBuffer { get; set; }
 
         public Task<RestMessage> CreateMessageAsync(string content, bool isTTS = false,
             EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)

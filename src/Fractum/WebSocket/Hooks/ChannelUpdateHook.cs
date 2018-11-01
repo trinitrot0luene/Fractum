@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
 
@@ -30,7 +30,7 @@ namespace Fractum.WebSocket.Hooks
                 cache.Client.InvokeLog(new LogMessage(nameof(ChannelCreateHook),
                     $"Channel {updatedChannel.Name} was updated", LogSeverity.Verbose));
 
-                cache.Client.InvokeChannelUpdated(new CachedEntity<CachedGuildChannel>(oldChannel), updatedChannel);
+                cache.Client.InvokeChannelUpdated(new Cacheable<CachedGuildChannel>(oldChannel), updatedChannel);
             }
 
             return Task.CompletedTask;

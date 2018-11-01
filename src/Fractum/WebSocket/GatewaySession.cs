@@ -3,9 +3,11 @@ using Fractum.Entities;
 
 namespace Fractum.WebSocket
 {
-    public sealed class Session : ISession
+    public sealed class GatewaySession
     {
-        public DateTimeOffset Duration { get; set; }
+        internal GatewaySession()
+        {
+        }
 
         public string SessionId { get; set; }
 

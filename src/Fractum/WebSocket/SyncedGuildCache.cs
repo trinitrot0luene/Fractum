@@ -201,7 +201,7 @@ namespace Fractum.WebSocket
                 return channels.TryGetValue(channelId, out channel);
         }
 
-        public bool TryGet(ulong channelId, out CircularBuffer<CachedMessage> cachedMessages)
+        internal bool TryGet(ulong channelId, out CircularBuffer<CachedMessage> cachedMessages)
         {
             lock (messageLock)
                 return messages.TryGetValue(channelId, out cachedMessages);

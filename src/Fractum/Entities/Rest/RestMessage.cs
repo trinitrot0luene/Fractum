@@ -8,6 +8,10 @@ namespace Fractum.Entities.Rest
 {
     public class RestMessage : RestEntity, IMessage
     {
+        internal RestMessage()
+        {
+        }
+
         [JsonProperty("mentions")]
         public ReadOnlyCollection<User> MentionedUsers { get; private set; }
 

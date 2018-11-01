@@ -6,7 +6,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class UserUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventArgs = (UserUpdateEventModel) args;
 
@@ -21,7 +21,7 @@ namespace Fractum.WebSocket.Hooks
                     user.AvatarRaw = eventArgs.AvatarRaw;
                 }
 
-                cache.Client.InvokeUserUpdated(new CachedEntity<User>(clone as User), user);
+                cache.Client.InvokeUserUpdated(new Cacheable<User>(clone as User), user);
             }
 
             return Task.CompletedTask;

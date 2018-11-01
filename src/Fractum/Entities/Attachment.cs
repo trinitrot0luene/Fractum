@@ -4,6 +4,10 @@ namespace Fractum.Entities
 {
     public sealed class Attachment : DiscordEntity
     {
+        internal Attachment()
+        {
+        }
+
         [JsonProperty("filename")]
         public string Filename { get; private set; }
 

@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMemberRemoveHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventArgs = (GuildMemberRemoveEventModel) args;
 
@@ -18,7 +18,7 @@ namespace Fractum.WebSocket.Hooks
                 $"{member?.ToString() ?? eventArgs.User.ToString()} left {member?.Guild?.Name ?? "Unknown Guild"}",
                 LogSeverity.Verbose));
 
-                cache.Client.InvokeMemberLeft(member as IUser ?? eventArgs.User);
+                cache.Client.InvokeMemberLeft(new Cacheable<CachedMember>(member));
 
                 guild.RemoveMember(member.Id);
             }

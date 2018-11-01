@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelDeleteHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventArgs = (ChannelCreateUpdateOrDeleteEventModel) args;
 
@@ -36,7 +36,7 @@ namespace Fractum.WebSocket.Hooks
                 cache.Client.InvokeLog(new LogMessage(nameof(ChannelDeleteHook), $"Channel {guildChannel.Name} was deleted",
                 LogSeverity.Verbose));
 
-                cache.Client.InvokeChannelDeleted(new CachedEntity<CachedGuildChannel>(guildChannel));
+                cache.Client.InvokeChannelDeleted(new Cacheable<CachedGuildChannel>(guildChannel));
             }
             else if (cache.HasDmChannel(deletedChannel.Id))
             {

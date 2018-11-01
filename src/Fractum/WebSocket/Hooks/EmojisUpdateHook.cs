@@ -1,12 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using Fractum.Entities;
+using Fractum.Entities.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks
 {
     internal sealed class EmojisUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventArgs = (EmojisUpdateEventModel) args;
 
@@ -17,7 +19,7 @@ namespace Fractum.WebSocket.Hooks
                 cache.Client.InvokeLog(new LogMessage(nameof(EmojisUpdateHook),
                     $"Emojis updated for {guild?.Guild.Name ?? "Unknown Guild"}", LogSeverity.Debug));
 
-                cache.Client.InvokeEmojisUpdated(guild?.Guild);
+                cache.Client.InvokeEmojisUpdated(new Cacheable<CachedGuild>(guild?.Guild), eventArgs.Emojis);
             }
 
             return Task.CompletedTask;

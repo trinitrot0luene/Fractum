@@ -21,7 +21,7 @@ namespace Fractum.Entities
         {
             Fields = new List<EmbedField>();
             Footer = new EmbedFooter {Text = string.Empty, IconUrl = string.Empty};
-            Color = Color.Black;
+            Color = Color.White;
         }
 
         public EmbedBuilder WithField(string title, string value, bool isInline = false)

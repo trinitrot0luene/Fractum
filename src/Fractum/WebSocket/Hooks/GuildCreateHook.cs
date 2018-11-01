@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildCreateHook : IEventHook<EventModelBase>
     {
-        public async Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public async Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventModel = (GuildCreateEventModel) args;
 

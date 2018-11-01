@@ -16,9 +16,6 @@ namespace Fractum.WebSocket
 
         public bool TryGetValue(ulong key, out User value) => _cache.TryGetUser(key, out value);
 
-        public Task<User> GetOrRetrieveAsync(ulong key) => TryGetValue(key, out var value) 
-            ? Task.FromResult(value) : _cache.Client.RestClient.GetUserAsync(key);
-
         public IEnumerator<User> GetEnumerator() => _cache.Users.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

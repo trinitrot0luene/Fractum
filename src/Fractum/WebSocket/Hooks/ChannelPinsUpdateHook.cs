@@ -7,22 +7,19 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelPinsUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, ISession session)
+        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
         {
             var eventModel = (ChannelPinsUpdateEventModel) args;
 
-            CachedGuildChannel channel = null;
-            foreach (var guild in cache.Guilds)
-                if (guild.TryGet(eventModel.ChannelId, out channel))
-                    break;
-
-
-            // TODO: DM Channels.
-
-            cache.Client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {channel.Name}",
+            if (cache.Client.Channels.TryGetValue(eventModel.ChannelId, out var guildChannel))
+            {
+                cache.Client.InvokeLog(new LogMessage(nameof(ChannelPinsUpdateHook), $"Pins updated in channel {guildChannel.Name}",
                 LogSeverity.Debug));
 
-            cache.Client.InvokeMessagePinned(channel as CachedTextChannel);
+                cache.Client.InvokeMessagePinned(guildChannel as CachedTextChannel);
+            }
+            else
+                return Task.CompletedTask;
 
             return Task.CompletedTask;
         }

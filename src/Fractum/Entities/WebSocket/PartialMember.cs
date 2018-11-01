@@ -5,6 +5,10 @@ namespace Fractum.Entities.WebSocket
 {
     public sealed class PartialMember
     {
+        internal PartialMember()
+        {
+        }
+
         [JsonProperty("roles")]
         public ulong[] RoleIds { get; private set; }
 
