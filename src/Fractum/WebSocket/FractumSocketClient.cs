@@ -32,7 +32,7 @@ namespace Fractum.WebSocket
 
         internal ISession Session;
 
-        public SocketWrapper Socket;
+        internal SocketWrapper Socket;
 
         internal ServiceCollection PipelineServices;
 
