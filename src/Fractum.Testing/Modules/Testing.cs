@@ -16,11 +16,11 @@ namespace Fractum.Testing.Modules
         [Command("ping")]
         public Task PingAsync()
         {
-            var upSpan = DateTimeOffset.UtcNow - Program.StartedAt;
-
             return Context.RespondAsync("", false, new EmbedBuilder()
                 .WithTitle("Pong!")
-                .WithDescription($"Up for {upSpan.ToHumanString()}").WithColor(Color.Green));
+                .WithField("Socket Uptime", Context.Client.SocketUptime.ToHumanString())
+                .WithField("Client Uptime", Context.Client.SessionUptime.ToHumanString())
+                .WithColor(Color.Green));
         }
 
         [Command("heapalloc")]

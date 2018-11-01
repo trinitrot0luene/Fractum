@@ -54,7 +54,7 @@ namespace Fractum.WebSocket
 
         public int Latency { get; internal set; }
 
-        public ClientStatus Status { get; internal set; }
+        public ClientStatus ClientStatus { get; internal set; }
 
         public TimeSpan SocketUptime => Socket.Uptime ?? TimeSpan.Zero;
 
@@ -72,7 +72,7 @@ namespace Fractum.WebSocket
 
             PipelineServices = new ServiceCollection();
 
-            Status = ClientStatus.Disconnected;
+            ClientStatus = ClientStatus.Disconnected;
 
             RestClient.Log += msg =>
             {
@@ -303,7 +303,7 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         public Task StopAsync()
         {
-            Status = ClientStatus.Disconnected;
+            ClientStatus = ClientStatus.Disconnected;
 
             return Socket.DisconnectAsync(WebSocketCloseStatus.NormalClosure, null, false);
         }
@@ -322,7 +322,7 @@ namespace Fractum.WebSocket
             else
                 _reconnectionSemaphore.Wait();
 
-            Status = ClientStatus.Reconnecting;
+            ClientStatus = ClientStatus.Reconnecting;
 
             Session.WaitingForACK = false; // We've been disconnected, reset checks for zombied connections.
             Session.ReconnectionAttempts = 0;
@@ -549,7 +549,7 @@ namespace Fractum.WebSocket
         {
             _sessionStartedAt = DateTimeOffset.UtcNow;
 
-            Status = ClientStatus.Connected;
+            ClientStatus = ClientStatus.Connected;
 
             Ready?.Invoke();
         }
