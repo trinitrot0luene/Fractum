@@ -13,7 +13,7 @@ namespace Fractum.Entities.Rest
         }
 
         [JsonProperty("mentions")]
-        public ReadOnlyCollection<User> MentionedUsers { get; private set; }
+        public ReadOnlyCollection<IUser> MentionedUsers { get; private set; }
 
         [JsonProperty("attachments")]
         public ReadOnlyCollection<Attachment> Attachments { get; private set; }
@@ -22,7 +22,7 @@ namespace Fractum.Entities.Rest
         public ReadOnlyCollection<Embed> Embeds { get; private set; }
 
         [JsonProperty("author")]
-        public User Author { get; private set; }
+        public IUser Author { get; private set; }
 
         public ulong AuthorId => Author.Id;
 
@@ -40,7 +40,7 @@ namespace Fractum.Entities.Rest
         [JsonProperty("pinned")]
         public bool IsPinned { get; private set; }
 
-        IEnumerable<User> IMessage.MentionedUsers => MentionedUsers;
+        IEnumerable<IUser> IMessage.MentionedUsers => MentionedUsers;
 
         IEnumerable<Attachment> IMessage.Attachments => Attachments;
 
@@ -73,7 +73,7 @@ namespace Fractum.Entities.Rest
         public Task ClearReactionsAsync()
             => Client.ClearReactionsAsync(this.Id, this.ChannelId);
 
-        public Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25)
+        public Task<IReadOnlyCollection<RestUser>> GetReactionsAsync(Emoji emoji, int limit = 25)
             => Client.GetReactionsAsync(this.Id, this.ChannelId, emoji, limit);
 
         public Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction)

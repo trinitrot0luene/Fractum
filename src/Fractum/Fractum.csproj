@@ -18,4 +18,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Buffers">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\ref\netcoreapp2.1\System.Buffers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

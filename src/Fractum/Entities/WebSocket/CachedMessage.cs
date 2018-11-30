@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fractum.Entities.Rest;
 using Fractum.WebSocket;
@@ -126,7 +127,7 @@ namespace Fractum.Entities.WebSocket
 
         public bool IsPinned { get; private set; }
 
-        public IEnumerable<User> MentionedUsers { get; private set; }
+        public IEnumerable<IUser> MentionedUsers { get; private set; }
 
         public IEnumerable<Attachment> Attachments { get; private set; }
 
@@ -157,7 +158,7 @@ namespace Fractum.Entities.WebSocket
         public Task ClearReactionsAsync()
             => Client.RestClient.ClearReactionsAsync(this.Id, this.ChannelId);
 
-        public Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25)
+        public Task<IReadOnlyCollection<RestUser>> GetReactionsAsync(Emoji emoji, int limit = 25)
             => Client.RestClient.GetReactionsAsync(this.Id, this.ChannelId, emoji, limit);
 
         public Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction)

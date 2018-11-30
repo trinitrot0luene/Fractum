@@ -19,7 +19,7 @@ namespace Fractum.Entities
 
         bool IsPinned { get; }
 
-        IEnumerable<User> MentionedUsers { get; }
+        IEnumerable<IUser> MentionedUsers { get; }
 
         IEnumerable<Attachment> Attachments { get; }
 
@@ -43,7 +43,7 @@ namespace Fractum.Entities
 
         Task ClearReactionsAsync();
 
-        Task<IReadOnlyCollection<User>> GetReactionsAsync(Emoji emoji, int limit = 25);
+        Task<IReadOnlyCollection<RestUser>> GetReactionsAsync(Emoji emoji, int limit = 25);
 
         Task<RestMessage> EditAsync(Action<MessageEditProperties> updateAction);
     }
