@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Fractum.WebSocket
     {
         private const int _bufferSize = 4096;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private static ArrayPool<byte> _pool = ArrayPool<byte>.Create();
 
         private readonly SemaphoreSlim _ratelimitLock;
         private WebSocketMessageConverter _converter;
@@ -52,27 +54,33 @@ namespace Fractum.WebSocket
         public async Task ConnectAsync()
         {
             _socket = new ClientWebSocket();
-            var abortTask = Task.Run(async () =>
-            {
-                await Task.Delay(5000);
-                if (_socket.State != WebSocketState.Open)
-                    _socket.Abort();
-            });
-            await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
 
-            if (_socket.State != WebSocketState.Open)
-                return;
+            while(true)
+            {
+                var abortTask = Task.Run(async () =>
+                {
+                    await Task.Delay(5000);
+                    if (_socket.State != WebSocketState.Open)
+                        _socket.Abort();
+                });
+                await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
+
+                if (_socket.State == WebSocketState.Open)
+                    break;
+            }
 
             InvokeConnected();
 
-            ListenerTask = Task.Run(() => ListenAsync().ContinueWith(task =>
+            InvokeLog(new LogMessage(nameof(SocketWrapper), "Spawning new listener task", LogSeverity.Debug));
+
+            ListenerTask = Task.Run(() => ListenAsync(), _cts.Token).ContinueWith(task =>
             {
                 if (task.IsCanceled)
                     InvokeLog(new LogMessage(nameof(SocketWrapper),
                         "The listener task was cancelled.", LogSeverity.Error));
 
                 _startedAt = default;
-            }), _cts.Token);
+            });
         }
 
         public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = null, bool invokeCloseCodeIssued = true)
@@ -131,7 +139,7 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         private async Task ListenAsync()
         {
-            var buffer = new byte[32768];
+            var buffer = _pool.Rent(32768);
             var bufferSegment = new ArraySegment<byte>(buffer);
 
             byte[] resultBuffer = null;
@@ -151,12 +159,12 @@ namespace Fractum.WebSocket
                             if (result.MessageType == WebSocketMessageType.Close)
                                 break;
                             else
-                            {
                                 ms.Write(buffer, 0, result.Count);
-                            }
-                        } while (!result.EndOfMessage);
+                        }
+                        while (!result.EndOfMessage);
 
-                        resultBuffer = ms.ToArray();
+                        resultBuffer = _pool.Rent((int) ms.Length);
+                        ms.Write(resultBuffer, 0, (int) ms.Length);
                     }
                 }
                 catch (WebSocketException wsexception)
@@ -185,7 +193,20 @@ namespace Fractum.WebSocket
                             if (responsePayload.matchedPayload.Data != null)
                                 responsePayload.matchedPayload.Data.ProcessingStartedAt = DateTimeOffset.UtcNow;
 
-                            InvokeReceived(responsePayload.matchedPayload); // TODO: Decide between fire and forgetting or waiting for handlers.
+                            var cts = new CancellationTokenSource();
+                            var warningTask = Task.Delay(3000, cts.Token).ContinueWith(task =>
+                            {
+                                if (!task.IsCanceled)
+                                    InvokeLog(new LogMessage("Gateway",
+                                        "The gateway connection is being blocked by an event handler. Ensure your handlers do not run for longer than 3 seconds or wrap them in an unawaited Task.Run!", 
+                                        LogSeverity.Warning));
+                            });
+                            var handlerTask = PayloadReceived?.Invoke(responsePayload.matchedPayload).ContinueWith(task =>
+                            {
+                                if (!warningTask.IsCompleted)
+                                    cts.Cancel();
+                            });
+                            await Task.WhenAny(warningTask, handlerTask);
                         }
                     }
                     catch (Exception ex)
@@ -195,7 +216,9 @@ namespace Fractum.WebSocket
                             LogSeverity.Warning, ex));
                     }
                 }
+                _pool.Return(resultBuffer);
             }
+            _pool.Return(buffer);
 
             InvokeCloseCodeIssued(_socket.CloseStatus ?? WebSocketCloseStatus.Empty, result.CloseStatusDescription);
 

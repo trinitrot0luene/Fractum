@@ -21,6 +21,13 @@ namespace Fractum.WebSocket
         IPipeline<TData> AddStage(IPipelineStage<TData> newStage);
 
         /// <summary>
+        /// Get a stage added to the pipeline.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IPipelineStage<TData> GetStage<T>();
+
+        /// <summary>
         ///     Asynchronously enter the pipeline and begin processing stages.
         /// </summary>
         /// <param name="data">Data to be processed by the pipeline during execution.</param>

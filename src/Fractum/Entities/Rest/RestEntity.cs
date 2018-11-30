@@ -13,7 +13,7 @@ namespace Fractum.Entities.Rest
         internal FractumRestClient Client { get; set; }
         
         [JsonProperty("id")]
-        public ulong Id { get; private set; }
+        public ulong Id { get; protected set; }
 
         [JsonIgnore]
         public DateTimeOffset CreatedAt =>

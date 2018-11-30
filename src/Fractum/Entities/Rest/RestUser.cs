@@ -1,12 +1,14 @@
-﻿using System;
-using Fractum.Entities.WebSocket;
+﻿using Fractum.Entities.WebSocket;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Fractum.Entities
+namespace Fractum.Entities.Rest
 {
-    public sealed class User : DiscordEntity, IUser, ICloneable
+    public class RestUser : RestEntity, IUser, ICloneable
     {
-        internal User()
+        internal RestUser()
         {
         }
 
@@ -16,7 +18,7 @@ namespace Fractum.Entities
         [JsonProperty("member", NullValueHandling = NullValueHandling.Ignore)]
         internal PartialMember Member { get; private set; }
 
-        public object Clone() => new User
+        public object Clone() => new RestUser
         {
             Id = Id,
             AvatarRaw = AvatarRaw,

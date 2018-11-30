@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fractum.Entities;
 using Fractum.Entities.WebSocket;
@@ -28,6 +29,14 @@ namespace Fractum.WebSocket
 
             return this;
         }
+
+        /// <summary>
+        /// Get a stage added to the pipeline.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IPipelineStage<IPayload<EventModelBase>> GetStage<T>()
+            => Stages.FirstOrDefault(s => s.GetType() == typeof(T));
 
         /// <summary>
         ///     Remove all stages from the pipeline.

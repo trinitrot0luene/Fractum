@@ -3,7 +3,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
-using Fractum.Entities;
 using Fractum.Entities.WebSocket;
 using Fractum.Extensions;
 using Fractum.WebSocket.EventModels;
@@ -32,12 +31,6 @@ namespace Fractum.WebSocket
             DecompressionStream = new DeflateStream(CompressedStream, CompressionMode.Decompress);
         }
 
-        public void Reset()
-        {
-            DecompressionStream.Dispose();
-            DecompressionStream = new DeflateStream(CompressedStream, CompressionMode.Decompress);
-        }
-
         public async Task<(Payload, IPayload<EventModelBase>)> DecompressAsync(byte[] buffer)
         {
             if (buffer[0] == 0x78)
@@ -48,9 +41,7 @@ namespace Fractum.WebSocket
 
             if (BitConverter.ToUInt16(buffer, buffer.Length - 2) != _zlibSuffix)
                 using (var zlib = new DeflateStream(CompressedStream, CompressionMode.Decompress, true))
-                {
                     await zlib.CopyToAsync(DecompressedStream);
-                }
             else
                 await DecompressionStream.CopyToAsync(DecompressedStream);
 

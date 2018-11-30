@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fractum.Entities;
 using Fractum.Entities.Rest;
-using Fractum.Entities.WebSocket;
 using Fractum.Extensions;
 using Fractum.Rest.Utils;
 using Fractum.WebSocket;
@@ -49,47 +48,41 @@ namespace Fractum.Rest
 
             var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, 0, new { recipient_id = userId }.Serialize()));
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            var channel = responseContent.Deserialize<RestDMChannel>();
-
-            channel.Client = this;
-
-            return channel;
+            return await response.Content.ReadAsObjectAsync<RestDMChannel>(this);
         }
 
-        public async Task<User> GetUserAsync(ulong userId)
+        public async Task<RestUser> GetUserAsync(ulong userId)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.USERS), userId);
 
             var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            return responseContent.Deserialize<User>();
+            return await response.Content.ReadAsObjectAsync<RestUser>(this);
         }
 
         public async Task<IGuildChannel> GetChannelAsync(ulong channelId)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS), channelId);
-            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get))
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get))
                 .ConfigureAwait(false);
-            var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var channelType = (ChannelType) JObject.Parse(responseContent).Value<int>("type");
+
+            var channelObject = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            var channelType = (ChannelType) channelObject.Value<int>("type");
             switch (channelType)
             {
                 case ChannelType.GuildText:
-                    var textChannel = JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    var textChannel = channelObject.ToObject<RestTextChannel>();
                     textChannel.Client = this;
                     return textChannel;
                 case ChannelType.GuildVoice:
-                    var voiceChannel = JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    var voiceChannel = channelObject.ToObject<RestVoiceChannel>();
                     voiceChannel.Client = this;
                     return voiceChannel;
                 case ChannelType.GuildCategory:
-                    var category =  JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    var category = channelObject.ToObject<RestCategory>();
                     category.Client = this;
                     return category;
                 default:
@@ -102,23 +95,23 @@ namespace Fractum.Rest
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId);
 
-            var resp = await RestService
-                .SendRequestAsync(new StringRestRequest(rb, HttpMethod.Put, channelId, props.Serialize()))
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Put, channelId, props.Serialize()))
                 .ConfigureAwait(false);
-            var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var channelType = (ChannelType) JObject.Parse(responseContent).Value<int>("type");
+
+            var channelObject = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var channelType = (ChannelType)channelObject.Value<int>("type");
             switch (channelType)
             {
                 case ChannelType.GuildText:
-                    var textChannel = JsonConvert.DeserializeObject<RestTextChannel>(responseContent);
+                    var textChannel = channelObject.ToObject<RestTextChannel>();
                     textChannel.Client = this;
                     return textChannel;
                 case ChannelType.GuildVoice:
-                    var voiceChannel = JsonConvert.DeserializeObject<RestVoiceChannel>(responseContent);
+                    var voiceChannel = channelObject.ToObject<RestVoiceChannel>();
                     voiceChannel.Client = this;
                     return voiceChannel;
                 case ChannelType.GuildCategory:
-                    var category = JsonConvert.DeserializeObject<RestCategory>(responseContent);
+                    var category = channelObject.ToObject<RestCategory>();
                     category.Client = this;
                     return category;
                 default:
@@ -157,13 +150,10 @@ namespace Fractum.Rest
             foreach (var item in attachments)
                 multipartFiles.Add("file", item);
 
-            var resp = await RestService.SendRequestAsync(new MultipartRestRequest(rb, HttpMethod.Post, multipartFields,
+            var response = await RestService.SendRequestAsync(new MultipartRestRequest(rb, HttpMethod.Post, multipartFields,
                 multipartFiles, channelId)).ConfigureAwait(false);
-            var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var message = responseContent.Deserialize<RestMessage>();
-            message.Client = this;
-            return message;
+            return await response.Content.ReadAsObjectAsync<RestMessage>(this);
         }
 
         public async Task<IEnumerable<RestMessage>> GetMessagesAsync(ulong channelId, ulong messageId,
@@ -184,6 +174,7 @@ namespace Fractum.Rest
 
                 var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId))
                     .ConfigureAwait(false);
+
                 var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var msgs = responseContent.Deserialize<RestMessage[]>();
                 foreach (var msg in msgs)
@@ -204,11 +195,8 @@ namespace Fractum.Rest
 
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId))
                 .ConfigureAwait(false);
-            var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var message = responseContent.Deserialize<RestMessage>();
-            message.Client = this;
-            return message;
+            return await resp.Content.ReadAsObjectAsync<RestMessage>(this);
         }
 
         public async Task<RestMessage> EditMessageAsync(ulong messageId, ulong channelId, MessageEditProperties props)
@@ -217,13 +205,10 @@ namespace Fractum.Rest
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
                 .WithPart(RouteSection.Create(Consts.MESSAGES), messageId);
 
-            var responseMessage = await RestService.SendRequestAsync(new StringRestRequest(rb, new HttpMethod("PATCH"),
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, new HttpMethod("PATCH"),
                 channelId, props.Serialize()));
-            var responseContent = await responseMessage.Content.ReadAsStringAsync();
 
-            var message =  responseContent.Deserialize<RestMessage>();
-            message.Client = this;
-            return message;
+            return await response.Content.ReadAsObjectAsync<RestMessage>(this);
         }
 
         public Task DeleteMessageAsync(ulong messageId, ulong channelId)
@@ -247,7 +232,7 @@ namespace Fractum.Rest
                 channelId, new {messages = messageIds}.Serialize()));
         }
 
-        public async Task CreateReactionAsync(ulong messageId, ulong channelId, Emoji emoji)
+        public Task CreateReactionAsync(ulong messageId, ulong channelId, Emoji emoji)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
@@ -255,11 +240,10 @@ namespace Fractum.Rest
                 .WithPart(RouteSection.Create(Consts.REACTIONS), emoji.ToString())
                 .WithPart(RouteSection.Create(Consts.BLANK), Consts.ME);
 
-            _ = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Put, channelId))
-                .ConfigureAwait(false);
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Put, channelId));
         }
 
-        public async Task DeleteReactionAsync(ulong messageId, ulong channelId, Emoji emoji, ulong? userId = null)
+        public Task DeleteReactionAsync(ulong messageId, ulong channelId, Emoji emoji, ulong? userId = null)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
@@ -267,22 +251,20 @@ namespace Fractum.Rest
                 .WithPart(RouteSection.Create(Consts.REACTIONS), emoji.ToString())
                 .WithPart(RouteSection.Create(Consts.BLANK), userId == null ? userId.ToString() : Consts.ME);
 
-            _ = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId))
-                .ConfigureAwait(false);
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId));
         }
 
-        public async Task ClearReactionsAsync(ulong messageId, ulong channelId)
+        public Task ClearReactionsAsync(ulong messageId, ulong channelId)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
                 .WithPart(RouteSection.Create(Consts.MESSAGES), messageId)
                 .WithPart(RouteSection.Create(Consts.REACTIONS), string.Empty);
 
-            _ = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId))
-                .ConfigureAwait(false);
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId));
         }
 
-        public async Task<IReadOnlyCollection<User>> GetReactionsAsync(ulong messageId, ulong channelId, Emoji emoji,
+        public async Task<IReadOnlyCollection<RestUser>> GetReactionsAsync(ulong messageId, ulong channelId, Emoji emoji,
             int limit = 25)
         {
             var rb = new RouteBuilder()
@@ -292,11 +274,10 @@ namespace Fractum.Rest
                 .WithParameterBuilder(new RouteParameterBuilder()
                     .Add("limit", limit.ToString()));
 
-            var responseMessage = await RestService
+            var response = await RestService
                 .SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId)).ConfigureAwait(false);
-            var responseContent = await responseMessage.Content.ReadAsStringAsync();
 
-            return responseContent.Deserialize<ReadOnlyCollection<User>>();
+            return await response.Content.ReadAsObjectAsync<ReadOnlyCollection<RestUser>>();
         }
 
         public async Task<GatewayDetails> GetSocketUrlAsync()
