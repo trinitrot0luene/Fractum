@@ -25,6 +25,8 @@
 
         public static string USERS = "/users/{0}";
 
+        public static string GUILDS = "/guilds/{0}";
+
         public static string ME = "@me";
         public static string BLANK = "/{0}";
         public static string GATEWAY = "/gateway";

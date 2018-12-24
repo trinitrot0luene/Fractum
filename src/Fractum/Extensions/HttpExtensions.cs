@@ -1,4 +1,4 @@
-﻿using Fractum.Entities.Rest;
+﻿using Fractum.Rest;
 using Fractum.Rest;
 using Newtonsoft.Json;
 using System;

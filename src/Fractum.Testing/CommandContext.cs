@@ -1,6 +1,6 @@
-﻿using Fractum.Entities;
-using Fractum.Entities.Rest;
-using Fractum.Entities.WebSocket;
+﻿using Fractum;
+using Fractum.Rest;
+using Fractum.WebSocket;
 using Fractum.WebSocket;
 using Qmmands;
 using System.IO;

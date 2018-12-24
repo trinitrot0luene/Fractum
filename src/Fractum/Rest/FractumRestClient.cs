@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.Rest;
+using Fractum;
+using Fractum.Rest;
 using Fractum.Extensions;
 using Fractum.Rest.Utils;
 using Fractum.WebSocket;
@@ -17,6 +17,7 @@ namespace Fractum.Rest
     public sealed class FractumRestClient
     {
         internal FractumConfig Config;
+
         internal FractumRestService RestService;
 
         public FractumRestClient(FractumConfig config)
@@ -32,34 +33,11 @@ namespace Fractum.Rest
             };
         }
 
-        public Task TriggerTypingAsync(ulong channelId)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
-                .WithPart(RouteSection.Create(Consts.TYPING));
-            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, channelId));
-        }
+        #region /audit-logs
 
-        public async Task<RestDMChannel> CreateDMChannelAsync(ulong userId)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.USERS), Consts.ME)
-                .WithPart(RouteSection.Create(Consts.CHANNELS), string.Empty);
+        #endregion
 
-            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, 0, new { recipient_id = userId }.Serialize()));
-
-            return await response.Content.ReadAsObjectAsync<RestDMChannel>(this);
-        }
-
-        public async Task<RestUser> GetUserAsync(ulong userId)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.USERS), userId);
-
-            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
-
-            return await response.Content.ReadAsObjectAsync<RestUser>(this);
-        }
+        #region /channels
 
         public async Task<IGuildChannel> GetChannelAsync(ulong channelId)
         {
@@ -70,7 +48,7 @@ namespace Fractum.Rest
 
             var channelObject = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            var channelType = (ChannelType) channelObject.Value<int>("type");
+            var channelType = (ChannelType)channelObject.Value<int>("type");
             switch (channelType)
             {
                 case ChannelType.GuildText:
@@ -128,34 +106,6 @@ namespace Fractum.Rest
                 .ConfigureAwait(false);
         }
 
-        public async Task<RestMessage> CreateMessageAsync(ulong channelId, string content, bool isTTS = false,
-            EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
-                .WithPart(RouteSection.Create(Consts.MESSAGES));
-
-            var multipartFields = new Dictionary<string, string>();
-            var multipartFiles = new Dictionary<string, (string, Stream)>();
-
-            multipartFields.Add("tts", isTTS.ToString().ToLower());
-            if (content != null)
-                multipartFields.Add("content", content);
-            if (embedBuilder != null)
-                multipartFields.Add("payload_json", new
-                {
-                    embed = embedBuilder.Create()
-                }.Serialize());
-
-            foreach (var item in attachments)
-                multipartFiles.Add("file", item);
-
-            var response = await RestService.SendRequestAsync(new MultipartRestRequest(rb, HttpMethod.Post, multipartFields,
-                multipartFiles, channelId)).ConfigureAwait(false);
-
-            return await response.Content.ReadAsObjectAsync<RestMessage>(this);
-        }
-
         public async Task<IEnumerable<RestMessage>> GetMessagesAsync(ulong channelId, ulong messageId,
             int target)
         {
@@ -199,6 +149,42 @@ namespace Fractum.Rest
             return await resp.Content.ReadAsObjectAsync<RestMessage>(this);
         }
 
+        public Task TriggerTypingAsync(ulong channelId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
+                .WithPart(RouteSection.Create(Consts.TYPING));
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, channelId));
+        }
+
+        public async Task<RestMessage> CreateMessageAsync(ulong channelId, string content, bool isTTS = false,
+            EmbedBuilder embedBuilder = null, params (string fileName, Stream fileStream)[] attachments)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
+                .WithPart(RouteSection.Create(Consts.MESSAGES));
+
+            var multipartFields = new Dictionary<string, string>();
+            var multipartFiles = new Dictionary<string, (string, Stream)>();
+
+            multipartFields.Add("tts", isTTS.ToString().ToLower());
+            if (content != null)
+                multipartFields.Add("content", content);
+            if (embedBuilder != null)
+                multipartFields.Add("payload_json", new
+                {
+                    embed = embedBuilder.Create()
+                }.Serialize());
+
+            foreach (var item in attachments)
+                multipartFiles.Add("file", item);
+
+            var response = await RestService.SendRequestAsync(new MultipartRestRequest(rb, HttpMethod.Post, multipartFields,
+                multipartFiles, channelId)).ConfigureAwait(false);
+
+            return await response.Content.ReadAsObjectAsync<RestMessage>(this);
+        }
+
         public async Task<RestMessage> EditMessageAsync(ulong messageId, ulong channelId, MessageEditProperties props)
         {
             var rb = new RouteBuilder()
@@ -209,27 +195,6 @@ namespace Fractum.Rest
                 channelId, props.Serialize()));
 
             return await response.Content.ReadAsObjectAsync<RestMessage>(this);
-        }
-
-        public Task DeleteMessageAsync(ulong messageId, ulong channelId)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
-                .WithPart(RouteSection.Create(Consts.MESSAGES), messageId);
-
-            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete,
-                channelId));
-        }
-
-        public Task DeleteMessagesAsync(ulong channelId, IEnumerable<ulong> messageIds)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
-                .WithPart(RouteSection.Create(Consts.MESSAGES))
-                .WithPart(RouteSection.Create(Consts.BULK_DELETE));
-
-            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post,
-                channelId, new {messages = messageIds}.Serialize()));
         }
 
         public Task CreateReactionAsync(ulong messageId, ulong channelId, Emoji emoji)
@@ -254,16 +219,6 @@ namespace Fractum.Rest
             return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId));
         }
 
-        public Task ClearReactionsAsync(ulong messageId, ulong channelId)
-        {
-            var rb = new RouteBuilder()
-                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
-                .WithPart(RouteSection.Create(Consts.MESSAGES), messageId)
-                .WithPart(RouteSection.Create(Consts.REACTIONS), string.Empty);
-
-            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId));
-        }
-
         public async Task<IReadOnlyCollection<RestUser>> GetReactionsAsync(ulong messageId, ulong channelId, Emoji emoji,
             int limit = 25)
         {
@@ -279,6 +234,85 @@ namespace Fractum.Rest
 
             return await response.Content.ReadAsObjectAsync<ReadOnlyCollection<RestUser>>();
         }
+
+        public Task ClearReactionsAsync(ulong messageId, ulong channelId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
+                .WithPart(RouteSection.Create(Consts.MESSAGES), messageId)
+                .WithPart(RouteSection.Create(Consts.REACTIONS), string.Empty);
+
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete, channelId));
+        }
+
+        public Task DeleteMessageAsync(ulong messageId, ulong channelId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
+                .WithPart(RouteSection.Create(Consts.MESSAGES), messageId);
+
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete,
+                channelId));
+        }
+
+        public Task DeleteMessagesAsync(ulong channelId, IEnumerable<ulong> messageIds)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.CHANNELS, true), channelId)
+                .WithPart(RouteSection.Create(Consts.MESSAGES))
+                .WithPart(RouteSection.Create(Consts.BULK_DELETE));
+
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post,
+                channelId, new { messages = messageIds }.Serialize()));
+        }
+
+        #endregion
+
+        #region /emojis
+
+        #endregion
+
+        #region /guilds
+
+        #endregion
+
+        #region /invites
+
+        #endregion
+
+        #region /users
+
+        public Task LeaveGuildAsync(ulong guildId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), Consts.ME)
+                .WithPart(RouteSection.Create(Consts.GUILDS), guildId);
+
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete));
+        }
+
+        public async Task<RestDMChannel> CreateDMChannelAsync(ulong userId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), Consts.ME)
+                .WithPart(RouteSection.Create(Consts.CHANNELS), string.Empty);
+
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post, 0, new { recipient_id = userId }.Serialize()));
+
+            return await response.Content.ReadAsObjectAsync<RestDMChannel>(this);
+        }
+
+        public async Task<RestUser> GetUserAsync(ulong userId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), userId);
+
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
+
+            return await response.Content.ReadAsObjectAsync<RestUser>(this);
+        }
+
+        #endregion
 
         public async Task<GatewayDetails> GetSocketUrlAsync()
         {

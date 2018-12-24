@@ -4,8 +4,8 @@ using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+using Fractum;
+using Fractum.WebSocket;
 using Fractum.Extensions;
 using Fractum.Rest;
 using Fractum.WebSocket.EventModels;
@@ -105,7 +105,7 @@ namespace Fractum.WebSocket
                         color = ConsoleColor.Green;
                         break;
                     case LogSeverity.Verbose:
-                        color = ConsoleColor.Blue;
+                        color = ConsoleColor.Cyan;
                         break;
                 }
                 Console.ForegroundColor = color;

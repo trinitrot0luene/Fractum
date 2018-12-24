@@ -5,8 +5,8 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+using Fractum;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
@@ -140,15 +140,15 @@ namespace Fractum.WebSocket
         private async Task ListenAsync()
         {
             var buffer = _pool.Rent(32768);
-            var bufferSegment = new ArraySegment<byte>(buffer);
 
-            byte[] resultBuffer = null;
             WebSocketReceiveResult result = null;
 
             var token = _cts.Token;
 
             while (!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
             {
+                byte[] resultBuffer;
+                int realLen = 0;
                 try
                 {
                     using (var ms = new MemoryStream())
@@ -163,8 +163,11 @@ namespace Fractum.WebSocket
                         }
                         while (!result.EndOfMessage);
 
-                        resultBuffer = _pool.Rent((int) ms.Length);
-                        ms.Write(resultBuffer, 0, (int) ms.Length);
+                        resultBuffer = _pool.Rent((int)ms.Length);
+                        ms.Position = 0;
+                        ms.Read(resultBuffer, 0, (int)ms.Length);
+
+                        realLen = (int)ms.Length;
                     }
                 }
                 catch (WebSocketException wsexception)
@@ -182,8 +185,8 @@ namespace Fractum.WebSocket
                 {
                     (Payload rawPayload, IPayload<EventModelBase> matchedPayload) responsePayload = default;
                     if (result.MessageType == WebSocketMessageType.Binary)
-                        responsePayload = await _converter.DecompressAsync(resultBuffer);
-
+                        responsePayload = await _converter.DecompressAsync(new ArraySegment<byte>(resultBuffer, 0, realLen));
+                    _pool.Return(resultBuffer);
                     try
                     {
                         if (responsePayload.matchedPayload == null)
@@ -216,7 +219,6 @@ namespace Fractum.WebSocket
                             LogSeverity.Warning, ex));
                     }
                 }
-                _pool.Return(resultBuffer);
             }
             _pool.Return(buffer);
 

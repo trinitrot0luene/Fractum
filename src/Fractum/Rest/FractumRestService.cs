@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 using Fractum.Rest.Compliance;
 using Fractum.WebSocket;
 

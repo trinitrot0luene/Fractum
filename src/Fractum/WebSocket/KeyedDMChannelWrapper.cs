@@ -1,4 +1,4 @@
-﻿using Fractum.Entities.WebSocket;
+﻿using Fractum.WebSocket;
 using System;
 using System.Collections;
 using System.Collections.Generic;

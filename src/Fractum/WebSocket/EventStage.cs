@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
@@ -50,7 +50,7 @@ namespace Fractum.WebSocket
             return this;
         }
 
-        public EventStage RegisterCallback<T>(string eventName, Func<EventModelBase, FractumCache, GatewaySession, Task> func)
+        public EventStage RegisterCallback(string eventName, Func<EventModelBase, FractumCache, GatewaySession, Task> func)
         {
             if (Delegates.TryGetValue(eventName.ToUpper(), out var existingDelegates))
                 existingDelegates.Add(func);
