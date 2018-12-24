@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+using Fractum;
+using Fractum.WebSocket;
 using Fractum.Extensions;
 using Fractum.Rest;
 using Fractum.WebSocket.EventModels;
@@ -81,7 +79,12 @@ namespace Fractum.WebSocket
             };
         }
 
-        public void UseDefaultLogging(LogSeverity minSeverity = LogSeverity.Info, bool hidePresenceUpdates = false)
+        /// <summary>
+        /// Subscribe a default log handler implementation to the client's <see cref="Log"/> event.
+        /// </summary>
+        /// <param name="minSeverity">The minimum severity required for an event to be be logged.</param>
+        /// <param name="hidePresenceUpdates">Whether presence updates should be included in the log output, regardless of what the minimum severity is set to.</param>
+        public void RegisterDefaultLogHandler(LogSeverity minSeverity = LogSeverity.Info, bool hidePresenceUpdates = false)
         {
             Log += (msg) =>
             {
@@ -102,7 +105,7 @@ namespace Fractum.WebSocket
                         color = ConsoleColor.Green;
                         break;
                     case LogSeverity.Verbose:
-                        color = ConsoleColor.Blue;
+                        color = ConsoleColor.Cyan;
                         break;
                 }
                 Console.ForegroundColor = color;
@@ -114,22 +117,27 @@ namespace Fractum.WebSocket
         }
 
         /// <summary>
-        ///     Use the default <see cref="PayloadPipeline" /> to process gateway messages.
+        ///     Gets or initialises the client's default <see cref="PayloadPipeline"/>.
         /// </summary>
-        public FractumSocketClient GetPipeline()
+        public IPipeline<IPayload<EventModelBase>> GetOrConfigurePipeline()
         {
-            _pipeline = _pipeline ?? new PayloadPipeline();
+            if (_pipeline == null)
+            {
+                _pipeline = new PayloadPipeline();
 
-            return this;
+                AddConnectionStage();
+                AddEventStage();
+            }
+
+            return _pipeline;
         }
 
-        /// <summary>
-        ///     Add the <see cref="EventStage"/> responsible for maintaining cache and handling gateway dispatches to the pipeline.
-        /// </summary>
-        /// <returns></returns>
-        public FractumSocketClient AddEventStage()
+        public EventStage GetEventStage()
+            => _pipeline.GetStage<EventStage>() as EventStage;
+
+        private void AddEventStage()
         {
-            _pipeline?.AddStage(new EventStage(this)
+            _pipeline.AddStage(new EventStage(this)
                     .RegisterHook("READY", new ReadyHook())
                     .RegisterHook("RESUMED", new ResumedEventHook())
                     .RegisterHook("PRESENCE_UPDATE", new PresenceUpdateHook())
@@ -162,20 +170,10 @@ namespace Fractum.WebSocket
                 //.RegisterHook("VOICE_STATE_UPDATE", new VoiceStateUpdateHook())
                 //.RegisterHook("WEBHOOKS_UPDATE", new WebhooksUpdateHook());
             );
-
-            return this;
         }
 
-        /// <summary>
-        ///     Add the <see cref="ConnectionStage"/> responsible for connection logic to the pipeline.
-        /// </summary>
-        /// <returns></returns>
-        public FractumSocketClient AddConnectionStage()
-        {
-            _pipeline.AddStage(new ConnectionStage());
-
-            return this;
-        }
+        private void AddConnectionStage()
+            => _pipeline.AddStage(new ConnectionStage());
 
         /// <summary>
         ///     Add an <see cref="IPipelineStage{TData}"/> to the pipeline.
@@ -265,14 +263,18 @@ namespace Fractum.WebSocket
         #endregion
 
         /// <summary>
-        ///     Retrieve connection details from the gateway and prepare the client for connection.
+        ///     Performs all pre-flight checks for the client, retrieves all necessary information to make a gateway connection and prepares the client to start a session.
         /// </summary>
         /// <returns></returns>
-        public async Task GetConnectionInfoAsync()
+        public async Task PrepareForSessionAsync()
         {
+            GetOrConfigurePipeline();
+
+            // TODO: Validate token FractumUtils.ValidateToken(Config.Token);
+            
             var gatewayInfo = await RestClient.GetSocketUrlAsync().ConfigureAwait(false);
             if (gatewayInfo.SessionStartLimit["remaining"] <= 0)
-                throw new InvalidOperationException("No new sessions can be started.");
+                throw new InvalidOperationException("No new sessions can be started under this token.");
 
             Socket = new SocketWrapper(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
 
@@ -298,7 +300,7 @@ namespace Fractum.WebSocket
             =>  Socket.ConnectAsync();
 
         /// <summary>
-        ///     Disconnect from the socket.
+        ///     Disconnect from the socket, suppressing automatic client reconnects.
         /// </summary>
         /// <returns></returns>
         public Task StopAsync()

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+using Fractum;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks

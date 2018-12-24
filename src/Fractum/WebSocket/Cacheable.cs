@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 
 namespace Fractum.WebSocket
 {
@@ -38,7 +38,7 @@ namespace Fractum.WebSocket
         /// </summary>
         /// <returns></returns>
         public Task<TEntity> GetAsync()
-            => _entity != default ? Task.FromResult(_entity) : (GetFunc != default ? GetFunc.Invoke() : default);
+            => _entity != default ? Task.FromResult(_entity) : (GetFunc != default ? GetFunc() : default);
 
         /// <summary>
         /// Gets the value of the cached entity.

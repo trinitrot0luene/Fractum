@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Qmmands" Version="1.0.3-nightly-00057" />
+    <PackageReference Include="Qmmands" Version="1.0.3-nightly-00083" />
   </ItemGroup>
 
   <ItemGroup>

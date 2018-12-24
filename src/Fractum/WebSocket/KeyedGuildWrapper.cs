@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Fractum.Entities.WebSocket;
+using Fractum.WebSocket;
 
 namespace Fractum.WebSocket
 {

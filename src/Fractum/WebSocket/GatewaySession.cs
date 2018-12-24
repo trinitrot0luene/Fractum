@@ -1,5 +1,5 @@
 ﻿using System;
-using Fractum.Entities;
+using Fractum;
 
 namespace Fractum.WebSocket
 {

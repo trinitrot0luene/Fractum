@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
@@ -8,10 +9,13 @@ namespace Fractum.WebSocket
     public sealed class EventStage : IPipelineStage<IPayload<EventModelBase>>
     {
         private readonly Dictionary<string, List<IEventHook<EventModelBase>>> Hooks;
+        private readonly Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>> Delegates = new Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>>();
 
         public EventStage(FractumSocketClient client)
         {
             Hooks = new Dictionary<string, List<IEventHook<EventModelBase>>>();
+
+            Delegates = new Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>>();
         }
 
         /// <summary>
@@ -25,6 +29,9 @@ namespace Fractum.WebSocket
             if (Hooks.TryGetValue(payload.Type ?? string.Empty, out var hooks))
                 foreach (var hook in hooks)
                     await hook.RunAsync(payload.Data, ctx.Cache, ctx.Session);
+            if (Delegates.TryGetValue(payload.Type ?? string.Empty, out var delegates))
+                foreach (var func in delegates)
+                    await func.Invoke(payload.Data, ctx.Cache, ctx.Session);
         }
 
         /// <summary>
@@ -39,6 +46,16 @@ namespace Fractum.WebSocket
                 existingHooks.Add(hook);
             else
                 Hooks.Add(eventName.ToUpper(), new List<IEventHook<EventModelBase>> {hook});
+
+            return this;
+        }
+
+        public EventStage RegisterCallback(string eventName, Func<EventModelBase, FractumCache, GatewaySession, Task> func)
+        {
+            if (Delegates.TryGetValue(eventName.ToUpper(), out var existingDelegates))
+                existingDelegates.Add(func);
+            else
+                Delegates.Add(eventName.ToUpper(), new List<Func<EventModelBase, FractumCache, GatewaySession, Task>> { func });
 
             return this;
         }

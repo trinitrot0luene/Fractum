@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket.Hooks

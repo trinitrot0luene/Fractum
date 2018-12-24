@@ -1,4 +1,4 @@
-﻿using Fractum.Entities.WebSocket;
+﻿using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket

@@ -1,6 +1,7 @@
-﻿using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+﻿using Fractum;
 using Fractum.WebSocket;
+using Fractum.WebSocket;
+using Fractum.WebSocket.EventModels;
 using Qmmands;
 using System;
 using System.Reflection;
@@ -33,19 +34,21 @@ namespace Fractum.Testing
                 DefaultRunMode = RunMode.Sequential
             });
 
-            _client.GetPipeline()
-                .AddConnectionStage()
-                .AddEventStage();
-
-            _client.UseDefaultLogging(LogSeverity.Info, true);
-
             _client.MessageCreated += HandleMessageCreated;
 
             _client.Ready += () => _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
 
+            _client.RegisterDefaultLogHandler(LogSeverity.Verbose);
+
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            await _client.GetConnectionInfoAsync();
+            await _client.PrepareForSessionAsync();
+
+            _client.GetEventStage().RegisterCallback(Dispatch.GUILD_MEMBERS_CHUNK, (model, cache, session) =>
+            {
+                Console.WriteLine(session.SessionId);
+                return Task.CompletedTask;
+            });
 
             await _client.StartAsync();
 

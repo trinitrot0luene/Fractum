@@ -1,5 +1,5 @@
-﻿using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+﻿using Fractum;
+using Fractum.WebSocket;
 using Newtonsoft.Json;
 
 namespace Fractum.WebSocket.EventModels

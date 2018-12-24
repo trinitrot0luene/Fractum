@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractum.Entities;
-using Fractum.Entities.WebSocket;
+using Fractum;
+using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 
 namespace Fractum.WebSocket
@@ -14,6 +15,7 @@ namespace Fractum.WebSocket
     {
         private const int _bufferSize = 4096;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private static ArrayPool<byte> _pool = ArrayPool<byte>.Create();
 
         private readonly SemaphoreSlim _ratelimitLock;
         private WebSocketMessageConverter _converter;
@@ -52,27 +54,33 @@ namespace Fractum.WebSocket
         public async Task ConnectAsync()
         {
             _socket = new ClientWebSocket();
-            var abortTask = Task.Run(async () =>
-            {
-                await Task.Delay(5000);
-                if (_socket.State != WebSocketState.Open)
-                    _socket.Abort();
-            });
-            await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
 
-            if (_socket.State != WebSocketState.Open)
-                return;
+            while(true)
+            {
+                var abortTask = Task.Run(async () =>
+                {
+                    await Task.Delay(5000);
+                    if (_socket.State != WebSocketState.Open)
+                        _socket.Abort();
+                });
+                await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
+
+                if (_socket.State == WebSocketState.Open)
+                    break;
+            }
 
             InvokeConnected();
 
-            ListenerTask = Task.Run(() => ListenAsync().ContinueWith(task =>
+            InvokeLog(new LogMessage(nameof(SocketWrapper), "Spawning new listener task", LogSeverity.Debug));
+
+            ListenerTask = Task.Run(() => ListenAsync(), _cts.Token).ContinueWith(task =>
             {
                 if (task.IsCanceled)
                     InvokeLog(new LogMessage(nameof(SocketWrapper),
                         "The listener task was cancelled.", LogSeverity.Error));
 
                 _startedAt = default;
-            }), _cts.Token);
+            });
         }
 
         public async Task DisconnectAsync(WebSocketCloseStatus status = WebSocketCloseStatus.Empty, string reason = null, bool invokeCloseCodeIssued = true)
@@ -131,16 +139,16 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         private async Task ListenAsync()
         {
-            var buffer = new byte[32768];
-            var bufferSegment = new ArraySegment<byte>(buffer);
+            var buffer = _pool.Rent(32768);
 
-            byte[] resultBuffer = null;
             WebSocketReceiveResult result = null;
 
             var token = _cts.Token;
 
             while (!token.IsCancellationRequested && _socket.State == WebSocketState.Open)
             {
+                byte[] resultBuffer;
+                int realLen = 0;
                 try
                 {
                     using (var ms = new MemoryStream())
@@ -151,12 +159,15 @@ namespace Fractum.WebSocket
                             if (result.MessageType == WebSocketMessageType.Close)
                                 break;
                             else
-                            {
                                 ms.Write(buffer, 0, result.Count);
-                            }
-                        } while (!result.EndOfMessage);
+                        }
+                        while (!result.EndOfMessage);
 
-                        resultBuffer = ms.ToArray();
+                        resultBuffer = _pool.Rent((int)ms.Length);
+                        ms.Position = 0;
+                        ms.Read(resultBuffer, 0, (int)ms.Length);
+
+                        realLen = (int)ms.Length;
                     }
                 }
                 catch (WebSocketException wsexception)
@@ -174,8 +185,8 @@ namespace Fractum.WebSocket
                 {
                     (Payload rawPayload, IPayload<EventModelBase> matchedPayload) responsePayload = default;
                     if (result.MessageType == WebSocketMessageType.Binary)
-                        responsePayload = await _converter.DecompressAsync(resultBuffer);
-
+                        responsePayload = await _converter.DecompressAsync(new ArraySegment<byte>(resultBuffer, 0, realLen));
+                    _pool.Return(resultBuffer);
                     try
                     {
                         if (responsePayload.matchedPayload == null)
@@ -185,7 +196,20 @@ namespace Fractum.WebSocket
                             if (responsePayload.matchedPayload.Data != null)
                                 responsePayload.matchedPayload.Data.ProcessingStartedAt = DateTimeOffset.UtcNow;
 
-                            InvokeReceived(responsePayload.matchedPayload); // TODO: Decide between fire and forgetting or waiting for handlers.
+                            var cts = new CancellationTokenSource();
+                            var warningTask = Task.Delay(3000, cts.Token).ContinueWith(task =>
+                            {
+                                if (!task.IsCanceled)
+                                    InvokeLog(new LogMessage("Gateway",
+                                        "The gateway connection is being blocked by an event handler. Ensure your handlers do not run for longer than 3 seconds or wrap them in an unawaited Task.Run!", 
+                                        LogSeverity.Warning));
+                            });
+                            var handlerTask = PayloadReceived?.Invoke(responsePayload.matchedPayload).ContinueWith(task =>
+                            {
+                                if (!warningTask.IsCompleted)
+                                    cts.Cancel();
+                            });
+                            await Task.WhenAny(warningTask, handlerTask);
                         }
                     }
                     catch (Exception ex)
@@ -196,6 +220,7 @@ namespace Fractum.WebSocket
                     }
                 }
             }
+            _pool.Return(buffer);
 
             InvokeCloseCodeIssued(_socket.CloseStatus ?? WebSocketCloseStatus.Empty, result.CloseStatusDescription);
 

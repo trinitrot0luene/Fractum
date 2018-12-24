@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Fractum.Entities;
+using Fractum;
 
 namespace Fractum.WebSocket
 {
@@ -19,6 +19,13 @@ namespace Fractum.WebSocket
         /// <param name="newStage"></param>
         /// <returns></returns>
         IPipeline<TData> AddStage(IPipelineStage<TData> newStage);
+
+        /// <summary>
+        /// Get a stage added to the pipeline.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IPipelineStage<TData> GetStage<T>();
 
         /// <summary>
         ///     Asynchronously enter the pipeline and begin processing stages.
