@@ -1,7 +1,6 @@
 ﻿using Fractum;
 using Fractum.Rest;
 using Fractum.WebSocket;
-using Fractum.WebSocket;
 using Qmmands;
 using System.IO;
 using System.Threading.Tasks;

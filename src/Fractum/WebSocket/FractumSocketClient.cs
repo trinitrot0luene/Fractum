@@ -72,7 +72,7 @@ namespace Fractum.WebSocket
 
             ClientStatus = ClientStatus.Disconnected;
 
-            RestClient.Log += msg =>
+            RestClient.OnLog += msg =>
             {
                 InvokeLog(msg);
                 return Task.CompletedTask;
@@ -80,13 +80,13 @@ namespace Fractum.WebSocket
         }
 
         /// <summary>
-        /// Subscribe a default log handler implementation to the client's <see cref="Log"/> event.
+        /// Subscribe a default log handler implementation to the client's <see cref="OnLog"/> event.
         /// </summary>
         /// <param name="minSeverity">The minimum severity required for an event to be be logged.</param>
         /// <param name="hidePresenceUpdates">Whether presence updates should be included in the log output, regardless of what the minimum severity is set to.</param>
-        public void RegisterDefaultLogHandler(LogSeverity minSeverity = LogSeverity.Info, bool hidePresenceUpdates = false)
+        public void UseDefaultLogging(LogSeverity minSeverity = LogSeverity.Info, bool hidePresenceUpdates = false)
         {
-            Log += (msg) =>
+            OnLog += (msg) =>
             {
                 if (msg.Severity < minSeverity || (hidePresenceUpdates && msg.Source == "PresenceUpdateHook"))
                     return Task.CompletedTask;
@@ -266,7 +266,7 @@ namespace Fractum.WebSocket
         ///     Performs all pre-flight checks for the client, retrieves all necessary information to make a gateway connection and prepares the client to start a session.
         /// </summary>
         /// <returns></returns>
-        public async Task PrepareForSessionAsync()
+        public async Task InitialiseAsync()
         {
             GetOrConfigurePipeline();
 
@@ -280,7 +280,7 @@ namespace Fractum.WebSocket
 
             Socket.ConnectionClosed += ReconnectAsync;
 
-            Socket.Log += Log;
+            Socket.OnLog += OnLog;
 
             Socket.PayloadReceived += async payload =>
             {
@@ -475,77 +475,77 @@ namespace Fractum.WebSocket
             if (RestClient.Config.DisableLogging)
                 return;
 
-            _ = Log?.Invoke(message);
+            _ = OnLog?.Invoke(message);
         }
 
         internal void InvokeMessagePinned(ITextChannel channel)
-            => MessagePinned?.Invoke(channel);
+            => OnMessagePinned?.Invoke(channel);
 
         internal void InvokeGuildCreated(CachedGuild guild)
-            => GuildCreated?.Invoke(guild);
+            => OnGuildCreated?.Invoke(guild);
 
         internal void InvokeGuildUnavailable(CachedGuild guild)
-            => GuildUnavailable?.Invoke(guild);
+            => OnGuildUnavailable?.Invoke(guild);
 
         internal void InvokeGuildUpdated(CachedGuild guild)
-            => GuildUpdated?.Invoke(guild);
+            => OnGuildUpdated?.Invoke(guild);
 
         internal void InvokeMessageCreated(CachedMessage message)
-            => MessageCreated?.Invoke(message);
+            => OnMessageCreated?.Invoke(message);
 
         internal void InvokeMessageUpdated(CachedMessage oldMessage, CachedMessage newMessage)
-            => MessageUpdated?.Invoke(oldMessage, newMessage);
+            => OnMessageUpdated?.Invoke(oldMessage, newMessage);
 
         internal void InvokeMessageDeleted(Cacheable<CachedMessage> cachedMessage)
-            => MessageDeleted?.Invoke(cachedMessage);
+            => OnMessageDeleted?.Invoke(cachedMessage);
 
         internal void InvokeChannelCreated(CachedChannel channel)
-            => ChannelCreated?.Invoke(channel);
+            => OnChannelCreated?.Invoke(channel);
 
         internal void InvokeChannelUpdated(Cacheable<CachedGuildChannel> oldChannel, CachedGuildChannel channel)
-            => ChannelUpdated?.Invoke(oldChannel, channel);
+            => OnChannelUpdated?.Invoke(oldChannel, channel);
 
         internal void InvokeChannelDeleted(Cacheable<CachedGuildChannel> channel)
-            => ChannelDeleted?.Invoke(channel);
+            => OnChannelDeleted?.Invoke(channel);
 
         internal void InvokeMemberBanned(CachedMember member)
-            => MemberBanned?.Invoke(member);
+            => OnMemberBanned?.Invoke(member);
 
         internal void InvokeMemberUnbanned(User user)
-            => MemberUnbanned?.Invoke(user);
+            => OnMemberUnbanned?.Invoke(user);
 
         internal void InvokeEmojisUpdated(Cacheable<CachedGuild> guild, IEnumerable<GuildEmoji> emojis)
-            => EmojisUpdated?.Invoke(guild, emojis);
+            => OnEmojisUpdated?.Invoke(guild, emojis);
 
         internal void InvokeIntegrationsUpdated(CachedGuild guild)
-            => IntegrationsUpdated?.Invoke(guild);
+            => OnIntegrationsUpdated?.Invoke(guild);
 
         internal void InvokeMemberJoined(CachedMember member)
-            => MemberJoined?.Invoke(member);
+            => OnMemberJoined?.Invoke(member);
 
         internal void InvokeMemberLeft(Cacheable<CachedMember> user)
-            => MemberLeft?.Invoke(user);
+            => OnMemberLeft?.Invoke(user);
 
         internal void InvokeRoleCreated(CachedGuild guild, Role role)
-            => RoleCreated?.Invoke(guild, role);
+            => OnRoleCreated?.Invoke(guild, role);
 
         internal void InvokeRoleUpdated(CachedGuild guild, Role role)
-            => RoleUpdated?.Invoke(guild, role);
+            => OnRoleUpdated?.Invoke(guild, role);
 
         internal void InvokeRoleDeleted(CachedGuild guild, Role role)
-            => RoleDeleted?.Invoke(guild, role);
+            => OnRoleDeleted?.Invoke(guild, role);
 
         internal void InvokeReactionAdded(CachedReaction reaction)
-            => ReactionAdded?.Invoke(reaction);
+            => OnReactionAdded?.Invoke(reaction);
 
         internal void InvokeReactionRemoved(CachedReaction reaction)
-            => ReactionRemoved?.Invoke(reaction);
+            => OnReactionRemoved?.Invoke(reaction);
 
         internal void InvokeReactionsCleared(ulong messageId, ulong channelId, ulong? guildId)
-            => ReactionsCleared?.Invoke(messageId, channelId, guildId);
+            => OnReactionsCleared?.Invoke(messageId, channelId, guildId);
 
         internal void InvokeUserUpdated(Cacheable<User> oldUser, User user)
-            => UserUpdated?.Invoke(oldUser, user);
+            => OnUserUpdated?.Invoke(oldUser, user);
 
         internal void InvokeReady()
         {
@@ -553,133 +553,133 @@ namespace Fractum.WebSocket
 
             ClientStatus = ClientStatus.Connected;
 
-            Ready?.Invoke();
+            OnReady?.Invoke();
         }
 
         /// <summary>
         ///     Raised when a message is pinned in a text channel.
         /// </summary>
-        public event Func<ITextChannel, Task> MessagePinned;
+        public event Func<ITextChannel, Task> OnMessagePinned;
 
         /// <summary>
         ///     Raised when a guild becomes available to the client.
         /// </summary>
-        public event Func<CachedGuild, Task> GuildCreated;
+        public event Func<CachedGuild, Task> OnGuildCreated;
 
         /// <summary>
         ///     Raised when a guild becomes unavailable to the client.
         /// </summary>
-        public event Func<CachedGuild, Task> GuildUnavailable;
+        public event Func<CachedGuild, Task> OnGuildUnavailable;
 
         /// <summary>
         ///     Raised when a guild is updated.
         /// </summary>
-        public event Func<CachedGuild, Task> GuildUpdated;
+        public event Func<CachedGuild, Task> OnGuildUpdated;
 
         /// <summary>
         ///     Raised when a message is created.
         /// </summary>
-        public event Func<CachedMessage, Task> MessageCreated;
+        public event Func<CachedMessage, Task> OnMessageCreated;
 
         /// <summary>
         ///     Raised when a message is edited.
         /// </summary>
-        public event Func<CachedMessage, CachedMessage, Task> MessageUpdated;
+        public event Func<CachedMessage, CachedMessage, Task> OnMessageUpdated;
 
         /// <summary>
         ///     Raised when a message is deleted.
         /// </summary>
-        public event Func<Cacheable<CachedMessage>, Task> MessageDeleted;
+        public event Func<Cacheable<CachedMessage>, Task> OnMessageDeleted;
 
         /// <summary>
         ///     Raised when a channel is created.
         /// </summary>
-        public event Func<CachedChannel, Task> ChannelCreated;
+        public event Func<CachedChannel, Task> OnChannelCreated;
 
         /// <summary>
         ///     Raised when a channel is updated.
         /// </summary>
-        public event Func<Cacheable<CachedGuildChannel>, CachedGuildChannel, Task> ChannelUpdated;
+        public event Func<Cacheable<CachedGuildChannel>, CachedGuildChannel, Task> OnChannelUpdated;
 
         /// <summary>
         ///     Raised when a channel is deleted.
         /// </summary>
-        public event Func<Cacheable<CachedGuildChannel>, Task> ChannelDeleted;
+        public event Func<Cacheable<CachedGuildChannel>, Task> OnChannelDeleted;
 
         /// <summary>
         ///     Raised when a member is banned.
         /// </summary>
-        public event Func<CachedMember, Task> MemberBanned;
+        public event Func<CachedMember, Task> OnMemberBanned;
 
         /// <summary>
         ///     Raised when a member is unbanned.
         /// </summary>
-        public event Func<User, Task> MemberUnbanned;
+        public event Func<User, Task> OnMemberUnbanned;
 
         /// <summary>
         ///     Raised when emojis in a guild are updated.
         /// </summary>
-        public event Func<Cacheable<CachedGuild>, IEnumerable<GuildEmoji>, Task> EmojisUpdated;
+        public event Func<Cacheable<CachedGuild>, IEnumerable<GuildEmoji>, Task> OnEmojisUpdated;
 
         /// <summary>
         ///     Raised when a guild's integrations are updated.
         /// </summary>
-        public event Func<CachedGuild, Task> IntegrationsUpdated;
+        public event Func<CachedGuild, Task> OnIntegrationsUpdated;
 
         /// <summary>
         ///     Raised when a member joins a guild.
         /// </summary>
-        public event Func<CachedMember, Task> MemberJoined;
+        public event Func<CachedMember, Task> OnMemberJoined;
 
         /// <summary>
         ///     Raised when a member leaves a guild.
         /// </summary>
-        public event Func<Cacheable<CachedMember>, Task> MemberLeft;
+        public event Func<Cacheable<CachedMember>, Task> OnMemberLeft;
 
         /// <summary>
         ///     Raised when a role is created.
         /// </summary>
-        public event Func<CachedGuild, Role, Task> RoleCreated;
+        public event Func<CachedGuild, Role, Task> OnRoleCreated;
 
         /// <summary>
         ///     Raised when a role is updated.
         /// </summary>
-        public event Func<CachedGuild, Role, Task> RoleUpdated;
+        public event Func<CachedGuild, Role, Task> OnRoleUpdated;
 
         /// <summary>
         ///     Raised when a role is deleted.
         /// </summary>
-        public event Func<CachedGuild, Role, Task> RoleDeleted;
+        public event Func<CachedGuild, Role, Task> OnRoleDeleted;
 
         /// <summary>
         ///     Raised when a reaction is added to a message.
         /// </summary>
-        public event Func<CachedReaction, Task> ReactionAdded;
+        public event Func<CachedReaction, Task> OnReactionAdded;
 
         /// <summary>
         ///     Raised when a reaction is removed from a message.
         /// </summary>
-        public event Func<CachedReaction, Task> ReactionRemoved;
+        public event Func<CachedReaction, Task> OnReactionRemoved;
 
         /// <summary>
         ///     Raised when the reactions for a message are cleared.
         /// </summary>
-        public event Func<ulong, ulong, ulong?, Task> ReactionsCleared;
+        public event Func<ulong, ulong, ulong?, Task> OnReactionsCleared;
 
         /// <summary>
         ///     Raised when a user is updated.
         /// </summary>
-        public event Func<Cacheable<User>, User, Task> UserUpdated;
+        public event Func<Cacheable<User>, User, Task> OnUserUpdated;
 
         /// <summary>
         ///     Raised when the client has successfully identified and is ready to receive and send events and commands.
         /// </summary>
-        public event Func<Task> Ready;
+        public event Func<Task> OnReady;
 
         /// <summary>
         ///     Raised by the client when log-worthy events are encountered.
         /// </summary>
-        public event Func<LogMessage, Task> Log;
+        public event Func<LogMessage, Task> OnLog;
 
         #endregion
     }

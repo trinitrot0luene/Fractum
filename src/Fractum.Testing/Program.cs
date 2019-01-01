@@ -1,5 +1,5 @@
 ﻿using Fractum;
-using Fractum.WebSocket;
+using Fractum.Rest;
 using Fractum.WebSocket;
 using Fractum.WebSocket.EventModels;
 using Qmmands;
@@ -13,13 +13,19 @@ namespace Fractum.Testing
     {
         private FractumSocketClient _client;
 
-        private CommandService _commands;
+        private CommandService _commands = new CommandService(new CommandServiceConfiguration()
+        {
+            CaseSensitive = true,
+            DefaultRunMode = RunMode.Sequential
+        });
 
         static Task Main(string[] args)
             => new Program().RunAsync();
 
         public async Task RunAsync()
         {
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
             _client = new FractumSocketClient(new FractumConfig()
             {
                 Token = Environment.GetEnvironmentVariable("fractum_token"),
@@ -28,27 +34,13 @@ namespace Fractum.Testing
                 AlwaysDownloadMembers = false
             });
 
-            _commands = new CommandService(new CommandServiceConfiguration()
-            {
-                CaseSensitive = true,
-                DefaultRunMode = RunMode.Sequential
-            });
+            _client.OnMessageCreated += HandleMessageCreated;
 
-            _client.MessageCreated += HandleMessageCreated;
+            _client.OnReady += () => _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
 
-            _client.Ready += () => _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
+            _client.UseDefaultLogging(LogSeverity.Verbose);
 
-            _client.RegisterDefaultLogHandler(LogSeverity.Verbose);
-
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
-
-            await _client.PrepareForSessionAsync();
-
-            _client.GetEventStage().RegisterCallback(Dispatch.GUILD_MEMBERS_CHUNK, (model, cache, session) =>
-            {
-                Console.WriteLine(session.SessionId);
-                return Task.CompletedTask;
-            });
+            await _client.InitialiseAsync();
 
             await _client.StartAsync();
 

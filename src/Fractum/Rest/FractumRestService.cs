@@ -114,11 +114,11 @@ namespace Fractum.Rest
         }
 
         internal void InvokeLog(LogMessage msg)
-            => Log?.Invoke(msg);
+            => OnLog?.Invoke(msg);
 
         /// <summary>
         ///     Raised when the client receives a log event.
         /// </summary>
-        public event Func<LogMessage, Task> Log;
+        public event Func<LogMessage, Task> OnLog;
     }
 }
