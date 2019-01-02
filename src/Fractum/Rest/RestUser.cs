@@ -15,14 +15,10 @@ namespace Fractum.Rest
         [JsonProperty("avatar")]
         internal string AvatarRaw { get; set; }
 
-        [JsonProperty("member", NullValueHandling = NullValueHandling.Ignore)]
-        internal PartialMember Member { get; private set; }
-
         public object Clone() => new RestUser
         {
             Id = Id,
             AvatarRaw = AvatarRaw,
-            Member = Member,
             Username = Username,
             DiscrimValue = DiscrimValue,
             IsBot = IsBot

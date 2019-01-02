@@ -42,6 +42,8 @@ namespace Fractum.WebSocket
 
         public FractumRestClient RestClient { get; private set; }
 
+        public RestBotUser BotUser { get; private set; }
+
         public IKeyedEnumerable<ulong, CachedGuild> Guilds => new KeyedGuildWrapper(Cache);
 
         public IKeyedEnumerable<ulong, CachedGuildChannel> Channels => new KeyedChannelWrapper(Cache);
@@ -275,6 +277,8 @@ namespace Fractum.WebSocket
             var gatewayInfo = await RestClient.GetSocketUrlAsync().ConfigureAwait(false);
             if (gatewayInfo.SessionStartLimit["remaining"] <= 0)
                 throw new InvalidOperationException("No new sessions can be started under this token.");
+
+            BotUser = await RestClient.GetCurrentUserAsync();
 
             Socket = new SocketWrapper(new Uri(gatewayInfo.Url + Consts.GATEWAY_PARAMS));
 

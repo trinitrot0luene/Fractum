@@ -27,10 +27,13 @@
 
         public static string GUILDS = "/guilds/{0}";
 
+        public static string VOICE = "/voice";
+
         public static string ME = "@me";
         public static string BLANK = "/{0}";
         public static string GATEWAY = "/gateway";
         public static string BOT = "/bot";
+        public static string REGIONS = "/regions";
         public static string GATEWAY_PARAMS = "?v=6&encoding=json&compress=zlib-stream";
 
         public static string CHANNEL_MENTION = "<#{0}>";

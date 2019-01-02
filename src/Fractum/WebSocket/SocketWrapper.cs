@@ -209,7 +209,7 @@ namespace Fractum.WebSocket
                                 if (!warningTask.IsCompleted)
                                     cts.Cancel();
                             });
-                            await Task.WhenAny(warningTask, handlerTask);
+                            await Task.WhenAll(warningTask, handlerTask);
                         }
                     }
                     catch (Exception ex)

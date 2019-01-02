@@ -274,6 +274,23 @@ namespace Fractum.Rest
 
         #region /guilds
 
+        public async Task CreateGuildAsync(string name, string voiceRegionId, string iconBase64, 
+            VerificationLevel verificationLevel = VerificationLevel.None, MessageNotificationLevel messageNotificationLevel = MessageNotificationLevel.OnlyMentions,
+            ExplicitContentFilterLevel explicitContentFilterLevel = ExplicitContentFilterLevel.Disabled, Role[] roles = null, PartialChannel[] channels = null)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.GUILDS), string.Empty);
+
+            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get,
+                content: new GuildCreationArguments(name, voiceRegionId, iconBase64, verificationLevel,
+                    messageNotificationLevel, explicitContentFilterLevel, roles, channels).Serialize()))
+                .ConfigureAwait(false);
+
+            Console.WriteLine(await resp.Content.ReadAsStringAsync());
+
+            return;
+        }
+
         #endregion
 
         #region /invites
@@ -281,6 +298,16 @@ namespace Fractum.Rest
         #endregion
 
         #region /users
+        
+        public async Task<RestBotUser> GetCurrentUserAsync()
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.USERS), Consts.ME);
+
+            var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, 0));
+
+            return await response.Content.ReadAsObjectAsync<RestBotUser>();
+        }
 
         public Task LeaveGuildAsync(ulong guildId)
         {
@@ -310,6 +337,21 @@ namespace Fractum.Rest
             var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
 
             return await response.Content.ReadAsObjectAsync<RestUser>(this);
+        }
+
+        #endregion
+
+        #region /voice
+
+        public async Task<VoiceRegion[]> GetVoiceRegionsAsync()
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.VOICE))
+                .WithPart(RouteSection.Create(Consts.REGIONS));
+
+            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
+
+            return await resp.Content.ReadAsObjectAsync<VoiceRegion[]>();
         }
 
         #endregion

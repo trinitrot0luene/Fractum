@@ -14,6 +14,8 @@ namespace Fractum.WebSocket
 
         private SyncedGuildCache GuildCache => Cache.TryGetGuild(Id, out var guild) ? guild : default;
 
+        public CachedMember BotMember => GuildCache.TryGet(Cache.Client.User?.Id ?? 0, out CachedMember member) ? member : null;
+
         public ulong OwnerId => GuildCache.OwnerId;
 
         public bool IsUnavailable => GuildCache.IsUnavailable;
