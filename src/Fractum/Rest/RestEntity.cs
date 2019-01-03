@@ -12,7 +12,6 @@ namespace Fractum.Rest
 
         internal FractumRestClient Client { get; set; }
 
-
         [JsonProperty("id")]
         public ulong Id { get; protected set; }
 
