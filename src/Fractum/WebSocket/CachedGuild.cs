@@ -5,7 +5,7 @@ using Fractum.WebSocket;
 
 namespace Fractum.WebSocket
 {
-    public sealed class CachedGuild : PopulatedEntity
+    public sealed class CachedGuild : PopulatedEntity, IGuild
     {
         internal CachedGuild(FractumCache cache, ulong id) : base(cache)
         {
@@ -14,7 +14,7 @@ namespace Fractum.WebSocket
 
         private SyncedGuildCache GuildCache => Cache.TryGetGuild(Id, out var guild) ? guild : default;
 
-        public CachedMember BotMember => GuildCache.TryGet(Cache.Client.User?.Id ?? 0, out CachedMember member) ? member : null;
+        public CachedMember BotMember => GuildCache.TryGet(Cache.Client.BotUser?.Id ?? 0, out CachedMember member) ? member : null;
 
         public ulong OwnerId => GuildCache.OwnerId;
 
@@ -48,7 +48,11 @@ namespace Fractum.WebSocket
 
         public IEnumerable<GuildEmoji> Emojis => GuildCache.Emojis;
 
+        GuildEmoji[] IGuild.Emojis => Emojis.ToArray();
+
         public IEnumerable<Role> Roles => GuildCache.Roles;
+
+        Role[] IGuild.Roles => Roles.ToArray();
 
         public IEnumerable<CachedMember> Members => GuildCache.Members;
 
@@ -68,12 +72,15 @@ namespace Fractum.WebSocket
             .Where(c => c.Type == ChannelType.GuildCategory)
             .Cast<CachedCategory>();
 
+        public Task DeleteAsync()
+            => Client.RestClient.DeleteGuildAsync(Id);
+
         public Task LeaveAsync()
             => Client.RestClient.LeaveGuildAsync(Id);
 
         public string GetIconUrl() => IconHash == null
             ? default
-            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_ICON, Id.ToString(), IconHash, "png"));
+            : string.Concat(Consts.CDN, string.Format(Consts.CDN_GUILD_ICON, Id.ToString(), IconHash, ".png"));
 
         public string GetSplashUrl() => SplashHash == null
             ? default

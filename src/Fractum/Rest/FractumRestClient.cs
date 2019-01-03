@@ -274,21 +274,45 @@ namespace Fractum.Rest
 
         #region /guilds
 
-        public async Task CreateGuildAsync(string name, string voiceRegionId, string iconBase64, 
-            VerificationLevel verificationLevel = VerificationLevel.None, MessageNotificationLevel messageNotificationLevel = MessageNotificationLevel.OnlyMentions,
-            ExplicitContentFilterLevel explicitContentFilterLevel = ExplicitContentFilterLevel.Disabled, Role[] roles = null, PartialChannel[] channels = null)
+        public async Task<RestGuild> CreateGuildAsync(GuildCreationArguments creationArguments)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.GUILDS), string.Empty);
 
-            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get,
-                content: new GuildCreationArguments(name, voiceRegionId, iconBase64, verificationLevel,
-                    messageNotificationLevel, explicitContentFilterLevel, roles, channels).Serialize()))
+            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Post,
+                content: creationArguments.Serialize()))
                 .ConfigureAwait(false);
 
-            Console.WriteLine(await resp.Content.ReadAsStringAsync());
+            return await resp.Content.ReadAsObjectAsync<RestGuild>();
+        }
 
-            return;
+        public async Task<RestGuild> GetGuildAsync(ulong guildId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.GUILDS), guildId);
+
+            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get)).ConfigureAwait(false);
+
+            return await resp.Content.ReadAsObjectAsync<RestGuild>();
+        }
+
+        public Task DeleteGuildAsync(ulong guildId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.GUILDS), guildId);
+
+            return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete));
+        }
+
+        public async Task<RestChannel[]> GetChannelsAsync(ulong guildId)
+        {
+            var rb = new RouteBuilder()
+                .WithPart(RouteSection.Create(Consts.GUILDS, true), guildId)
+                .WithPart(RouteSection.Create(Consts.CHANNELS));
+
+            var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, guildId));
+
+            return await resp.Content.ReadAsObjectAsync<RestChannel[]>();
         }
 
         #endregion

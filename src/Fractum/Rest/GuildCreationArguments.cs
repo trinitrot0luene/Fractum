@@ -2,7 +2,7 @@
 
 namespace Fractum.Rest
 {
-    internal class GuildCreationArguments
+    public sealed class GuildCreationArguments
     {
         [JsonProperty("name")]
         public string Name { get; }
@@ -28,8 +28,9 @@ namespace Fractum.Rest
         [JsonProperty("channels")]
         public PartialChannel[] Channels { get; }
 
-        public GuildCreationArguments(string name, string voiceRegionId, string iconBase64, VerificationLevel verificationLevel, 
-            MessageNotificationLevel messageNotificationLevel, ExplicitContentFilterLevel explicitContentFilterLevel, Role[] roles, PartialChannel[] channels)
+        public GuildCreationArguments(string name, string voiceRegionId, string iconBase64, VerificationLevel verificationLevel = VerificationLevel.None, 
+            MessageNotificationLevel messageNotificationLevel = MessageNotificationLevel.OnlyMentions, ExplicitContentFilterLevel explicitContentFilterLevel = ExplicitContentFilterLevel.Disabled, 
+            Role[] roles = null, PartialChannel[] channels = null)
         {
             Name = name;
             VoiceRegionId = voiceRegionId;
