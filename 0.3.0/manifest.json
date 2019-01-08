@@ -1,0 +1,1725 @@
+{
+  "homepages": [],
+  "source_base_path": "C:/projects/fractum/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Activity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Activity.html",
+          "hash": "IYpv58+6Ezbf/KmhYeeYaQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.ActivityType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.ActivityType.html",
+          "hash": "5Rnh8WbkvS8WYpftdoDAJg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Attachment.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Attachment.html",
+          "hash": "tqMR4loZLCl/VTtEoC31nA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.ChannelPermissions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.ChannelPermissions.html",
+          "hash": "sQm3qx7iKKGSWUwRCvwKlA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.ChannelType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.ChannelType.html",
+          "hash": "CVMNFSbRK/K/gRoReVaM9g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.DiscordEntity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.DiscordEntity.html",
+          "hash": "CMgTJJSwz+2pGwBiVrxgFg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.DisposableScope-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.DisposableScope-1.html",
+          "hash": "/j3erKb03cLBD2hBALCGVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.DisposableScope.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.DisposableScope.html",
+          "hash": "nxNrnD8hltvPAW2rsj3jmQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Embed.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Embed.html",
+          "hash": "3mM61Xbf1cSlho7khhHz0Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.EmbedAuthor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.EmbedAuthor.html",
+          "hash": "C0SQ8IQk7AEVIjLQ0sSHww=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.EmbedBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.EmbedBuilder.html",
+          "hash": "XjGfaYNlirJpPOR7/0/kmw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.EmbedContent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.EmbedContent.html",
+          "hash": "0nOP6CrGvvfdkLmfpsHYWA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.EmbedField.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.EmbedField.html",
+          "hash": "rkSS/k62ypqwuwOccwNmZg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.EmbedFooter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.EmbedFooter.html",
+          "hash": "PwvdBrckLYegIsl3l1PJ6w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Emoji.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Emoji.html",
+          "hash": "/mFpmV9MTX9TqhJ7/k+XoQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.ExplicitContentFilterLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.ExplicitContentFilterLevel.html",
+          "hash": "moDReuFtC0SEjsFk8+vK7A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.GuildChannelProperties.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.GuildChannelProperties.html",
+          "hash": "T4r+2HXL7yYaxi68BmykOw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.GuildEmoji.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.GuildEmoji.html",
+          "hash": "4uDgGNRAFOryanqQqZ2cQw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.GuildPermissions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.GuildPermissions.html",
+          "hash": "2ZXXnz+Y0pyCbUyENwTcqg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IDiscordEntity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IDiscordEntity.html",
+          "hash": "w6V3XYYRfhYgBStVXNdzRw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IGuild.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IGuild.html",
+          "hash": "kJJYW6tWgENp0j4y2GFwzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IGuildChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IGuildChannel.html",
+          "hash": "5XtydplTQRMcqaXl1gG5kQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IMessage.html",
+          "hash": "iF8I+9OFCzYTkRKgf+xL+Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IMessageChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IMessageChannel.html",
+          "hash": "ecBhJb1i5+b/tmc7PXo+WQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.ITextChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.ITextChannel.html",
+          "hash": "lE7XeShN4TuGlpgMV7VOtw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.IUser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.IUser.html",
+          "hash": "y/1d5uaU/p0mRUWczccdQA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.LogMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.LogMessage.html",
+          "hash": "bcHMamLOWZjRu4pGQRUF9A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.LogSeverity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.LogSeverity.html",
+          "hash": "rWwekwJphy200kcA/QRg8A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.MessageEditProperties.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.MessageEditProperties.html",
+          "hash": "19rwXfWI7Gr9OZsi+RWjKA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.MessageNotificationLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.MessageNotificationLevel.html",
+          "hash": "9RMSv0wDGmBbYPCrxJQdBg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.MessageType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.MessageType.html",
+          "hash": "Kkz/R1ued44l3FJH4Yjx/w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.MfaLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.MfaLevel.html",
+          "hash": "SmbVzfG/67yRIt3Yq1auqQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.OverwriteType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.OverwriteType.html",
+          "hash": "3+b/hvLlME6zaSloixrHlQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Permissions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Permissions.html",
+          "hash": "pRkVrr28Z/Cp6GWeB8Gj4A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.PermissionsOverwrite.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.PermissionsOverwrite.html",
+          "hash": "orZl+G2pMYsk6+84iXOk/w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.PopulatedEntity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.PopulatedEntity.html",
+          "hash": "yIJh4Zstu4TAuFd8ZymJHg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.BadRequestException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.BadRequestException.html",
+          "hash": "Pfsf4YT5h5QXr2Vt9cnGJQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.GatewayDetails.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.GatewayDetails.html",
+          "hash": "xYh+8UUqL/yJPB9S+QK+ZQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.GuildCreationArguments.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.GuildCreationArguments.html",
+          "hash": "6rzNhguGS/NC/LbrlcxdAg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.NotAllowedException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.NotAllowedException.html",
+          "hash": "ZH2BkiJiK/BDVpDTQ5M6/A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.NotFoundException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.NotFoundException.html",
+          "hash": "hyuhkYBHhgsWjbwihpCtPQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.PartialChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.PartialChannel.html",
+          "hash": "NmO5yEdR73IrhZhO7GTAVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestBotUser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestBotUser.html",
+          "hash": "ll1CyUsvkduIjfhfdZExCQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestCategory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestCategory.html",
+          "hash": "hw47EPEXVRs6ZoRYC+0euA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestChannel.html",
+          "hash": "34Hbb1jbrx/CUz+Nmjt+kQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestClient.html",
+          "hash": "1fAmTj4xal4t4fzDkZb7KQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestDMChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestDMChannel.html",
+          "hash": "wDaL2jE/kI9ZQYDmY2MvEA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestEntity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestEntity.html",
+          "hash": "/sqvNZHL1E2tlE76VvIxIQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestGuild.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestGuild.html",
+          "hash": "eU4CS1asug5m4qDAekd0Dg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestGuildChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestGuildChannel.html",
+          "hash": "rLkDBpHubzv0TbOARowUxg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestMessage.html",
+          "hash": "ll3zn02Z1In0LLdRtSywDQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestTextChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestTextChannel.html",
+          "hash": "NMj06ZgIH6KRDIzY2DKT8Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestUser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestUser.html",
+          "hash": "awgb+7IqE9UOFxsG5fn2zg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.RestVoiceChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.RestVoiceChannel.html",
+          "hash": "9T+O42+IVfP1tN45IJHSQw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.VoiceRegion.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.VoiceRegion.html",
+          "hash": "HVgVYlBvlI51r2a7LuNaaA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Rest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Rest.html",
+          "hash": "HVo4Drv7vyrcwRDUSCD/Bg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Role.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Role.html",
+          "hash": "W1UlKsKTAYOTAWmonSd79A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.Status.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.Status.html",
+          "hash": "1BPxi0M2EA6Id8IVNUapwQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.TextChannelProperties.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.TextChannelProperties.html",
+          "hash": "naaVhi7ptsGp0hj6Ecfjiw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.User.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.User.html",
+          "hash": "TZAhBgMJ+QxXjaxm34e8OQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.VerificationLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.VerificationLevel.html",
+          "hash": "PxcFIxlr6iYIKm9WkZ1p+Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.VoiceChannelProperties.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.VoiceChannelProperties.html",
+          "hash": "W3skV6EhzC65UL1f/CFudg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.VotedAsyncAction-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.VotedAsyncAction-1.html",
+          "hash": "UzgZsQKuDoHY5e924XmF3w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.Cacheable-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.Cacheable-1.html",
+          "hash": "yjY9K3C+T8fcFLkczFvdDw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedCategory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedCategory.html",
+          "hash": "AsDZ5ExpIxDg83PsSH/F/g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedChannel.html",
+          "hash": "F5nit5C671EaO0jsd65jgA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedDMChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedDMChannel.html",
+          "hash": "C0wO5g44e8ZbH6pcQuc6IA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedGuild.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedGuild.html",
+          "hash": "MhVCjLwWkWLJszWPqW7U3w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedGuildChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedGuildChannel.html",
+          "hash": "GARmfpyBGW4lcSwR1Xe+tg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedMember.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedMember.html",
+          "hash": "zs7feQ6cBzD5hpnU7Rg8FQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedMessage.html",
+          "hash": "Jz6XKSk5f6sp3O5S1ksALg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedPresence.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedPresence.html",
+          "hash": "LlfrFzKmwCjuPxYp7MPt5Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedReaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedReaction.html",
+          "hash": "A1WNRsHNxATQHj54h4R+lg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedTextChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedTextChannel.html",
+          "hash": "XUWsEXzhvsZtb9LHoYp7/Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.CachedVoiceChannel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.CachedVoiceChannel.html",
+          "hash": "EPyazkRuAaOV1YsohSsDHA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.ClientStatus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.ClientStatus.html",
+          "hash": "azkEB5jAYn0WdNEP67zKBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.Dispatch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.Dispatch.html",
+          "hash": "w51AOJruAdYS+BTMaUq9Ng=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.BanAddEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.BanAddEventModel.html",
+          "hash": "/4OsYtx9R9QBagpeBJYQHQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.BanRemoveEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.BanRemoveEventModel.html",
+          "hash": "vTUBgAlLrznvphubh5rizA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.ChannelCreateUpdateOrDeleteEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.ChannelCreateUpdateOrDeleteEventModel.html",
+          "hash": "rh2dYI/4FOgTly1nJ4e4zQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.ChannelPinsUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.ChannelPinsUpdateEventModel.html",
+          "hash": "mvsRMdqE2UvPg/W1a09HYA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.EmojisUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.EmojisUpdateEventModel.html",
+          "hash": "D1fLiblXsJU8Jii0bG5kRA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.EmptyEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.EmptyEventModel.html",
+          "hash": "eLsyUGgdpy2igvLB8Ni6Pw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.EventModelBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.EventModelBase.html",
+          "hash": "MAMwfZyyg1jdJty9oN0mMQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildCreateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildCreateEventModel.html",
+          "hash": "jybO/ObmyleSeNVG6kU2pg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildDeleteEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildDeleteEventModel.html",
+          "hash": "SN3hXpHga5MRfhGXh2UyRQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildEmojiModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildEmojiModel.html",
+          "hash": "ZTMqCJM89A1VMJsJDrbtLA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberAddEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberAddEventModel.html",
+          "hash": "w+55hlkTrfI7aViSOLNPhA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberRemoveEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberRemoveEventModel.html",
+          "hash": "+2Y4DJylx0KUCztxrbsjGQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildMemberUpdateEventModel.html",
+          "hash": "G0Bb2VDZGXIELmL+ljsYXA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildMembersChunkEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildMembersChunkEventModel.html",
+          "hash": "RUQBKKdiX+r6KkSoplIjFQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildRoleEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildRoleEventModel.html",
+          "hash": "gfvpHwyy1G/TohjrsxyXuA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.GuildUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.GuildUpdateEventModel.html",
+          "hash": "2aLXne9gq4E4MPf63S3O8g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.HelloEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.HelloEventModel.html",
+          "hash": "y6xIe/zJ8HxG61lFXy41uQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.IntegrationsUpdatedEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.IntegrationsUpdatedEventModel.html",
+          "hash": "HmG7zC89+RhpLo6UCYw5cw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.InvalidSessionEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.InvalidSessionEventModel.html",
+          "hash": "qMK2L9rkJL5qd/u+0cUKgg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.MessageCreateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.MessageCreateEventModel.html",
+          "hash": "mhuxfIvOlU+V36rY5RfR6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.MessageDeleteEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.MessageDeleteEventModel.html",
+          "hash": "KQCuBKhvp9iDEnTHG5Zk4A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.MessageUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.MessageUpdateEventModel.html",
+          "hash": "Ygzs0tUeDQ5q2ipyktQeoA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.PresenceUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.PresenceUpdateEventModel.html",
+          "hash": "ahRv3sq0fME05v2TC6rH+Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.ReactionAddEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.ReactionAddEventModel.html",
+          "hash": "8nmHGtRaqzwfTTsdd0jf2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.ReactionRemoveEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.ReactionRemoveEventModel.html",
+          "hash": "bC5eMugVroBnwxw6raCKpw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.ReactionsClearEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.ReactionsClearEventModel.html",
+          "hash": "x3puRatYdJDUlel7Hw0BPw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.RoleCreateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.RoleCreateEventModel.html",
+          "hash": "zfQwqTANTW/PUTkBPBybbg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.RoleDeleteEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.RoleDeleteEventModel.html",
+          "hash": "uRab0ByeLFyL4z5M8glCCg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.RoleUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.RoleUpdateEventModel.html",
+          "hash": "eBpeTmQNdfqLDfRDrYifhg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.UserUpdateEventModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.UserUpdateEventModel.html",
+          "hash": "OTU6V8gIk9etum/TLWrYiw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventModels.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventModels.html",
+          "hash": "HxXt0v8C53F8mkeNubSiLg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.EventStage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.EventStage.html",
+          "hash": "QIyiUoubR2QpbRKGIpBrFA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.GatewayCache.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.GatewayCache.html",
+          "hash": "TI/Te/qAFkVOQXf9cHKW1Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.GatewayClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.GatewayClient.html",
+          "hash": "656TU7McInD40NCAmG3fiw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.GatewayConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.GatewayConfig.html",
+          "hash": "MFR5M7hwBYqY+VWPYGvGGw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.GatewayException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.GatewayException.html",
+          "hash": "xrHzQvfOeS44xxrNwWNDBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.GatewaySession.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.GatewaySession.html",
+          "hash": "biLtGCjIN9vrrK7f2JJGiw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.IEventHook-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.IEventHook-1.html",
+          "hash": "bknloqDzoMjhWBUgzm3JWw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.IKeyedEnumerable-2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.IKeyedEnumerable-2.html",
+          "hash": "pcYGtqgdW+th0gLro2S3Uw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.IPayload-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.IPayload-1.html",
+          "hash": "VN6cCXw+KcY8684SrgZn3A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.IPipeline-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.IPipeline-1.html",
+          "hash": "XmqoPJGEHwl6x3A771qQwg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.IPipelineStage-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.IPipelineStage-1.html",
+          "hash": "zNMGRXLSSQYBQ9gYaY2Obw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.KeyedChannelWrapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.KeyedChannelWrapper.html",
+          "hash": "HtRkQWRv1CpkGjnKml9K1w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.KeyedDMChannelWrapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.KeyedDMChannelWrapper.html",
+          "hash": "bCVeWqBc1pOl/zZarlc5Vw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.KeyedGuildWrapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.KeyedGuildWrapper.html",
+          "hash": "RZVNlCKsKHx9V9qTspDRmA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.KeyedUserWrapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.KeyedUserWrapper.html",
+          "hash": "7h7t+dsBmNoVtUNPYcgdHQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.OpCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.OpCode.html",
+          "hash": "pJHufl87A9V6NDYMJTjnQw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.PartialMember.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.PartialMember.html",
+          "hash": "HPMupxn/8IWDGB1t0MvlLg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.Payload-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.Payload-1.html",
+          "hash": "o4eOPoGaTeZ1dD8hyhPf+A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.Payload.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.Payload.html",
+          "hash": "lCsvhFHZBJye2qBgXeAMlA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.PayloadPipeline.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.PayloadPipeline.html",
+          "hash": "5dX/xZ7+IrXSQG1BTHoo3A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.PipelineContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.PipelineContext.html",
+          "hash": "g56j97hSyCavY9QH65Ds7Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.PresenceModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.PresenceModel.html",
+          "hash": "3DgXhgCZ8unlJT0Sy0at6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.SearchType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.SearchType.html",
+          "hash": "oxoCou4QMQrmB7HeFnlxww=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.SyncedGuildCache.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.SyncedGuildCache.html",
+          "hash": "agS5w5twunvENo3yKClbcw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.WebSocket.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.WebSocket.html",
+          "hash": "/BLZ+hTM38iNCNeQSgSmgA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Fractum.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Fractum.html",
+          "hash": "r8hIyoIJmW4l89WwQWCI8A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "dOEfSARApnBY1Sc3+yhIzw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "8X3WOR47PfXsY8HHHBKlIA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "SF/1h9SI4SRZVpDmTBtlnw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "t7iiFrmuYmrKWisdq+lN6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "JbAimc3NN0bWZu50p8xqVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "k+/dkjFuwAVS32HduMpmBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
+        "incrementalPhase": "build"
+      },
+      "processors": {
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
+        "incrementalPhase": "postProcessing"
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
