@@ -8,9 +8,9 @@ namespace Fractum.WebSocket
 {
     public sealed class KeyedDMChannelWrapper : IKeyedEnumerable<ulong, CachedDMChannel>
     {
-        private readonly FractumCache _cache;
+        private readonly GatewayCache _cache;
 
-        internal KeyedDMChannelWrapper(FractumCache cache)
+        internal KeyedDMChannelWrapper(GatewayCache cache)
             => _cache = cache;
 
         public CachedDMChannel this[ulong key] => _cache.TryGetDmChannel(key, out var channel) ? channel : throw new KeyNotFoundException("The channel could not be found in cache.");

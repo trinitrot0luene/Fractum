@@ -5,7 +5,7 @@ using Fractum;
 namespace Fractum.WebSocket
 {
     /// <summary>
-    ///     Wraps an entity that may exist in the <see cref="FractumCache" />, and will otherwise be retrieved asynchronously
+    ///     Wraps an entity that may exist in the <see cref="GatewayCache" />, and will otherwise be retrieved asynchronously
     ///     from the API.
     /// </summary>
     /// <typeparam name="TEntity">The entity wrapped by the cache.</typeparam>

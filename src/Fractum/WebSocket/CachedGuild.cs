@@ -7,7 +7,7 @@ namespace Fractum.WebSocket
 {
     public sealed class CachedGuild : PopulatedEntity, IGuild
     {
-        internal CachedGuild(FractumCache cache, ulong id) : base(cache)
+        internal CachedGuild(GatewayCache cache, ulong id) : base(cache)
         {
             Id = id;
         }

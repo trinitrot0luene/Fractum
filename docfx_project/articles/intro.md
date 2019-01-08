@@ -2,11 +2,11 @@ Fractum provides abstractions for both Discord's REST and Gateway APIs. For furt
 
 # REST
 
-To perform most actions on Discord, clients must send requests through their RESTful HTTP API. This can be done implicitly through helper methods on `Cached` entities when using the `FractumSocketClient`, or explicitly by accessing the `FractumSocketClient#RestClient` or by instantiating your own. Note that if you intend to use the WebSocket and REST API at the same time you should never instantiate new REST clients using the same token, to avoid accidentally hitting the rate limit.
+To perform most actions on Discord, clients must send requests through their RESTful HTTP API. This can be done implicitly through helper methods on `Cached` entities when using the `RestClient`, or explicitly by accessing the `GatewayClient#RestClient` or by instantiating your own. Note that if you intend to use the WebSocket and REST API at the same time you should never instantiate new REST clients using the same token, to avoid accidentally hitting the rate limit.
 
 # Gateway
 
-Discord exposes a WebSocket API to dispatch events and updates. When calling `FractumSocketClient#StartAsync()` the client will begin a new session and start to listen for events, as well as populate a cache from received data. You can access this cached data through parameters passed to event handlers as they are called, or through the relevant `IKeyedEnumerable<TEntity>` properties on the client itself.
+Discord exposes a WebSocket API to dispatch events and updates. When calling `GatewayClient#ConnectAsync()` the client will begin a new session and start to listen for events, as well as populate a cache from received data. You can access this cached data through parameters passed to event handlers as they are called, or through the relevant `IKeyedEnumerable<TEntity>` properties on the client itself.
 
 # Example
 
@@ -18,7 +18,7 @@ namespace MyBot
 {
 	public class Program
 	{
-		private FractumSocketClient _client;
+		private GatewayClient _client;
 		
 		public static CancellationTokenSource _cts = new CancellationTokenSource();
 		
@@ -27,10 +27,7 @@ namespace MyBot
 			
 		public async Task RunAsync()
 		{
-			_client = new FractumSocketClient(new FractumConfig()
-			{
-				Token = Environment.GetEnvironmentVariable("bot_token") // Grab token from an environment variable
-			});
+			_client = new GatewayClient(new GatewayConfig(Environment.GetEnvironmentVariable("bot_token")));
 			
 			_client.UseDefaultLogging(LogSeverity.Verbose); // This will register a default logging implementation
 			
@@ -44,7 +41,7 @@ namespace MyBot
 			
 			await _client.InitialiseAsync(); // Pull information to connect and client information from the API
 			
-			await _client.StartAsync(); // Start listening for events (non-blocking operation)
+			await _client.ConnectAsync(); // Start listening for events (non-blocking operation)
 			
 			await Task.Delay(-1, _cts.Token) // Delay infinitely since otherwise the console application will close
 				.ContinueWith(task => _client.StopAsync());

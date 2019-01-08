@@ -42,7 +42,7 @@ namespace Fractum.WebSocket
                     if (context.Session.Invalidated || context.Session.SessionId == null)
                     {
                         context.Client.Session = new GatewaySession();
-                        context.Client.Cache = new FractumCache(context.Client);
+                        context.Client.Cache = new GatewayCache(context.Client);
                         return context.Client.IdentifyAsync();
                     }
                     else

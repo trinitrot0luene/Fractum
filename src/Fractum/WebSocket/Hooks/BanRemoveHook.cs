@@ -6,7 +6,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class BanRemoveHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
+        public Task RunAsync(EventModelBase args, GatewayCache cache, GatewaySession session)
         {
             var eventData = (BanRemoveEventModel) args;
 

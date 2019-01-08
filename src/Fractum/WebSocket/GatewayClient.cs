@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fractum.WebSocket
 {
-    public sealed class FractumSocketClient
+    public sealed class GatewayClient
     {
         #region Hidden Properties & Fields
 
@@ -26,7 +26,7 @@ namespace Fractum.WebSocket
 
         internal Timer HeartbeatTimer { get; set; }
 
-        internal FractumCache Cache;
+        internal GatewayCache Cache;
 
         internal DateTimeOffset LastSentHeartbeat;
 
@@ -40,7 +40,7 @@ namespace Fractum.WebSocket
 
         #region Public Properties & Fields
 
-        public FractumRestClient RestClient { get; private set; }
+        public RestClient RestClient { get; private set; }
 
         public RestBotUser BotUser { get; private set; }
 
@@ -62,13 +62,15 @@ namespace Fractum.WebSocket
 
         #endregion
 
-        public FractumSocketClient(FractumConfig config)
+        public GatewayClient(GatewayConfig config)
         {
             _reconnectionSemaphore = new SemaphoreSlim(1, 1);
 
-            Cache = new FractumCache(this);
+            Cache = new GatewayCache(this);
             Session = new GatewaySession();
-            RestClient = new FractumRestClient(config);
+            RestClient = new RestClient(config);
+
+            GetOrConfigurePipeline();
 
             PipelineServices = new ServiceCollection();
 
@@ -183,7 +185,7 @@ namespace Fractum.WebSocket
         /// <typeparam name="T">Type of the stage to be added</typeparam>
         /// <param name="ctorParameters">Optional parameters to be used when constructing the stage</param>
         /// <returns></returns>
-        public FractumSocketClient AddStage<T>(params object[] ctorParameters)
+        public GatewayClient AddStage<T>(params object[] ctorParameters)
             where T : IPipelineStage<IPayload<EventModelBase>>
         {
             _pipeline.AddStage((IPipelineStage<IPayload<EventModelBase>>) Activator.CreateInstance(typeof(T), ctorParameters));
@@ -197,7 +199,7 @@ namespace Fractum.WebSocket
         /// <typeparam name="T">Type of the stage to be added</typeparam>
         /// <param name="inst">Instance of the stage to be added to the pipeline</param>
         /// <returns></returns>
-        public FractumSocketClient AddStage<T>(T inst)
+        public GatewayClient AddStage<T>(T inst)
             where T : IPipelineStage<IPayload<EventModelBase>>
         {
             _pipeline.AddStage(inst);
@@ -270,8 +272,6 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         public async Task InitialiseAsync()
         {
-            GetOrConfigurePipeline();
-
             // TODO: Validate token FractumUtils.ValidateToken(Config.Token);
             
             var gatewayInfo = await RestClient.GetSocketUrlAsync().ConfigureAwait(false);
@@ -300,14 +300,14 @@ namespace Fractum.WebSocket
         ///     Connect and listen on the socket. This method does not block.
         /// </summary>
         /// <returns></returns>
-        public Task StartAsync()
+        public Task ConnectAsync()
             =>  Socket.ConnectAsync();
 
         /// <summary>
         ///     Disconnect from the socket, suppressing automatic client reconnects.
         /// </summary>
         /// <returns></returns>
-        public Task StopAsync()
+        public Task DisconnectAsync()
         {
             ClientStatus = ClientStatus.Disconnected;
 
@@ -326,7 +326,7 @@ namespace Fractum.WebSocket
             if (_reconnectionSemaphore.CurrentCount == 0)
                 return;
             else
-                _reconnectionSemaphore.Wait();
+                await _reconnectionSemaphore.WaitAsync();
 
             ClientStatus = ClientStatus.Reconnecting;
 
@@ -422,7 +422,7 @@ namespace Fractum.WebSocket
         /// <returns></returns>
         internal Task IdentifyAsync()
         {
-            Cache = new FractumCache(this);
+            Cache = new GatewayCache(this);
             var identify = new SendPayload
             {
                 op = OpCode.Identify,
@@ -475,81 +475,76 @@ namespace Fractum.WebSocket
         #region Events
 
         internal void InvokeLog(LogMessage message)
-        {
-            if (RestClient.Config.DisableLogging)
-                return;
-
-            _ = OnLog?.Invoke(message);
-        }
+            => _ = OnLog?.Invoke(message);
 
         internal void InvokeMessagePinned(ITextChannel channel)
-            => OnMessagePinned?.Invoke(channel);
+            => _ = OnMessagePinned?.Invoke(channel);
 
         internal void InvokeGuildCreated(CachedGuild guild)
-            => OnGuildCreated?.Invoke(guild);
+            => _ = OnGuildCreated?.Invoke(guild);
 
         internal void InvokeGuildUnavailable(CachedGuild guild)
-            => OnGuildUnavailable?.Invoke(guild);
+            => _ = OnGuildUnavailable?.Invoke(guild);
 
         internal void InvokeGuildUpdated(CachedGuild guild)
-            => OnGuildUpdated?.Invoke(guild);
+            => _ = OnGuildUpdated?.Invoke(guild);
 
         internal void InvokeMessageCreated(CachedMessage message)
-            => OnMessageCreated?.Invoke(message);
+            => _ = OnMessageCreated?.Invoke(message);
 
         internal void InvokeMessageUpdated(CachedMessage oldMessage, CachedMessage newMessage)
-            => OnMessageUpdated?.Invoke(oldMessage, newMessage);
+            => _ = OnMessageUpdated?.Invoke(oldMessage, newMessage);
 
         internal void InvokeMessageDeleted(Cacheable<CachedMessage> cachedMessage)
-            => OnMessageDeleted?.Invoke(cachedMessage);
+            => _ = OnMessageDeleted?.Invoke(cachedMessage);
 
         internal void InvokeChannelCreated(CachedChannel channel)
-            => OnChannelCreated?.Invoke(channel);
+            => _ = OnChannelCreated?.Invoke(channel);
 
         internal void InvokeChannelUpdated(Cacheable<CachedGuildChannel> oldChannel, CachedGuildChannel channel)
-            => OnChannelUpdated?.Invoke(oldChannel, channel);
+            => _ = OnChannelUpdated?.Invoke(oldChannel, channel);
 
         internal void InvokeChannelDeleted(Cacheable<CachedGuildChannel> channel)
-            => OnChannelDeleted?.Invoke(channel);
+            => _ = OnChannelDeleted?.Invoke(channel);
 
         internal void InvokeMemberBanned(CachedMember member)
-            => OnMemberBanned?.Invoke(member);
+            => _ = OnMemberBanned?.Invoke(member);
 
         internal void InvokeMemberUnbanned(User user)
-            => OnMemberUnbanned?.Invoke(user);
+            => _ = OnMemberUnbanned?.Invoke(user);
 
         internal void InvokeEmojisUpdated(Cacheable<CachedGuild> guild, IEnumerable<GuildEmoji> emojis)
-            => OnEmojisUpdated?.Invoke(guild, emojis);
+            => _ = OnEmojisUpdated?.Invoke(guild, emojis);
 
         internal void InvokeIntegrationsUpdated(CachedGuild guild)
-            => OnIntegrationsUpdated?.Invoke(guild);
+            => _ = OnIntegrationsUpdated?.Invoke(guild);
 
         internal void InvokeMemberJoined(CachedMember member)
-            => OnMemberJoined?.Invoke(member);
+            => _ = OnMemberJoined?.Invoke(member);
 
         internal void InvokeMemberLeft(Cacheable<CachedMember> user)
-            => OnMemberLeft?.Invoke(user);
+            => _ = OnMemberLeft?.Invoke(user);
 
         internal void InvokeRoleCreated(CachedGuild guild, Role role)
-            => OnRoleCreated?.Invoke(guild, role);
+            => _ = OnRoleCreated?.Invoke(guild, role);
 
         internal void InvokeRoleUpdated(CachedGuild guild, Role role)
-            => OnRoleUpdated?.Invoke(guild, role);
+            => _ = OnRoleUpdated?.Invoke(guild, role);
 
         internal void InvokeRoleDeleted(CachedGuild guild, Role role)
-            => OnRoleDeleted?.Invoke(guild, role);
+            => _ = OnRoleDeleted?.Invoke(guild, role);
 
         internal void InvokeReactionAdded(CachedReaction reaction)
-            => OnReactionAdded?.Invoke(reaction);
+            => _ = OnReactionAdded?.Invoke(reaction);
 
         internal void InvokeReactionRemoved(CachedReaction reaction)
-            => OnReactionRemoved?.Invoke(reaction);
+            => _ = OnReactionRemoved?.Invoke(reaction);
 
         internal void InvokeReactionsCleared(ulong messageId, ulong channelId, ulong? guildId)
-            => OnReactionsCleared?.Invoke(messageId, channelId, guildId);
+            => _ = OnReactionsCleared?.Invoke(messageId, channelId, guildId);
 
         internal void InvokeUserUpdated(Cacheable<User> oldUser, User user)
-            => OnUserUpdated?.Invoke(oldUser, user);
+            => _ = OnUserUpdated?.Invoke(oldUser, user);
 
         internal void InvokeReady()
         {
@@ -557,7 +552,7 @@ namespace Fractum.WebSocket
 
             ClientStatus = ClientStatus.Connected;
 
-            OnReady?.Invoke();
+            _ = OnReady?.Invoke();
         }
 
         /// <summary>

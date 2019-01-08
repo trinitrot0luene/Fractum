@@ -9,7 +9,7 @@ namespace Fractum.Testing
 {
     public sealed class CommandContext : ICommandContext
     {
-        public CommandContext(FractumSocketClient client, CachedMessage message)
+        public CommandContext(GatewayClient client, CachedMessage message)
         {
             Client = client;
             Guild = (message.Channel as CachedGuildChannel)?.Guild;
@@ -17,7 +17,7 @@ namespace Fractum.Testing
             User = message.Author;
         }
 
-        public FractumSocketClient Client { get; }
+        public GatewayClient Client { get; }
 
         public CachedGuild Guild { get; }
 

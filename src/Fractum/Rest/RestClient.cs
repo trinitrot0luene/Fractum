@@ -14,17 +14,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Fractum.Rest
 {
-    public sealed class FractumRestClient
+    public sealed class RestClient
     {
-        internal FractumConfig Config;
+        internal GatewayConfig Config;
 
-        internal FractumRestService RestService;
+        internal RestApiService RestService;
 
-        public FractumRestClient(FractumConfig config)
+        public RestClient(GatewayConfig config)
         {
             Config = config;
 
-            RestService = new FractumRestService(config);
+            RestService = new RestApiService(config);
 
             RestService.OnLog += msg =>
             {
@@ -125,10 +125,8 @@ namespace Fractum.Rest
                 var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId))
                     .ConfigureAwait(false);
 
-                var responseContent = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var msgs = responseContent.Deserialize<RestMessage[]>();
-                foreach (var msg in msgs)
-                    msg.Client = this;
+                var msgs = await resp.Content.ReadAsObjectsAsync<RestMessage[]>(this).ConfigureAwait(false);
+
                 messages.AddRange(msgs);
 
                 messageId = messages[messages.Count - 1].Id;
@@ -232,7 +230,7 @@ namespace Fractum.Rest
             var response = await RestService
                 .SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, channelId)).ConfigureAwait(false);
 
-            return await response.Content.ReadAsObjectAsync<ReadOnlyCollection<RestUser>>();
+            return await response.Content.ReadAsObjectsAsync<ReadOnlyCollection<RestUser>>(this);
         }
 
         public Task ClearReactionsAsync(ulong messageId, ulong channelId)
@@ -283,7 +281,7 @@ namespace Fractum.Rest
                 content: creationArguments.Serialize()))
                 .ConfigureAwait(false);
 
-            return await resp.Content.ReadAsObjectAsync<RestGuild>();
+            return await resp.Content.ReadAsObjectAsync<RestGuild>(this);
         }
 
         public async Task<RestGuild> GetGuildAsync(ulong guildId)
@@ -293,7 +291,7 @@ namespace Fractum.Rest
 
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get)).ConfigureAwait(false);
 
-            return await resp.Content.ReadAsObjectAsync<RestGuild>();
+            return await resp.Content.ReadAsObjectAsync<RestGuild>(this);
         }
 
         public Task DeleteGuildAsync(ulong guildId)
@@ -304,7 +302,7 @@ namespace Fractum.Rest
             return RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Delete));
         }
 
-        public async Task<RestChannel[]> GetChannelsAsync(ulong guildId)
+        public async Task<IReadOnlyCollection<RestChannel>> GetChannelsAsync(ulong guildId)
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.GUILDS, true), guildId)
@@ -312,7 +310,7 @@ namespace Fractum.Rest
 
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, guildId));
 
-            return await resp.Content.ReadAsObjectAsync<RestChannel[]>();
+            return await resp.Content.ReadAsObjectsAsync<ReadOnlyCollection<RestChannel>>(this);
         }
 
         #endregion
@@ -330,7 +328,7 @@ namespace Fractum.Rest
 
             var response = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get, 0));
 
-            return await response.Content.ReadAsObjectAsync<RestBotUser>();
+            return await response.Content.ReadAsObjectAsync<RestBotUser>(this);
         }
 
         public Task LeaveGuildAsync(ulong guildId)
@@ -367,7 +365,7 @@ namespace Fractum.Rest
 
         #region /voice
 
-        public async Task<VoiceRegion[]> GetVoiceRegionsAsync()
+        public async Task<IReadOnlyCollection<VoiceRegion>> GetVoiceRegionsAsync()
         {
             var rb = new RouteBuilder()
                 .WithPart(RouteSection.Create(Consts.VOICE))
@@ -375,7 +373,7 @@ namespace Fractum.Rest
 
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get));
 
-            return await resp.Content.ReadAsObjectAsync<VoiceRegion[]>();
+            return await resp.Content.ReadAsObjectAsync<ReadOnlyCollection<VoiceRegion>>();
         }
 
         #endregion
@@ -389,8 +387,7 @@ namespace Fractum.Rest
             var resp = await RestService.SendRequestAsync(new StringRestRequest(rb, HttpMethod.Get))
                 .ConfigureAwait(false);
 
-            return JsonConvert.DeserializeObject<GatewayDetails>(await resp.Content.ReadAsStringAsync()
-                .ConfigureAwait(false));
+            return await resp.Content.ReadAsObjectAsync<GatewayDetails>();
         }
 
         internal void InvokeLog(LogMessage msg)

@@ -15,8 +15,8 @@ namespace Fractum.WebSocket
         private readonly object messageLock = new object();
         private readonly object roleLock = new object();
 
-        internal FractumCache Cache;
-        internal FractumSocketClient Client;
+        internal GatewayCache Cache;
+        internal GatewayClient Client;
 
         public CachedGuild Guild { get; }
 
@@ -26,7 +26,7 @@ namespace Fractum.WebSocket
         private readonly Dictionary<ulong, CachedGuildChannel> channels = new Dictionary<ulong, CachedGuildChannel>();
         private readonly Dictionary<ulong, CircularBuffer<CachedMessage>> messages = new Dictionary<ulong, CircularBuffer<CachedMessage>>();
 
-        internal SyncedGuildCache(FractumCache cache, GuildCreateEventModel model)
+        internal SyncedGuildCache(GatewayCache cache, GuildCreateEventModel model)
         {
             Client = cache.Client;
             Cache = cache;

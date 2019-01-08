@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class GuildMemberUpdateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
+        public Task RunAsync(EventModelBase args, GatewayCache cache, GatewaySession session)
         {
             var presenceUpdate = (GuildMemberUpdateEventModel) args;
 

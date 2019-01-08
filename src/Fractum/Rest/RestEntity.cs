@@ -10,7 +10,7 @@ namespace Fractum.Rest
         {
         }
 
-        internal FractumRestClient Client { get; set; }
+        internal RestClient Client { get; set; }
 
         [JsonProperty("id")]
         public ulong Id { get; protected set; }

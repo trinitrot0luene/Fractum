@@ -6,9 +6,9 @@ namespace Fractum.WebSocket
 {
     public sealed class KeyedGuildWrapper : IKeyedEnumerable<ulong, CachedGuild>
     {
-        private readonly FractumCache _cache;
+        private readonly GatewayCache _cache;
 
-        internal KeyedGuildWrapper(FractumCache cache)
+        internal KeyedGuildWrapper(GatewayCache cache)
             => _cache = cache;
 
         public CachedGuild this[ulong key] => _cache.TryGetGuild(key, out var guild) ? guild.Guild : throw new KeyNotFoundException("The guild could not be found in cache.");

@@ -11,7 +11,7 @@ namespace Fractum.Testing
 {
     public sealed class Program
     {
-        private FractumSocketClient _client;
+        private GatewayClient _client;
 
         private CommandService _commands = new CommandService(new CommandServiceConfiguration()
         {
@@ -26,23 +26,22 @@ namespace Fractum.Testing
         {
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            _client = new FractumSocketClient(new FractumConfig()
+            _client = new GatewayClient(new GatewayConfig(Environment.GetEnvironmentVariable("fractum_token"), alwaysDownloadMembers: true));
+
+            _client.GetEventStage().RegisterCallback(Dispatch.GUILD_MEMBERS_CHUNK, (model, cache, session) =>
             {
-                Token = Environment.GetEnvironmentVariable("fractum_token"),
-                LargeThreshold = 250,
-                MessageCacheLength = 100,
-                AlwaysDownloadMembers = false
+                return Task.CompletedTask;
             });
 
             _client.OnMessageCreated += HandleMessageCreated;
 
             _client.OnReady += () => _client.UpdatePresenceAsync("Benchmarking uptime!", ActivityType.Playing, Status.Online);
 
-            _client.UseDefaultLogging(LogSeverity.Verbose);
+            _client.UseDefaultLogging(LogSeverity.Debug, true);
 
             await _client.InitialiseAsync();
 
-            await _client.StartAsync();
+            await _client.ConnectAsync();
 
             await Task.Delay(-1);
         }
