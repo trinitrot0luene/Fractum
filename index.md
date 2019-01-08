@@ -1,7 +1,7 @@
 ## Versions
 - [**0.1.0**](#) (Unavailable)
-- [**0.2.0**](https://trinitrot0luene.github.io/Fractum/0.2.0) (Current)
-- [**0.3.0**](#) (Next release)
+- [**0.2.0**](https://trinitrot0luene.github.io/Fractum/0.2.0) (Deprecated)
+- [**0.3.0**](https://trinitrot0luene.github.io/Fractum/0.3.0) (Current)
 
 ## Documentation for Fractum
 
