@@ -7,7 +7,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ChannelCreateHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
+        public Task RunAsync(EventModelBase args, GatewayCache cache, GatewaySession session)
         {
             var eventModel = (ChannelCreateUpdateOrDeleteEventModel) args;
 

@@ -1,5 +1,4 @@
 ﻿using Fractum.Rest;
-using Fractum.Rest;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace Fractum.Extensions
 {
     internal static class HttpExtensions
     {
-        public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content, FractumRestClient client) where T : RestEntity
+        public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content, RestClient client) where T : RestEntity
         {
             var rawContent = await content.ReadAsStringAsync();
 
@@ -20,6 +19,18 @@ namespace Fractum.Extensions
             entity.Client = client;
 
             return entity;
+        }
+
+        public static async Task<T> ReadAsObjectsAsync<T>(this HttpContent content, RestClient client) where T : IEnumerable<RestEntity>
+        {
+            var rawContent = await content.ReadAsStringAsync();
+
+            var entities = JsonConvert.DeserializeObject<T>(rawContent);
+
+            foreach (var entity in entities)
+                entity.Client = client;
+
+            return entities;
         }
 
         public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content)

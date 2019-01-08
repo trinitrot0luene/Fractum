@@ -13,7 +13,7 @@ namespace Fractum.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedTextChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel model,
+        internal CachedTextChannel(GatewayCache cache, ChannelCreateUpdateOrDeleteEventModel model,
             ulong? guildId = null) : base(cache, model, guildId)
         {
             Topic = model.Topic;

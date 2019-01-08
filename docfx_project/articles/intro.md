@@ -1,9 +1,55 @@
-# Introduction
+Fractum provides abstractions for both Discord's REST and Gateway APIs. For further clarification, read below.
 
-Fractum is a highly asynchronous library split into two parts to mirror the Discord API. 
+# REST
 
-Actions that involve updating state such as sending messages, kicking, banning etc. are handled by the REST API, and correspondingly by the `FractumRestClient`. State caching such as which guilds a bot is in, roles, members, and presence information is sent over a WebSocket connection to Discord's Gateway. This is handled by the `FractumSocketClient`, which also exposes events to hook into if you'd like to execute actions in response to them occurring.
+To perform most actions on Discord, clients must send requests through their RESTful HTTP API. This can be done implicitly through helper methods on `Cached` entities when using the `RestClient`, or explicitly by accessing the `GatewayClient#RestClient` or by instantiating your own. Note that if you intend to use the WebSocket and REST API at the same time you should never instantiate new REST clients using the same token, to avoid accidentally hitting the rate limit.
 
-The `FractumSocketClient` contains an instantiated `FractumRestClient` through which it makes calls to the REST API, and then populates the returned results with cached data from the Gateway. Therefore unless you have a very specific usecase it is recommmended to never use the `FractumRestClient` on its own if you care about using the returned entities.
+# Gateway
 
-For more information about the library, see additional articles in this section as well as the [API Reference](https://trinitrot0luene.github.io/Fractum/api/index.html).
+Discord exposes a WebSocket API to dispatch events and updates. When calling `GatewayClient#ConnectAsync()` the client will begin a new session and start to listen for events, as well as populate a cache from received data. You can access this cached data through parameters passed to event handlers as they are called, or through the relevant `IKeyedEnumerable<TEntity>` properties on the client itself.
+
+# Example
+
+```cs
+using Fractum;
+using Fractum.WebSocket;
+
+namespace MyBot 
+{
+	public class Program
+	{
+		private GatewayClient _client;
+		
+		public static CancellationTokenSource _cts = new CancellationTokenSource();
+		
+		public static Task Main(string args[]) // To enable this signature use language version 7.1+ (<LangVersion>7.1</LangVersion> in your .csproj)
+			=> new Program().RunAsync();
+			
+		public async Task RunAsync()
+		{
+			_client = new GatewayClient(new GatewayConfig(Environment.GetEnvironmentVariable("bot_token")));
+			
+			_client.UseDefaultLogging(LogSeverity.Verbose); // This will register a default logging implementation
+			
+			_client.OnMessageCreated += async msg => {
+				if (msg.Type != MessageType.Default || msg.Author.IsBot) // Only respond to user messages & ignore bots
+					return;
+				
+				if (msg.Content.Equals("!ping"))
+					await msg.Channel.CreateMessageAsync("Pong!"); // Use a commands library like Qmmands if you want to implement a command-based bot (Fractum will eventually ship with a default implementation)
+			};
+			
+			await _client.InitialiseAsync(); // Pull information to connect and client information from the API
+			
+			await _client.ConnectAsync(); // Start listening for events (non-blocking operation)
+			
+			await Task.Delay(-1, _cts.Token) // Delay infinitely since otherwise the console application will close
+				.ContinueWith(task => _client.StopAsync());
+		}
+	}
+}
+```
+
+# Support
+
+Shoot me an email - `tnt(at)codeforge.cc` or hit me up on Discord - `trinitrotoluene#0001`

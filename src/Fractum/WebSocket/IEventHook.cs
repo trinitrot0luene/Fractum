@@ -6,6 +6,6 @@ namespace Fractum.WebSocket
 {
     public interface IEventHook<in TArgs> where TArgs : EventModelBase
     {
-        Task RunAsync(TArgs args, FractumCache cache, GatewaySession session);
+        Task RunAsync(TArgs args, GatewayCache cache, GatewaySession session);
     }
 }

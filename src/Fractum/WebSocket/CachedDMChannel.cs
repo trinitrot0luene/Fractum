@@ -14,7 +14,7 @@ namespace Fractum.WebSocket
     {
         private VotedAsyncAction<ITextChannel> _typingAction;
 
-        internal CachedDMChannel(FractumCache cache, ChannelCreateUpdateOrDeleteEventModel eventModel) : base(cache)
+        internal CachedDMChannel(GatewayCache cache, ChannelCreateUpdateOrDeleteEventModel eventModel) : base(cache)
         {
             Id = eventModel.Id;
             Type = eventModel.Type;

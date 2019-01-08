@@ -13,7 +13,7 @@ namespace Fractum.WebSocket
     /// </summary>
     public sealed class CachedMember : PopulatedEntity, IUser
     {
-        internal CachedMember(FractumCache cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
+        internal CachedMember(GatewayCache cache, GuildMemberAddEventModel model, ulong? parentGuildId = null) :
             base(cache)
         {
             GuildId = parentGuildId ?? model.GuildId ??

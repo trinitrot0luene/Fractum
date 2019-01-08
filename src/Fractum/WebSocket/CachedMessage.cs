@@ -10,7 +10,7 @@ namespace Fractum.WebSocket
 {
     public sealed class CachedMessage : PopulatedEntity, IMessage, ICloneable
     {
-        internal CachedMessage(FractumCache cache, MessageCreateEventModel model) : base(cache)
+        internal CachedMessage(GatewayCache cache, MessageCreateEventModel model) : base(cache)
         {
             Id = model.Id;
 
@@ -32,7 +32,7 @@ namespace Fractum.WebSocket
             cache.AddOrReplace(model.AuthorUser);
         }
 
-        private CachedMessage(FractumCache cache) : base(cache)
+        private CachedMessage(GatewayCache cache) : base(cache)
         {
         }
 

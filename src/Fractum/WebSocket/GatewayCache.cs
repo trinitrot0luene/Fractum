@@ -6,14 +6,14 @@ using Fractum.WebSocket;
 
 namespace Fractum.WebSocket
 {
-    public sealed class FractumCache
+    public sealed class GatewayCache
     {
         private readonly object guildLock = new object();
         private readonly object userLock = new object();
         private readonly object presenceLock = new object();
         private readonly object dmChannelLock = new object();
 
-        public FractumSocketClient Client { get; }
+        public GatewayClient Client { get; }
 
         private Dictionary<ulong, SyncedGuildCache> guilds = new Dictionary<ulong, SyncedGuildCache>();
         private Dictionary<ulong, CachedDMChannel> dmChannels = new Dictionary<ulong, CachedDMChannel>();
@@ -21,7 +21,7 @@ namespace Fractum.WebSocket
         private Dictionary<ulong, CachedPresence> presences = new Dictionary<ulong, CachedPresence>();
         private Dictionary<ulong, User> users = new Dictionary<ulong, User>();
 
-        internal FractumCache(FractumSocketClient client)
+        internal GatewayCache(GatewayClient client)
         {
             Client = client;
         }

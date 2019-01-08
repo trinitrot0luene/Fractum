@@ -5,7 +5,7 @@ namespace Fractum
 {
     public sealed class Role : DiscordEntity
     {
-        internal Role()
+        public Role()
         {
         }
 
@@ -28,13 +28,13 @@ namespace Fractum
         public bool IsHoisted { get; private set; }
 
         [JsonProperty("color")]
-        internal int ColorRaw { get; private set; }
+        public int ColorValue { get; private set; }
 
         [JsonIgnore]
         public string Mention => string.Format(Consts.ROLE_MENTION, Id);
 
         [JsonIgnore]
-        public Color Color => Color.FromArgb(ColorRaw);
+        public Color Color => Color.FromArgb(ColorValue);
 
         public override string ToString() => $"{Name} : {Id}";
     }

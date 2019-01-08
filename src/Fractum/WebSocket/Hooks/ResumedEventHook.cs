@@ -6,7 +6,7 @@ namespace Fractum.WebSocket.Hooks
 {
     internal sealed class ResumedEventHook : IEventHook<EventModelBase>
     {
-        public Task RunAsync(EventModelBase args, FractumCache cache, GatewaySession session)
+        public Task RunAsync(EventModelBase args, GatewayCache cache, GatewaySession session)
         {
             cache.Client.InvokeLog(new LogMessage(nameof(ResumedEventHook), "Resumed", LogSeverity.Info));
 

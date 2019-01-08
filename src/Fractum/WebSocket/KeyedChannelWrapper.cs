@@ -7,9 +7,9 @@ namespace Fractum.WebSocket
 {
     public sealed class KeyedChannelWrapper : IKeyedEnumerable<ulong, CachedGuildChannel>
     {
-        private readonly FractumCache _cache;
+        private readonly GatewayCache _cache;
 
-        internal KeyedChannelWrapper(FractumCache cache)
+        internal KeyedChannelWrapper(GatewayCache cache)
             => _cache = cache;
 
         public CachedGuildChannel this[ulong key]

@@ -55,19 +55,16 @@ namespace Fractum.WebSocket
         {
             _socket = new ClientWebSocket();
 
-            while(true)
+            var abortTask = Task.Run(async () =>
             {
-                var abortTask = Task.Run(async () =>
-                {
-                    await Task.Delay(5000);
-                    if (_socket.State != WebSocketState.Open)
-                        _socket.Abort();
-                });
-                await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
+                await Task.Delay(5000);
+                if (_socket.State != WebSocketState.Open)
+                    _socket.Abort();
+            });
+            await Task.WhenAny(abortTask, _socket.ConnectAsync(_url, _cts.Token));
 
-                if (_socket.State == WebSocketState.Open)
-                    break;
-            }
+            if (_socket.State != WebSocketState.Open)
+                return;
 
             InvokeConnected();
 
@@ -209,7 +206,7 @@ namespace Fractum.WebSocket
                                 if (!warningTask.IsCompleted)
                                     cts.Cancel();
                             });
-                            await Task.WhenAny(warningTask, handlerTask);
+                            await Task.WhenAll(warningTask, handlerTask);
                         }
                     }
                     catch (Exception ex)

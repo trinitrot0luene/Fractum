@@ -8,7 +8,7 @@ namespace Fractum.WebSocket
     /// </summary>
     public class PipelineContext
     {
-        internal PipelineContext(FractumSocketClient client)
+        internal PipelineContext(GatewayClient client)
         {
             Client = client;
             Cache = client.Cache;
@@ -25,12 +25,12 @@ namespace Fractum.WebSocket
         /// <summary>
         ///     Gets the <see cref="ISocketCache{T}" /> which stores guild state.
         /// </summary>
-        public FractumCache Cache { get; }
+        public GatewayCache Cache { get; }
 
         /// <summary>
-        ///     Gets the <see cref="FractumSocketClient"/> containing gateway state and caching information.
+        ///     Gets the <see cref="GatewayClient"/> containing gateway state and caching information.
         /// </summary>
-        public FractumSocketClient Client { get; }
+        public GatewayClient Client { get; }
 
         /// <summary>
         ///     Gets the <see cref="Session" /> which caches session data for the gateway connection.
@@ -38,7 +38,7 @@ namespace Fractum.WebSocket
         public GatewaySession Session { get; }
 
         /// <summary>
-        ///     Gets the <see cref="IServiceProvider"/> containing services previously supplied to the <see cref="FractumSocketClient"/>.
+        ///     Gets the <see cref="IServiceProvider"/> containing services previously supplied to the <see cref="GatewayClient"/>.
         /// </summary>
         public IServiceProvider Services { get; }
 

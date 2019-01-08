@@ -9,13 +9,13 @@ namespace Fractum.WebSocket
     public sealed class EventStage : IPipelineStage<IPayload<EventModelBase>>
     {
         private readonly Dictionary<string, List<IEventHook<EventModelBase>>> Hooks;
-        private readonly Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>> Delegates = new Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>>();
+        private readonly Dictionary<string, List<Func<EventModelBase, GatewayCache, GatewaySession, Task>>> Delegates = new Dictionary<string, List<Func<EventModelBase, GatewayCache, GatewaySession, Task>>>();
 
-        public EventStage(FractumSocketClient client)
+        public EventStage(GatewayClient client)
         {
             Hooks = new Dictionary<string, List<IEventHook<EventModelBase>>>();
 
-            Delegates = new Dictionary<string, List<Func<EventModelBase, FractumCache, GatewaySession, Task>>>();
+            Delegates = new Dictionary<string, List<Func<EventModelBase, GatewayCache, GatewaySession, Task>>>();
         }
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace Fractum.WebSocket
             return this;
         }
 
-        public EventStage RegisterCallback(string eventName, Func<EventModelBase, FractumCache, GatewaySession, Task> func)
+        public EventStage RegisterCallback(string eventName, Func<EventModelBase, GatewayCache, GatewaySession, Task> func)
         {
             if (Delegates.TryGetValue(eventName.ToUpper(), out var existingDelegates))
                 existingDelegates.Add(func);
             else
-                Delegates.Add(eventName.ToUpper(), new List<Func<EventModelBase, FractumCache, GatewaySession, Task>> { func });
+                Delegates.Add(eventName.ToUpper(), new List<Func<EventModelBase, GatewayCache, GatewaySession, Task>> { func });
 
             return this;
         }

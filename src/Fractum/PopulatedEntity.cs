@@ -4,13 +4,13 @@ namespace Fractum
 {
     public abstract class PopulatedEntity : DiscordEntity
     {
-        protected PopulatedEntity(FractumCache cache)
+        protected PopulatedEntity(GatewayCache cache)
         {
             Cache = cache;
         }
 
-        internal FractumCache Cache { get; }
+        internal GatewayCache Cache { get; }
 
-        internal FractumSocketClient Client => Cache.Client;
+        internal GatewayClient Client => Cache.Client;
     }
 }
